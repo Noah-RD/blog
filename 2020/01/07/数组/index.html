@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法,数据结构,数组,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="每种数据结构都有其使用场景下的优点与缺点，而这也是数据结构不断发展与优化的原因之一。 一种思想：升维、空间换时间">
+<meta name="keywords" content="算法,数据结构,数组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法：数组、链表、跳表">
+<meta property="og:url" content="http://blog.intersico.com/2020/01/07/数组/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="每种数据结构都有其使用场景下的优点与缺点，而这也是数据结构不断发展与优化的原因之一。 一种思想：升维、空间换时间">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/the_complexity.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/array.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/insert.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/linkedlist.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/linkedlist_insert.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/skiplist.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/skiplist2.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/01/07/数组/skiplist3.png">
+<meta property="og:updated_time" content="2020-01-09T05:38:49.375Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="算法：数组、链表、跳表">
+<meta name="twitter:description" content="每种数据结构都有其使用场景下的优点与缺点，而这也是数据结构不断发展与优化的原因之一。 一种思想：升维、空间换时间">
+<meta name="twitter:image" content="http://blog.intersico.com/2020/01/07/数组/the_complexity.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2020/01/07/数组/">
+
+
+
+
+
+  <title>算法：数组、链表、跳表 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/01/07/数组/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">算法：数组、链表、跳表</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-07T16:28:10+08:00">
+                2020-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>每种数据结构都有其使用场景下的优点与缺点，而这也是数据结构不断发展与优化的原因之一。</p>
+<p>一种思想：<strong>升维、空间换时间</strong></p>
+<a id="more"></a>
+
+<h3 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h3><p><strong>数组</strong> 是数据结构中最常见的一种，也是很多其他数据结构实现的基础，其随机访问(下标访问)复杂度为常数级的 <code>O(1)</code>。但是插入与删除操作却效率很低，是线性级的 <code>O(n)</code>。于是为了提高插入与删除操作，便出现了链表。</p>
+<p><strong>链表</strong> 的插入与删除操作都是常数级的 <code>O(1)</code>，这弥补了数组的线性复杂度，但链表的访问复杂度却是线性级的 <code>O(n)</code>，那怎么才能继续优化访问的复杂度呢？跳表随之而来。</p>
+<p><strong>跳表</strong> 最常见的场景便是 redis 中。其设计的思想是：<strong>一维转二维，空间换时间的思想。</strong> 其访问、搜索、插入、删除的时间复杂度皆为 <code>O(log(n))</code>，但是空间复杂度为 <code>O(nlog(n))</code>，而数组与链表的空间复杂度为 <code>O(n)</code>。</p>
+<p>正如开头所说，每种数据结构都有其优缺点，其取舍取决于其使用场景。</p>
+<img src="/2020/01/07/数组/the_complexity.png" title="时间与空间复杂度">
+
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>数组在底层硬件实现中，每当你申请数组时，会在内存中开辟一段连续的内存地址，每一个地址可以通过内存管理器直接进行访问。</p>
+<p>也真是由于数组采用顺序存储的方式，使其访问复杂度为常数级 <code>O(1)</code>，但也因此，插入与删除为线性级<code>O(n)</code>。</p>
+<p><em>(数组在内存中示意图)</em></p>
+<img src="/2020/01/07/数组/array.png" title="截取自极客大学《算法训练营》">
+
+<p><strong>访问操作：</strong> 由于内存地址连续，所以数组的随机访问(下标访问)的时间复杂度为 <code>O(1)</code></p>
+<p><strong>搜索操作：</strong> 比如搜索数组中(乱序)等于几的值，需要从头遍历数组，所以复杂度为 <code>O(n)</code></p>
+<p><strong>插入操作：</strong> 插入前，需先挪动插入点之后的所有元素依次后移一位，再进行插入操作，所以复杂度为 <code>O(n)</code></p>
+<img src="/2020/01/07/数组/insert.png" title="插入操作">
+
+<p><strong>删除操作：</strong> 删除后，将删除点后所有元素依次向前挪动一位(与插入操作相反)，所以复杂度为 <code>O(n)</code></p>
+<p>有很多数据结构是以数组为基础构建的，比如数组链表(<a href="/2020/01/08/ArrayList源码学习/" title="ArrayList">ArrayList</a>)、哈希表(<a href="/2020/01/08/HashMap源码学习/" title="HashMap">HashMap</a>) 等。数组这种数据结构非常稳定，其复杂度不会因为极端情况而退化。</p>
+<h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><p>链表由一系列结点 <code>Node</code> 组成(第一个节点为头结点 <code>Head</code> ，最后一个是尾结点 <code>Tail</code> )，每个节点包括一个数据域 <code>value</code> 和指向下一个节点的指针域，结点数量可在运行时动态生成。</p>
+<p>其物理存储单元是非连续的、非顺序的存储结构，其逻辑顺序通过结点中的指针链接次序实现的(即一个结点指向另一个结点)。</p>
+<img src="/2020/01/07/数组/linkedlist.png" title="截取自极客大学《算法训练营》">
+
+<p>链表包括：<strong>单向链表</strong>(结点中只有 <code>next</code> 指针指向下一个结点，最后一个结点 <code>next</code> 指向空)、<strong>双向链表</strong>(结点中既有 <code>next</code> 指向下一个节点，又有 <code>prev</code> 指向前一个节点)和<strong>循环链表</strong>(尾指针指向头指针)。</p>
+<p><em>一个最简单的 <a href="/2020/01/08/LinkedList源码学习/" title="LinkedList">LinkedList</a> 定义(JAVA)：</em></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LinkedList</span> </span>&#123; </span><br><span class="line">    Node head; <span class="comment">// 头结点</span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* 内部结点类*/</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123; </span><br><span class="line">        <span class="keyword">int</span> data; <span class="comment">//数据域</span></span><br><span class="line">        Node next; <span class="comment">//指向下一个节点的指针</span></span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 通过构造函数创建新的节点</span></span><br><span class="line">        <span class="comment">// next 初始化为默认值 null</span></span><br><span class="line">        Node(<span class="keyword">int</span> d) &#123; data = d; &#125; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>访问与搜索操作：</strong> 由于链表的存储单元是非连续、顺序的，所以其访问或搜索只能从头结点向后依次遍历，或从尾结点向前依次遍历，所以其时间复杂度为 <code>O(n)</code></p>
+<p><strong>插入与删除操作：</strong> 也正是由于链表的存储方式，使其插入或删除无需挪动其他结点，只需修改相应位置的结点指针即可，所以其时间复杂度为 <code>O(1)</code></p>
+<img src="/2020/01/07/数组/linkedlist_insert.png" title="链表插入操作">
+
+<p>从上图可以看出，链表的插入与删除(与插入原理相同)操作仅进行了修改指针的操作，所以时间复杂度为常数级的。链表的数据结构也很稳点，不会在特殊情况下而退化。</p>
+<p>虽然链表这种数据结构将数组低效率的插入与删除，从线性复杂度提升到了常数级，但其查询效率却变为了 <code>O(n)</code> 的，那怎么给链表加速才能将读写的效率平衡呢？于是有了跳表。</p>
+<h3 id="跳表"><a href="#跳表" class="headerlink" title="跳表"></a>跳表</h3><p>数组和链表是一维的数据结构，为了弥补一维结构的一些不足，于是便有了<strong>升维</strong>的思想。</p>
+<p>跳表是一个随机化的数据结构，可以被看做二叉树的一个变种，其实质就是一种可以进行二分查找的有序链表。跳表在原有的有序链表上面增加了<strong>多级索引</strong>，通过索引来实现快速查找。</p>
+<img src="/2020/01/07/数组/skiplist.png" title="截取自极客大学《算法训练营》">
+
+<p>可以看到，跳表在原有的有序链表上面增加了多级索引，通过索引来实现快速查找。首先在最高级索引上查找最后一个小于当前查找元素的位置，然后再跳到次高级索引继续查找，直到跳到最底层为止，这时候已经十分接近要查找的元素的位置了(如果查找元素存在的话)。由于根据索引可以一次跳过多个元素，所以跳查找的查找速度也就变快了。</p>
+<p>比如上面的图要查询 <code>8</code> 这个数，在二级索引找到小于 <code>8</code> 的元素 <code>7</code>，于是从 <code>1</code> 跳到 <code>7</code>。<br>接着从 <code>7</code> 来到一级索引发现小于 <code>8</code> 的还是 <code>7</code>，于是来到原始链表，找到 <code>8</code>。可以看到相比于原来的从 <code>1</code> 遍历到 <code>8</code>，跳表只需要 <code>3</code> 次即可。</p>
+<p>当链表中数据较多时，只要相应的增加索引级即可，那具体增加多少级索引呢，<code>log2(n)</code> 个。从这里也体现了一种思想即<strong>空间换时间</strong></p>
+<img src="/2020/01/07/数组/skiplist2.png" title="截取自极客大学《算法训练营》">
+
+<h4 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h4><p>跳表的时间复杂度是怎样的呢？从上图可以看出，原始链表假设有 <code>N</code> 个结点，一级索引为 <code>N/2</code>，二级索引为 <code>N/4</code> 以此类推：</p>
+<p><code>N/2、N/4、N/8</code>、第 <code>k</code> 级索引结点的个数就是 <code>N/(2^k)</code>。</p>
+<p>那么假设索引一共有 <code>H</code> 级，最高级索引有 <code>2</code> 个结点。即表示为：<code>N/(2^H) = 2</code>，从而求得 <code>H = log2(n) - 1</code>。所以跳表的查询复杂度为 <code>O(logn)</code> 的。</p>
+<p>比如如果原始链表有 <code>1024</code> 个结点，那假如查找最后一个结点则需要遍历 <code>1024</code> 次，而用跳表只需要 <code>10</code> 次 (<code>log2(1024)</code>) 即可。</p>
+<h4 id="现实中使用"><a href="#现实中使用" class="headerlink" title="现实中使用"></a>现实中使用</h4><img src="/2020/01/07/数组/skiplist3.png" title="截取自 redis 文档">
+
+<p>在现实中，由于跳表会有插入与删除的操作，这会使其索引结构不那么工整，比如有的索引可能会多跨几步，而有的则少跨几步。所以对于插入与删除操作来说，每次操作后都要进行索引的调整，所以其插入与删除操作的复杂度为对数级 O(logn) 的。</p>
+<p>从图中可以看出，跳表主要由以下几部分构成：</p>
+<ul>
+<li><strong>表头（head）：</strong>负责维护跳跃表的节点指针。</li>
+<li><strong>跳跃表节点：</strong>保存着元素值，以及多个层。</li>
+<li><strong>层：</strong>保存着指向其他元素的指针。高层的指针越过的元素数量大于等于低层的指针，为了提高查找的效率，程序总是从高层先开始访问，然后随着元素值范围的缩小，慢慢降低层次。</li>
+<li><strong>表尾：</strong>全部由 NULL 组成，表示跳跃表的末尾。</li>
+</ul>
+<blockquote>
+<p>有关 redis 中如何实现跳表，可查看文档：<a href="https://redisbook.readthedocs.io/en/latest/internal-datastruct/skiplist.html" target="_blank" rel="noopener">跳跃表——Redis设计与实现</a></p>
+</blockquote>
+<h3 id="LeetCode题目"><a href="#LeetCode题目" class="headerlink" title="LeetCode题目"></a>LeetCode题目</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+            <a href="/tags/数组/" rel="tag"># 数组</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/06/数据结构与算法/" rel="next" title="数据结构与算法">
+                <i class="fa fa-chevron-left"></i> 数据结构与算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/08/ArrayList源码学习/" rel="prev" title="ArrayList源码学习">
+                ArrayList源码学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组"><span class="nav-number">2.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表"><span class="nav-number">3.</span> <span class="nav-text">链表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跳表"><span class="nav-number">4.</span> <span class="nav-text">跳表</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#时间复杂度"><span class="nav-number">4.1.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#现实中使用"><span class="nav-number">4.2.</span> <span class="nav-text">现实中使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LeetCode题目"><span class="nav-number">5.</span> <span class="nav-text">LeetCode题目</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
