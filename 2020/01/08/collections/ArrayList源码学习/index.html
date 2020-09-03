@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="JAVA,算法,数据结构,ArrayList,">
+  <meta name="keywords" content="JAVA,">
 
 
 
@@ -80,14 +80,14 @@
 
 
 <meta name="description" content="ArrayList 底层由数组实现，并可根据元素数量自动扩容。 有一个重点是，ArrayList 是非线程安全的，如果全局并发调用会产生意想不到的结果，虽然 ArrayList 已经尽最大努力(从源码中可以看出，大部分方法都在尽全力验证状态一致性)保证其快速失败。">
-<meta name="keywords" content="JAVA,算法,数据结构,ArrayList">
+<meta name="keywords" content="JAVA">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ArrayList源码学习">
 <meta property="og:url" content="http://blog.intersico.com/2020/01/08/collections/ArrayList源码学习/index.html">
 <meta property="og:site_name" content="Every Day">
 <meta property="og:description" content="ArrayList 底层由数组实现，并可根据元素数量自动扩容。 有一个重点是，ArrayList 是非线程安全的，如果全局并发调用会产生意想不到的结果，虽然 ArrayList 已经尽最大努力(从源码中可以看出，大部分方法都在尽全力验证状态一致性)保证其快速失败。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-09-03T08:13:41.221Z">
+<meta property="og:updated_time" content="2020-09-03T08:29:41.724Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ArrayList源码学习">
 <meta name="twitter:description" content="ArrayList 底层由数组实现，并可根据元素数量自动扩容。 有一个重点是，ArrayList 是非线程安全的，如果全局并发调用会产生意想不到的结果，虽然 ArrayList 已经尽最大努力(从源码中可以看出，大部分方法都在尽全力验证状态一致性)保证其快速失败。">
@@ -305,19 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA源码/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA源码</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
+                  <a href="/categories/集合/" itemprop="url" rel="index">
+                    <span itemprop="name">集合</span>
                   </a>
                 </span>
 
@@ -394,12 +383,6 @@
           
             <a href="/tags/JAVA/" rel="tag"># JAVA</a>
           
-            <a href="/tags/算法/" rel="tag"># 算法</a>
-          
-            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
-          
-            <a href="/tags/ArrayList/" rel="tag"># ArrayList</a>
-          
         </div>
       
 
@@ -411,7 +394,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/01/07/数组/" rel="next" title="算法：数组、链表、跳表">
+              <a href="/2020/01/07/algorithm/数组/" rel="next" title="算法：数组、链表、跳表">
                 <i class="fa fa-chevron-left"></i> 算法：数组、链表、跳表
               </a>
             
@@ -421,7 +404,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/01/08/LinkedList源码学习/" rel="prev" title="LinkedList源码学习">
+              <a href="/2020/01/08/collections/LinkedList源码学习/" rel="prev" title="LinkedList源码学习">
                 LinkedList源码学习 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -511,7 +494,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -522,7 +505,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JUC,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ReentrantLock 是 JUC 中提供的可中断、可重入获取锁、支持超时、支持尝试获取锁的独占锁模式的并发工具类。">
+<meta name="keywords" content="JUC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReentrantLock源码学习">
+<meta property="og:url" content="http://blog.intersico.com/2020/03/22/concurrent/ReentrantLock源码学习/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="ReentrantLock 是 JUC 中提供的可中断、可重入获取锁、支持超时、支持尝试获取锁的独占锁模式的并发工具类。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2020/03/22/concurrent/ReentrantLock源码学习/head.jpg">
+<meta property="og:updated_time" content="2020-09-03T08:28:37.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReentrantLock源码学习">
+<meta name="twitter:description" content="ReentrantLock 是 JUC 中提供的可中断、可重入获取锁、支持超时、支持尝试获取锁的独占锁模式的并发工具类。">
+<meta name="twitter:image" content="http://blog.intersico.com/2020/03/22/concurrent/ReentrantLock源码学习/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2020/03/22/concurrent/ReentrantLock源码学习/">
+
+
+
+
+
+  <title>ReentrantLock源码学习 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/03/22/concurrent/ReentrantLock源码学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ReentrantLock源码学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-22T12:08:12+08:00">
+                2020-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2020/03/22/concurrent/ReentrantLock源码学习/head.jpg">
+
+<p>ReentrantLock 是 JUC 中提供的可中断、可重入获取锁、支持超时、支持尝试获取锁的独占锁模式的并发工具类。</p>
+<a id="more"></a>
+
+<h4 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReentrantLock</span> <span class="keyword">extends</span> <span class="title">Object</span> <span class="keyword">implements</span> <span class="title">Lock</span>, <span class="title">Serializable</span></span></span><br></pre></td></tr></table></figure>
+
+<p>一个可重入互斥锁，具有与使用同步的方法和语句访问隐式监视器锁的方式，相同的基本行为和语义，但具有扩展功能。</p>
+<p>当另一个线程不拥有该锁时，调用该锁的线程将成功返回该锁。 如果当前线程已经拥有该锁，则该方法将立即返回。 可以使用 isHeldByCurrentThread()和 getHoldCount() 方法进行检查。</p>
+<p>此类的构造函数接受一个可选的 fairness 参数。 设置为 true 时，在争用下，锁倾向于授予对等待时间最长的线程的访问。否则，此锁不能保证任何特定的访问顺序。使用许多线程访问的公平锁的程序可能会比使用默认的设置(非公平锁)体现较低的总体吞吐量(即较慢，通常要慢得多)，但是获取锁并保证缺乏饥饿的时间变化较小。但是请注意，锁的公平性不能保证线程调度的公平性。因此，使用公平锁的许多线程之一可能会连续多次获得它，而其他活动线程没有进行且当前未持有该锁。 还要注意，未定时的tryLock（）方法不支持公平性设置。如果锁可用，即使其他线程正在等待，它将成功。</p>
+<p>建议的做法是始终在调用后使用 try 块进行锁定，最常见的是在构造之前/之后，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">X</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">   <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     lock.lock();  <span class="comment">// block until condition holds</span></span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="comment">// ... method body</span></span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">       lock.unlock();</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>除了实现 Lock 接口之外，此类还定义了许多用于检查锁状态的公共方法和受保护方法。 其中一些方法仅对 instrumentation 和 monitoring 有用。</p>
+<p>此类的序列化与内置锁的行为相同：反序列化的锁处于解锁状态，而不管序列化时的状态如何。</p>
+<p>此锁通过同一线程最多支持 2147483647 个递归锁。 尝试超过此限制会导致锁定方法引发错误。</p>
+<p><strong>ReentrantLock 特点</strong></p>
+<ul>
+<li>可重入, 一个线程获取独占锁后, 可多次获取, 多次释放(synchronized 也一样, 只是 synchronized 内的代码执行异常后会自动释放到 monitor 上的锁)</li>
+<li>支持中断(synchronized 不支持)</li>
+<li>支持超时机制, 支持尝试获取 lock, 支持公平与不公平的获取 lock(主要区别在 判断 AQS 中的 Sync Queue 里面是否有其他线程等待获取 lock)</li>
+<li>支持调用 Condition 提供的 await(释放 lock, 并等待), signal(将线程节点从 Condition Queue 转移到 Sync Queue 里面)</li>
+<li>在运行 synchronized 里面的代码若抛出异常, 则会自动释放监视器上的 lock, 而 ReentrantLock 是需要显示的调用 unlock方法</li>
+</ul>
+<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><p>ReentrantLock 内部基于同步队列 AQS，关于 AQS 请看 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br><span class="line">500</span><br><span class="line">501</span><br><span class="line">502</span><br><span class="line">503</span><br><span class="line">504</span><br><span class="line">505</span><br><span class="line">506</span><br><span class="line">507</span><br><span class="line">508</span><br><span class="line">509</span><br><span class="line">510</span><br><span class="line">511</span><br><span class="line">512</span><br><span class="line">513</span><br><span class="line">514</span><br><span class="line">515</span><br><span class="line">516</span><br><span class="line">517</span><br><span class="line">518</span><br><span class="line">519</span><br><span class="line">520</span><br><span class="line">521</span><br><span class="line">522</span><br><span class="line">523</span><br><span class="line">524</span><br><span class="line">525</span><br><span class="line">526</span><br><span class="line">527</span><br><span class="line">528</span><br><span class="line">529</span><br><span class="line">530</span><br><span class="line">531</span><br><span class="line">532</span><br><span class="line">533</span><br><span class="line">534</span><br><span class="line">535</span><br><span class="line">536</span><br><span class="line">537</span><br><span class="line">538</span><br><span class="line">539</span><br><span class="line">540</span><br><span class="line">541</span><br><span class="line">542</span><br><span class="line">543</span><br><span class="line">544</span><br><span class="line">545</span><br><span class="line">546</span><br><span class="line">547</span><br><span class="line">548</span><br><span class="line">549</span><br><span class="line">550</span><br><span class="line">551</span><br><span class="line">552</span><br><span class="line">553</span><br><span class="line">554</span><br><span class="line">555</span><br><span class="line">556</span><br><span class="line">557</span><br><span class="line">558</span><br><span class="line">559</span><br><span class="line">560</span><br><span class="line">561</span><br><span class="line">562</span><br><span class="line">563</span><br><span class="line">564</span><br><span class="line">565</span><br><span class="line">566</span><br><span class="line">567</span><br><span class="line">568</span><br><span class="line">569</span><br><span class="line">570</span><br><span class="line">571</span><br><span class="line">572</span><br><span class="line">573</span><br><span class="line">574</span><br><span class="line">575</span><br><span class="line">576</span><br><span class="line">577</span><br><span class="line">578</span><br><span class="line">579</span><br><span class="line">580</span><br><span class="line">581</span><br><span class="line">582</span><br><span class="line">583</span><br><span class="line">584</span><br><span class="line">585</span><br><span class="line">586</span><br><span class="line">587</span><br><span class="line">588</span><br><span class="line">589</span><br><span class="line">590</span><br><span class="line">591</span><br><span class="line">592</span><br><span class="line">593</span><br><span class="line">594</span><br><span class="line">595</span><br><span class="line">596</span><br><span class="line">597</span><br><span class="line">598</span><br><span class="line">599</span><br><span class="line">600</span><br><span class="line">601</span><br><span class="line">602</span><br><span class="line">603</span><br><span class="line">604</span><br><span class="line">605</span><br><span class="line">606</span><br><span class="line">607</span><br><span class="line">608</span><br><span class="line">609</span><br><span class="line">610</span><br><span class="line">611</span><br><span class="line">612</span><br><span class="line">613</span><br><span class="line">614</span><br><span class="line">615</span><br><span class="line">616</span><br><span class="line">617</span><br><span class="line">618</span><br><span class="line">619</span><br><span class="line">620</span><br><span class="line">621</span><br><span class="line">622</span><br><span class="line">623</span><br><span class="line">624</span><br><span class="line">625</span><br><span class="line">626</span><br><span class="line">627</span><br><span class="line">628</span><br><span class="line">629</span><br><span class="line">630</span><br><span class="line">631</span><br><span class="line">632</span><br><span class="line">633</span><br><span class="line">634</span><br><span class="line">635</span><br><span class="line">636</span><br><span class="line">637</span><br><span class="line">638</span><br><span class="line">639</span><br><span class="line">640</span><br><span class="line">641</span><br><span class="line">642</span><br><span class="line">643</span><br><span class="line">644</span><br><span class="line">645</span><br><span class="line">646</span><br><span class="line">647</span><br><span class="line">648</span><br><span class="line">649</span><br><span class="line">650</span><br><span class="line">651</span><br><span class="line">652</span><br><span class="line">653</span><br><span class="line">654</span><br><span class="line">655</span><br><span class="line">656</span><br><span class="line">657</span><br><span class="line">658</span><br><span class="line">659</span><br><span class="line">660</span><br><span class="line">661</span><br><span class="line">662</span><br><span class="line">663</span><br><span class="line">664</span><br><span class="line">665</span><br><span class="line">666</span><br><span class="line">667</span><br><span class="line">668</span><br><span class="line">669</span><br><span class="line">670</span><br><span class="line">671</span><br><span class="line">672</span><br><span class="line">673</span><br><span class="line">674</span><br><span class="line">675</span><br><span class="line">676</span><br><span class="line">677</span><br><span class="line">678</span><br><span class="line">679</span><br><span class="line">680</span><br><span class="line">681</span><br><span class="line">682</span><br><span class="line">683</span><br><span class="line">684</span><br><span class="line">685</span><br><span class="line">686</span><br><span class="line">687</span><br><span class="line">688</span><br><span class="line">689</span><br><span class="line">690</span><br><span class="line">691</span><br><span class="line">692</span><br><span class="line">693</span><br><span class="line">694</span><br><span class="line">695</span><br><span class="line">696</span><br><span class="line">697</span><br><span class="line">698</span><br><span class="line">699</span><br><span class="line">700</span><br><span class="line">701</span><br><span class="line">702</span><br><span class="line">703</span><br><span class="line">704</span><br><span class="line">705</span><br><span class="line">706</span><br><span class="line">707</span><br><span class="line">708</span><br><span class="line">709</span><br><span class="line">710</span><br><span class="line">711</span><br><span class="line">712</span><br><span class="line">713</span><br><span class="line">714</span><br><span class="line">715</span><br><span class="line">716</span><br><span class="line">717</span><br><span class="line">718</span><br><span class="line">719</span><br><span class="line">720</span><br><span class="line">721</span><br><span class="line">722</span><br><span class="line">723</span><br><span class="line">724</span><br><span class="line">725</span><br><span class="line">726</span><br><span class="line">727</span><br><span class="line">728</span><br><span class="line">729</span><br><span class="line">730</span><br><span class="line">731</span><br><span class="line">732</span><br><span class="line">733</span><br><span class="line">734</span><br><span class="line">735</span><br><span class="line">736</span><br><span class="line">737</span><br><span class="line">738</span><br><span class="line">739</span><br><span class="line">740</span><br><span class="line">741</span><br><span class="line">742</span><br><span class="line">743</span><br><span class="line">744</span><br><span class="line">745</span><br><span class="line">746</span><br><span class="line">747</span><br><span class="line">748</span><br><span class="line">749</span><br><span class="line">750</span><br><span class="line">751</span><br><span class="line">752</span><br><span class="line">753</span><br><span class="line">754</span><br><span class="line">755</span><br><span class="line">756</span><br><span class="line">757</span><br><span class="line">758</span><br><span class="line">759</span><br><span class="line">760</span><br><span class="line">761</span><br><span class="line">762</span><br><span class="line">763</span><br><span class="line">764</span><br><span class="line">765</span><br><span class="line">766</span><br><span class="line">767</span><br><span class="line">768</span><br><span class="line">769</span><br><span class="line">770</span><br><span class="line">771</span><br><span class="line">772</span><br><span class="line">773</span><br><span class="line">774</span><br><span class="line">775</span><br><span class="line">776</span><br><span class="line">777</span><br><span class="line">778</span><br><span class="line">779</span><br><span class="line">780</span><br><span class="line">781</span><br><span class="line">782</span><br><span class="line">783</span><br><span class="line">784</span><br><span class="line">785</span><br><span class="line">786</span><br><span class="line">787</span><br><span class="line">788</span><br><span class="line">789</span><br><span class="line">790</span><br><span class="line">791</span><br><span class="line">792</span><br><span class="line">793</span><br><span class="line">794</span><br><span class="line">795</span><br><span class="line">796</span><br><span class="line">797</span><br><span class="line">798</span><br><span class="line">799</span><br><span class="line">800</span><br><span class="line">801</span><br><span class="line">802</span><br><span class="line">803</span><br><span class="line">804</span><br><span class="line">805</span><br><span class="line">806</span><br><span class="line">807</span><br><span class="line">808</span><br><span class="line">809</span><br><span class="line">810</span><br><span class="line">811</span><br><span class="line">812</span><br><span class="line">813</span><br><span class="line">814</span><br><span class="line">815</span><br><span class="line">816</span><br><span class="line">817</span><br><span class="line">818</span><br><span class="line">819</span><br><span class="line">820</span><br><span class="line">821</span><br><span class="line">822</span><br><span class="line">823</span><br><span class="line">824</span><br><span class="line">825</span><br><span class="line">826</span><br><span class="line">827</span><br><span class="line">828</span><br><span class="line">829</span><br><span class="line">830</span><br><span class="line">831</span><br><span class="line">832</span><br><span class="line">833</span><br><span class="line">834</span><br><span class="line">835</span><br><span class="line">836</span><br><span class="line">837</span><br><span class="line">838</span><br><span class="line">839</span><br><span class="line">840</span><br><span class="line">841</span><br><span class="line">842</span><br><span class="line">843</span><br><span class="line">844</span><br><span class="line">845</span><br><span class="line">846</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> java.util.concurrent.locks;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Lock</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">7373984872572414699L</span>;</span><br><span class="line">    <span class="comment">/** Synchronizer providing all implementation mechanics */</span></span><br><span class="line">    <span class="comment">//内部类，继承自 AQS</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Sync sync;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Base of synchronization control for this lock. Subclassed</span></span><br><span class="line"><span class="comment">     * into fair and nonfair versions below. Uses AQS state to</span></span><br><span class="line"><span class="comment">     * represent the number of holds on the lock.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">abstract</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Sync</span> <span class="keyword">extends</span> <span class="title">AbstractQueuedSynchronizer</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">5179523762034025860L</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Performs &#123;<span class="doctag">@link</span> Lock#lock&#125;. The main reason for subclassing</span></span><br><span class="line"><span class="comment">         * is to allow fast path for nonfair version.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="comment">//抽象方法，由子类实现，也就是 NonfairSync(非公平获取锁) 和 FairSync(公平获取锁)</span></span><br><span class="line">        <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Performs non-fair tryLock.  tryAcquire is implemented in</span></span><br><span class="line"><span class="comment">         * subclasses, but both need nonfair try for trylock method.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="comment">//非公平获取锁的方法，与公平获取锁的差别就是先用 CAS 设置 State，如果成功了直接抢占锁，否所加入队列。</span></span><br><span class="line">        <span class="comment">//而公平锁，会先查看队列中是否有线程正在等待获取锁，如果有则自己排队，否则才去尝试获取锁</span></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">            <span class="comment">//获取当前线程</span></span><br><span class="line">            <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">            <span class="comment">//获取当前占用锁计数</span></span><br><span class="line">            <span class="keyword">int</span> c = getState();</span><br><span class="line">            <span class="comment">// == 0 说明当前没有线程占用锁</span></span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123; <span class="comment">//直接 CAS 获取锁</span></span><br><span class="line">                    setExclusiveOwnerThread(current); <span class="comment">//获取成功，则直接抢占锁</span></span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123; <span class="comment">//如果锁已经被线程占用，且这个线程就是自己，那在此重入，增加 state 计数，然后直接返回</span></span><br><span class="line">                <span class="keyword">int</span> nextc = c + acquires; <span class="comment">//重入锁计数增加</span></span><br><span class="line">                <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">                setState(nextc); <span class="comment">//设置占锁状态</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//释放锁</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryRelease</span><span class="params">(<span class="keyword">int</span> releases)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span> c = getState() - releases; <span class="comment">//计算释放后剩余量</span></span><br><span class="line">            <span class="keyword">if</span> (Thread.currentThread() != getExclusiveOwnerThread())</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException();</span><br><span class="line">            <span class="keyword">boolean</span> free = <span class="keyword">false</span>;</span><br><span class="line">            <span class="comment">//如果 == 0 说明将锁完全释放</span></span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                free = <span class="keyword">true</span>;</span><br><span class="line">                setExclusiveOwnerThread(<span class="keyword">null</span>); <span class="comment">//设置独占锁的线程为 null</span></span><br><span class="line">            &#125;</span><br><span class="line">            setState(c);</span><br><span class="line">            <span class="keyword">return</span> free;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//当前线程是否占有锁</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isHeldExclusively</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">// While we must in general read state before owner,</span></span><br><span class="line">            <span class="comment">// we don't need to do so to check if current thread is owner</span></span><br><span class="line">            <span class="keyword">return</span> getExclusiveOwnerThread() == Thread.currentThread();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">final</span> ConditionObject <span class="title">newCondition</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> ConditionObject();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Methods relayed from outer class 外部类依赖的方法</span></span><br><span class="line">        <span class="comment">//获取占有锁的线程</span></span><br><span class="line">        <span class="function"><span class="keyword">final</span> Thread <span class="title">getOwner</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> getState() == <span class="number">0</span> ? <span class="keyword">null</span> : getExclusiveOwnerThread();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取锁 state 计数</span></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getHoldCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> isHeldExclusively() ? getState() : <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isLocked</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> getState() != <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Reconstitutes the instance from a stream (that is, deserializes it).</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="comment">//用于反序列化，并解除锁定状态</span></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(java.io.ObjectInputStream s)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> java.io.IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">            s.defaultReadObject();</span><br><span class="line">            setState(<span class="number">0</span>); <span class="comment">// reset to unlocked state</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Sync object for non-fair locks</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//非公平占锁实现</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">NonfairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">7316153563782823691L</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Performs lock.  Try immediate barge, backing up to normal</span></span><br><span class="line"><span class="comment">         * acquire on failure.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>)) <span class="comment">//先直接抢占锁，如果成功，则获取锁</span></span><br><span class="line">                setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                acquire(<span class="number">1</span>); <span class="comment">//否则进入队列</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Sync object for fair locks</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//公平占锁实现</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">3000897897090466540L</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123; <span class="comment">//直接进队列</span></span><br><span class="line">            acquire(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Fair version of tryAcquire.  Don't grant access unless</span></span><br><span class="line"><span class="comment">         * recursive call or no waiters or is first.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="comment">//尝试占锁</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">            <span class="keyword">int</span> c = getState();</span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp; <span class="comment">//会先判断队列中，是否有其他线程正在等待锁资源</span></span><br><span class="line">                    compareAndSetState(<span class="number">0</span>, acquires)) &#123; <span class="comment">//如果没有其他线程等待锁，则尝试 CAS 占锁</span></span><br><span class="line">                    setExclusiveOwnerThread(current);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123; <span class="comment">//如果是当前线程已经占有锁，则重入后直接返回</span></span><br><span class="line">                <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">                <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">                setState(nextc);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates an instance of &#123;<span class="doctag">@code</span> ReentrantLock&#125;.</span></span><br><span class="line"><span class="comment">     * This is equivalent to using &#123;<span class="doctag">@code</span> ReentrantLock(false)&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//默认构造函数，默认使用非公平模式</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates an instance of &#123;<span class="doctag">@code</span> ReentrantLock&#125; with the</span></span><br><span class="line"><span class="comment">     * given fairness policy.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> fair &#123;<span class="doctag">@code</span> true&#125; if this lock should use a fair ordering policy</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//使用 fair 参数，来使用公平还是非公平模式</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">        sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Acquires the lock.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;Acquires the lock if it is not held by another thread and returns</span></span><br><span class="line"><span class="comment">     * immediately, setting the lock hold count to one.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 获取锁。如果没有其他线程持有该锁，则获取该锁并立即返回，将锁保持计数设置为1。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the current thread already holds the lock then the hold</span></span><br><span class="line"><span class="comment">     * count is incremented by one and the method returns immediately.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程已经持有该锁，则持有计数将增加一，该方法将立即返回。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the lock is held by another thread then the</span></span><br><span class="line"><span class="comment">     * current thread becomes disabled for thread scheduling</span></span><br><span class="line"><span class="comment">     * purposes and lies dormant until the lock has been acquired,</span></span><br><span class="line"><span class="comment">     * at which time the lock hold count is set to one.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果锁是由另一个线程持有的，则当前线程将出于线程调度目的而被禁用，并处于休眠状态，直到获取了锁为止，此时，锁持有计数被设置为1。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync.lock();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Acquires the lock unless the current thread is</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> Thread#interrupt interrupted&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;Acquires the lock if it is not held by another thread and returns</span></span><br><span class="line"><span class="comment">     * immediately, setting the lock hold count to one.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the current thread already holds this lock then the hold count</span></span><br><span class="line"><span class="comment">     * is incremented by one and the method returns immediately.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the lock is held by another thread then the</span></span><br><span class="line"><span class="comment">     * current thread becomes disabled for thread scheduling</span></span><br><span class="line"><span class="comment">     * purposes and lies dormant until one of two things happens:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;The lock is acquired by the current thread; or</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;Some other thread &#123;<span class="doctag">@linkplain</span> Thread#interrupt interrupts&#125; the</span></span><br><span class="line"><span class="comment">     * current thread.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the lock is acquired by the current thread then the lock hold</span></span><br><span class="line"><span class="comment">     * count is set to one.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the current thread:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;has its interrupted status set on entry to this method; or</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;is &#123;<span class="doctag">@linkplain</span> Thread#interrupt interrupted&#125; while acquiring</span></span><br><span class="line"><span class="comment">     * the lock,</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * then &#123;<span class="doctag">@link</span> InterruptedException&#125; is thrown and the current thread's</span></span><br><span class="line"><span class="comment">     * interrupted status is cleared.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;In this implementation, as this method is an explicit</span></span><br><span class="line"><span class="comment">     * interruption point, preference is given to responding to the</span></span><br><span class="line"><span class="comment">     * interrupt over normal or reentrant acquisition of the lock.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException if the current thread is interrupted</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 除非当前线程被中断，否则获取锁。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果没有其他线程持有该锁，则获取该锁并立即返回，将锁保持计数设置为1。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程已经持有此锁，则持有计数将增加一，并且该方法将立即返回。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果锁是由另一个线程持有的，则出于线程调度的目的，当前线程将被禁用，并处于休眠状态，直到发生以下两种情况之一：</span></span><br><span class="line"><span class="comment">     * - 该锁由当前线程获取</span></span><br><span class="line"><span class="comment">     * - 其他一些线程中断当前线程</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程获取了锁，则锁保持计数将设置为1。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程：</span></span><br><span class="line"><span class="comment">     * - 在进入此方法时已设置其中断状态</span></span><br><span class="line"><span class="comment">     * - 获取锁时被中断</span></span><br><span class="line"><span class="comment">     * 那么将抛出InterruptedException并清除当前线程的中断状态。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 在此实现中，由于此方法是显式的中断点，因此优先于对中断的响应而不是正常或可重入的锁获取。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        sync.acquireInterruptibly(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Acquires the lock only if it is not held by another thread at the time</span></span><br><span class="line"><span class="comment">     * of invocation.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;Acquires the lock if it is not held by another thread and</span></span><br><span class="line"><span class="comment">     * returns immediately with the value &#123;<span class="doctag">@code</span> true&#125;, setting the</span></span><br><span class="line"><span class="comment">     * lock hold count to one. Even when this lock has been set to use a</span></span><br><span class="line"><span class="comment">     * fair ordering policy, a call to &#123;<span class="doctag">@code</span> tryLock()&#125; &lt;em&gt;will&lt;/em&gt;</span></span><br><span class="line"><span class="comment">     * immediately acquire the lock if it is available, whether or not</span></span><br><span class="line"><span class="comment">     * other threads are currently waiting for the lock.</span></span><br><span class="line"><span class="comment">     * This &amp;quot;barging&amp;quot; behavior can be useful in certain</span></span><br><span class="line"><span class="comment">     * circumstances, even though it breaks fairness. If you want to honor</span></span><br><span class="line"><span class="comment">     * the fairness setting for this lock, then use</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> #tryLock(long, TimeUnit) tryLock(0, TimeUnit.SECONDS) &#125;</span></span><br><span class="line"><span class="comment">     * which is almost equivalent (it also detects interruption).</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the current thread already holds this lock then the hold</span></span><br><span class="line"><span class="comment">     * count is incremented by one and the method returns &#123;<span class="doctag">@code</span> true&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the lock is held by another thread then this method will return</span></span><br><span class="line"><span class="comment">     * immediately with the value &#123;<span class="doctag">@code</span> false&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if the lock was free and was acquired by the</span></span><br><span class="line"><span class="comment">     *         current thread, or the lock was already held by the current</span></span><br><span class="line"><span class="comment">     *         thread; and &#123;<span class="doctag">@code</span> false&#125; otherwise</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 仅当调用时另一个线程未持有该锁时才获取该锁。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果没有其他线程持有该锁，则获取该锁，并立即返回 true 值，将锁保持计数设置为1。 </span></span><br><span class="line"><span class="comment">     * 即使已将此锁设置为使用公平的排序策略，对 tryLock() 的调用也会立即获取该锁(如果有)，无论当前是否有其他线程在等待该锁。 </span></span><br><span class="line"><span class="comment">     * 即使破坏公平性，这种“讨价还价”的行为在某些情况下还是有用的。 </span></span><br><span class="line"><span class="comment">     * 如果要遵守此锁的公平性设置，请使用几乎等效的 tryLock(0，TimeUnit.SECONDS)(它还会检测到中断)。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程已经持有此锁，则持有计数将增加一，并且该方法返回true。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果锁由另一个线程持有，则此方法将立即返回false值。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.nonfairTryAcquire(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Acquires the lock if it is not held by another thread within the given</span></span><br><span class="line"><span class="comment">     * waiting time and the current thread has not been</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> Thread#interrupt interrupted&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;Acquires the lock if it is not held by another thread and returns</span></span><br><span class="line"><span class="comment">     * immediately with the value &#123;<span class="doctag">@code</span> true&#125;, setting the lock hold count</span></span><br><span class="line"><span class="comment">     * to one. If this lock has been set to use a fair ordering policy then</span></span><br><span class="line"><span class="comment">     * an available lock &lt;em&gt;will not&lt;/em&gt; be acquired if any other threads</span></span><br><span class="line"><span class="comment">     * are waiting for the lock. This is in contrast to the &#123;<span class="doctag">@link</span> #tryLock()&#125;</span></span><br><span class="line"><span class="comment">     * method. If you want a timed &#123;<span class="doctag">@code</span> tryLock&#125; that does permit barging on</span></span><br><span class="line"><span class="comment">     * a fair lock then combine the timed and un-timed forms together:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     *  &lt;pre&gt; &#123;<span class="doctag">@code</span></span></span><br><span class="line"><span class="comment">     * if (lock.tryLock() ||</span></span><br><span class="line"><span class="comment">     *     lock.tryLock(timeout, unit)) &#123;</span></span><br><span class="line"><span class="comment">     *   ...</span></span><br><span class="line"><span class="comment">     * &#125;&#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the current thread</span></span><br><span class="line"><span class="comment">     * already holds this lock then the hold count is incremented by one and</span></span><br><span class="line"><span class="comment">     * the method returns &#123;<span class="doctag">@code</span> true&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the lock is held by another thread then the</span></span><br><span class="line"><span class="comment">     * current thread becomes disabled for thread scheduling</span></span><br><span class="line"><span class="comment">     * purposes and lies dormant until one of three things happens:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;The lock is acquired by the current thread; or</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;Some other thread &#123;<span class="doctag">@linkplain</span> Thread#interrupt interrupts&#125;</span></span><br><span class="line"><span class="comment">     * the current thread; or</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;The specified waiting time elapses</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the lock is acquired then the value &#123;<span class="doctag">@code</span> true&#125; is returned and</span></span><br><span class="line"><span class="comment">     * the lock hold count is set to one.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the current thread:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;has its interrupted status set on entry to this method; or</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;is &#123;<span class="doctag">@linkplain</span> Thread#interrupt interrupted&#125; while</span></span><br><span class="line"><span class="comment">     * acquiring the lock,</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">     * then &#123;<span class="doctag">@link</span> InterruptedException&#125; is thrown and the current thread's</span></span><br><span class="line"><span class="comment">     * interrupted status is cleared.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the specified waiting time elapses then the value &#123;<span class="doctag">@code</span> false&#125;</span></span><br><span class="line"><span class="comment">     * is returned.  If the time is less than or equal to zero, the method</span></span><br><span class="line"><span class="comment">     * will not wait at all.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;In this implementation, as this method is an explicit</span></span><br><span class="line"><span class="comment">     * interruption point, preference is given to responding to the</span></span><br><span class="line"><span class="comment">     * interrupt over normal or reentrant acquisition of the lock, and</span></span><br><span class="line"><span class="comment">     * over reporting the elapse of the waiting time.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> timeout the time to wait for the lock</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> unit the time unit of the timeout argument</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if the lock was free and was acquired by the</span></span><br><span class="line"><span class="comment">     *         current thread, or the lock was already held by the current</span></span><br><span class="line"><span class="comment">     *         thread; and &#123;<span class="doctag">@code</span> false&#125; if the waiting time elapsed before</span></span><br><span class="line"><span class="comment">     *         the lock could be acquired</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException if the current thread is interrupted</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NullPointerException if the time unit is null</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果在给定的等待时间内另一个线程未持有该锁并且当前线程尚未中断，则获取该锁。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果没有其他线程持有该锁，则获取该锁，并立即返回 true 值，将锁保持计数设置为 1。 </span></span><br><span class="line"><span class="comment">     * 如果已将此锁设置为使用公平的排序策略，则如果任何其他线程正在等待该锁，则不会获取可用锁。这与 tryLock() 方法相反。 </span></span><br><span class="line"><span class="comment">     * 如果您想要定时的 tryLock 确实允许对公平锁进行插入，则将定时和非定时形式组合在一起:</span></span><br><span class="line"><span class="comment">     * if (lock.tryLock() ||</span></span><br><span class="line"><span class="comment">     *      lock.tryLock(timeout, unit)) &#123;</span></span><br><span class="line"><span class="comment">     *    ...</span></span><br><span class="line"><span class="comment">     *  &#125;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程已经持有此锁，则持有计数将增加一，并且该方法返回true。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果该锁由另一个线程持有，则出于线程调度目的，当前线程将被禁用，并处于休眠状态，直到发生以下三种情况之一：</span></span><br><span class="line"><span class="comment">     * - 该锁由当前线程获取</span></span><br><span class="line"><span class="comment">     * - 其他一些线程中断当前线程</span></span><br><span class="line"><span class="comment">     * - 经过指定的等待时间</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果获取了锁，则返回 true 值，并将锁保持计数设置为 1。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程：</span></span><br><span class="line"><span class="comment">     * - 在进入此方法时已设置其中断状态</span></span><br><span class="line"><span class="comment">     * - 获取锁时被中断</span></span><br><span class="line"><span class="comment">     * 那么将抛出 InterruptedException 并清除当前线程的中断状态。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果经过了指定的等待时间，则返回值 false。 如果时间小于或等于零，则该方法将完全不等待。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 在此实现中，由于此方法是显式的中断点，因此优先于对中断的响应而不是正常或可重入的锁定获取，而是优先报告等待时间的流逝。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.tryAcquireNanos(<span class="number">1</span>, unit.toNanos(timeout));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Attempts to release this lock.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the current thread is the holder of this lock then the hold</span></span><br><span class="line"><span class="comment">     * count is decremented.  If the hold count is now zero then the lock</span></span><br><span class="line"><span class="comment">     * is released.  If the current thread is not the holder of this</span></span><br><span class="line"><span class="comment">     * lock then &#123;<span class="doctag">@link</span> IllegalMonitorStateException&#125; is thrown.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalMonitorStateException if the current thread does not</span></span><br><span class="line"><span class="comment">     *         hold this lock</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 尝试释放此锁。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果当前线程是此锁的持有者，则保留计数将减少。 如果保持计数现在为零，则释放锁定。 如果当前线程不是此锁的持有者，则抛出 IllegalMonitorStateException。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync.release(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns a &#123;<span class="doctag">@link</span> Condition&#125; instance for use with this</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> Lock&#125; instance.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;The returned &#123;<span class="doctag">@link</span> Condition&#125; instance supports the same</span></span><br><span class="line"><span class="comment">     * usages as do the &#123;<span class="doctag">@link</span> Object&#125; monitor methods (&#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment">     * Object#wait() wait&#125;, &#123;<span class="doctag">@link</span> Object#notify notify&#125;, and &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment">     * Object#notifyAll notifyAll&#125;) when used with the built-in</span></span><br><span class="line"><span class="comment">     * monitor lock.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;If this lock is not held when any of the &#123;<span class="doctag">@link</span> Condition&#125;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> Condition#await() waiting&#125; or &#123;<span class="doctag">@linkplain</span></span></span><br><span class="line"><span class="comment">     * Condition#signal signalling&#125; methods are called, then an &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment">     * IllegalMonitorStateException&#125; is thrown.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;When the condition &#123;<span class="doctag">@linkplain</span> Condition#await() waiting&#125;</span></span><br><span class="line"><span class="comment">     * methods are called the lock is released and, before they</span></span><br><span class="line"><span class="comment">     * return, the lock is reacquired and the lock hold count restored</span></span><br><span class="line"><span class="comment">     * to what it was when the method was called.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;If a thread is &#123;<span class="doctag">@linkplain</span> Thread#interrupt interrupted&#125;</span></span><br><span class="line"><span class="comment">     * while waiting then the wait will terminate, an &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment">     * InterruptedException&#125; will be thrown, and the thread's</span></span><br><span class="line"><span class="comment">     * interrupted status will be cleared.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt; Waiting threads are signalled in FIFO order.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;li&gt;The ordering of lock reacquisition for threads returning</span></span><br><span class="line"><span class="comment">     * from waiting methods is the same as for threads initially</span></span><br><span class="line"><span class="comment">     * acquiring the lock, which is in the default case not specified,</span></span><br><span class="line"><span class="comment">     * but for &lt;em&gt;fair&lt;/em&gt; locks favors those threads that have been</span></span><br><span class="line"><span class="comment">     * waiting the longest.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the Condition object</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 返回用于此 Lock 实例的 Condition 实例。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 当与内置监视器锁定一起使用时，返回的 Condition 实例支持与 Object 监视器方法(wait，notify 和 notifyAll)相同的用法。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * - 如果在调用任何 Condition 的 wait 或 signal 方法时未保持此锁，则将抛出IllegalMonitorStateException。</span></span><br><span class="line"><span class="comment">     * - 当调用 Condition wait 方法时，将释放锁，并在锁返回之前，重新获取该锁，并将锁保持计数恢复到调用该方法时的状态。</span></span><br><span class="line"><span class="comment">     * - 如果线程在等待时被中断，则等待将终止，将抛出 InterruptedException，并清除线程的中断状态。</span></span><br><span class="line"><span class="comment">     * - 等待线程以 FIFO 顺序发出信号。</span></span><br><span class="line"><span class="comment">     * - 从等待方法返回的线程的锁重新获取顺序与最初获取锁的线程的顺序相同(默认情况下未指定)，但对于公平锁，优先使用等待时间最长的线程。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Condition <span class="title">newCondition</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.newCondition();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Queries the number of holds on this lock by the current thread.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;A thread has a hold on a lock for each lock action that is not</span></span><br><span class="line"><span class="comment">     * matched by an unlock action.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;The hold count information is typically only used for testing and</span></span><br><span class="line"><span class="comment">     * debugging purposes. For example, if a certain section of code should</span></span><br><span class="line"><span class="comment">     * not be entered with the lock already held then we can assert that</span></span><br><span class="line"><span class="comment">     * fact:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     *  &lt;pre&gt; &#123;<span class="doctag">@code</span></span></span><br><span class="line"><span class="comment">     * class X &#123;</span></span><br><span class="line"><span class="comment">     *   ReentrantLock lock = new ReentrantLock();</span></span><br><span class="line"><span class="comment">     *   // ...</span></span><br><span class="line"><span class="comment">     *   public void m() &#123;</span></span><br><span class="line"><span class="comment">     *     assert lock.getHoldCount() == 0;</span></span><br><span class="line"><span class="comment">     *     lock.lock();</span></span><br><span class="line"><span class="comment">     *     try &#123;</span></span><br><span class="line"><span class="comment">     *       // ... method body</span></span><br><span class="line"><span class="comment">     *     &#125; finally &#123;</span></span><br><span class="line"><span class="comment">     *       lock.unlock();</span></span><br><span class="line"><span class="comment">     *     &#125;</span></span><br><span class="line"><span class="comment">     *   &#125;</span></span><br><span class="line"><span class="comment">     * &#125;&#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the number of holds on this lock by the current thread,</span></span><br><span class="line"><span class="comment">     *         or zero if this lock is not held by the current thread</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 查询当前线程对该锁的保持次数。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 对于每个未与解锁动作匹配的锁定动作，线程都会拥有一个锁。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 保留计数信息通常仅用于测试和调试目的。 例如，如果不应在已锁定的状态下输入特定的代码段，则可以断言以下事实：</span></span><br><span class="line"><span class="comment">     * class X &#123;</span></span><br><span class="line"><span class="comment">     *    ReentrantLock lock = new ReentrantLock();</span></span><br><span class="line"><span class="comment">     *    // ...</span></span><br><span class="line"><span class="comment">     *    public void m() &#123;</span></span><br><span class="line"><span class="comment">     *      assert lock.getHoldCount() == 0;</span></span><br><span class="line"><span class="comment">     *      lock.lock();</span></span><br><span class="line"><span class="comment">     *      try &#123;</span></span><br><span class="line"><span class="comment">     *        // ... method body</span></span><br><span class="line"><span class="comment">     *      &#125; finally &#123;</span></span><br><span class="line"><span class="comment">     *        lock.unlock();</span></span><br><span class="line"><span class="comment">     *      &#125;</span></span><br><span class="line"><span class="comment">     *    &#125;</span></span><br><span class="line"><span class="comment">     *  &#125;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getHoldCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.getHoldCount();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Queries if this lock is held by the current thread.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;Analogous to the &#123;<span class="doctag">@link</span> Thread#holdsLock(Object)&#125; method for</span></span><br><span class="line"><span class="comment">     * built-in monitor locks, this method is typically used for</span></span><br><span class="line"><span class="comment">     * debugging and testing. For example, a method that should only be</span></span><br><span class="line"><span class="comment">     * called while a lock is held can assert that this is the case:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     *  &lt;pre&gt; &#123;<span class="doctag">@code</span></span></span><br><span class="line"><span class="comment">     * class X &#123;</span></span><br><span class="line"><span class="comment">     *   ReentrantLock lock = new ReentrantLock();</span></span><br><span class="line"><span class="comment">     *   // ...</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     *   public void m() &#123;</span></span><br><span class="line"><span class="comment">     *       assert lock.isHeldByCurrentThread();</span></span><br><span class="line"><span class="comment">     *       // ... method body</span></span><br><span class="line"><span class="comment">     *   &#125;</span></span><br><span class="line"><span class="comment">     * &#125;&#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;It can also be used to ensure that a reentrant lock is used</span></span><br><span class="line"><span class="comment">     * in a non-reentrant manner, for example:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     *  &lt;pre&gt; &#123;<span class="doctag">@code</span></span></span><br><span class="line"><span class="comment">     * class X &#123;</span></span><br><span class="line"><span class="comment">     *   ReentrantLock lock = new ReentrantLock();</span></span><br><span class="line"><span class="comment">     *   // ...</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     *   public void m() &#123;</span></span><br><span class="line"><span class="comment">     *       assert !lock.isHeldByCurrentThread();</span></span><br><span class="line"><span class="comment">     *       lock.lock();</span></span><br><span class="line"><span class="comment">     *       try &#123;</span></span><br><span class="line"><span class="comment">     *           // ... method body</span></span><br><span class="line"><span class="comment">     *       &#125; finally &#123;</span></span><br><span class="line"><span class="comment">     *           lock.unlock();</span></span><br><span class="line"><span class="comment">     *       &#125;</span></span><br><span class="line"><span class="comment">     *   &#125;</span></span><br><span class="line"><span class="comment">     * &#125;&#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if current thread holds this lock and</span></span><br><span class="line"><span class="comment">     *         &#123;<span class="doctag">@code</span> false&#125; otherwise</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 查询此锁是否由当前线程持有。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 与内置监视器锁的 Thread.holdsLock(Object) 方法类似，此方法通常用于调试和测试。 例如，仅在持有锁的情况下才应调用的方法可以断言是这种情况：</span></span><br><span class="line"><span class="comment">     * class X &#123;</span></span><br><span class="line"><span class="comment">     *    ReentrantLock lock = new ReentrantLock();</span></span><br><span class="line"><span class="comment">     *    // ...</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     *    public void m() &#123;</span></span><br><span class="line"><span class="comment">     *        assert lock.isHeldByCurrentThread();</span></span><br><span class="line"><span class="comment">     *        // ... method body</span></span><br><span class="line"><span class="comment">     *    &#125;</span></span><br><span class="line"><span class="comment">     *  &#125;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 它还可以用于确保以非可重入方式使用可重入锁，例如：</span></span><br><span class="line"><span class="comment">     * class X &#123;</span></span><br><span class="line"><span class="comment">     *    ReentrantLock lock = new ReentrantLock();</span></span><br><span class="line"><span class="comment">     *    // ...</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     *    public void m() &#123;</span></span><br><span class="line"><span class="comment">     *        assert !lock.isHeldByCurrentThread();</span></span><br><span class="line"><span class="comment">     *        lock.lock();</span></span><br><span class="line"><span class="comment">     *        try &#123;</span></span><br><span class="line"><span class="comment">     *            // ... method body</span></span><br><span class="line"><span class="comment">     *        &#125; finally &#123;</span></span><br><span class="line"><span class="comment">     *            lock.unlock();</span></span><br><span class="line"><span class="comment">     *        &#125;</span></span><br><span class="line"><span class="comment">     *    &#125;</span></span><br><span class="line"><span class="comment">     *  &#125;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isHeldByCurrentThread</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.isHeldExclusively();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Queries if this lock is held by any thread. This method is</span></span><br><span class="line"><span class="comment">     * designed for use in monitoring of the system state,</span></span><br><span class="line"><span class="comment">     * not for synchronization control.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 查询此锁是否由任何线程持有。 此方法设计用于监视系统状态，而不用于同步控制。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if any thread holds this lock and</span></span><br><span class="line"><span class="comment">     *         &#123;<span class="doctag">@code</span> false&#125; otherwise</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isLocked</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.isLocked();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns &#123;<span class="doctag">@code</span> true&#125; if this lock has fairness set true.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果此锁的公平性设置为true，则返回true。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if this lock has fairness set true</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isFair</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync <span class="keyword">instanceof</span> FairSync;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the thread that currently owns this lock, or</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@code</span> null&#125; if not owned. When this method is called by a</span></span><br><span class="line"><span class="comment">     * thread that is not the owner, the return value reflects a</span></span><br><span class="line"><span class="comment">     * best-effort approximation of current lock status. For example,</span></span><br><span class="line"><span class="comment">     * the owner may be momentarily &#123;<span class="doctag">@code</span> null&#125; even if there are</span></span><br><span class="line"><span class="comment">     * threads trying to acquire the lock but have not yet done so.</span></span><br><span class="line"><span class="comment">     * This method is designed to facilitate construction of</span></span><br><span class="line"><span class="comment">     * subclasses that provide more extensive lock monitoring</span></span><br><span class="line"><span class="comment">     * facilities.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 返回当前拥有此锁的线程；如果不拥有，则返回null。 </span></span><br><span class="line"><span class="comment">     * 当非所有者的线程调用此方法时，返回值反映当前锁定状态的尽力而为近似。 </span></span><br><span class="line"><span class="comment">     * 例如，即使有线程试图获取锁，但所有者尚未拥有，所有者可能暂时为空。 </span></span><br><span class="line"><span class="comment">     * 设计此方法是为了便于构造提供更广泛的锁监视功能的子类。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the owner, or &#123;<span class="doctag">@code</span> null&#125; if not owned</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Thread <span class="title">getOwner</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.getOwner();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Queries whether any threads are waiting to acquire this lock. Note that</span></span><br><span class="line"><span class="comment">     * because cancellations may occur at any time, a &#123;<span class="doctag">@code</span> true&#125;</span></span><br><span class="line"><span class="comment">     * return does not guarantee that any other thread will ever</span></span><br><span class="line"><span class="comment">     * acquire this lock.  This method is designed primarily for use in</span></span><br><span class="line"><span class="comment">     * monitoring of the system state.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 查询是否有任何线程正在等待获取此锁。 </span></span><br><span class="line"><span class="comment">     * 请注意，由于取消可能随时发生，因此返回 true 不能保证任何其他线程都将获得此锁。 </span></span><br><span class="line"><span class="comment">     * 此方法主要设计用于监视系统状态。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if there may be other threads waiting to</span></span><br><span class="line"><span class="comment">     *         acquire the lock</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">hasQueuedThreads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.hasQueuedThreads();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Queries whether the given thread is waiting to acquire this</span></span><br><span class="line"><span class="comment">     * lock. Note that because cancellations may occur at any time, a</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@code</span> true&#125; return does not guarantee that this thread</span></span><br><span class="line"><span class="comment">     * will ever acquire this lock.  This method is designed primarily for use</span></span><br><span class="line"><span class="comment">     * in monitoring of the system state.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 查询给定线程是否正在等待获取此锁。 </span></span><br><span class="line"><span class="comment">     * 请注意，由于取消可能随时发生，因此返回 true 不能保证此线程将获得此锁。 </span></span><br><span class="line"><span class="comment">     * 此方法主要设计用于监视系统状态。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> thread the thread</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if the given thread is queued waiting for this lock</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NullPointerException if the thread is null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">hasQueuedThread</span><span class="params">(Thread thread)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.isQueued(thread);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns an estimate of the number of threads waiting to</span></span><br><span class="line"><span class="comment">     * acquire this lock.  The value is only an estimate because the number of</span></span><br><span class="line"><span class="comment">     * threads may change dynamically while this method traverses</span></span><br><span class="line"><span class="comment">     * internal data structures.  This method is designed for use in</span></span><br><span class="line"><span class="comment">     * monitoring of the system state, not for synchronization</span></span><br><span class="line"><span class="comment">     * control.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 返回等待获取此锁的线程数的估计值。 </span></span><br><span class="line"><span class="comment">     * 该值只是一个估计值，因为在此方法遍历内部数据结构时，线程数可能会动态变化。 </span></span><br><span class="line"><span class="comment">     * 此方法设计用于监视系统状态，而不用于同步控制。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the estimated number of threads waiting for this lock</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getQueueLength</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.getQueueLength();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns a collection containing threads that may be waiting to</span></span><br><span class="line"><span class="comment">     * acquire this lock.  Because the actual set of threads may change</span></span><br><span class="line"><span class="comment">     * dynamically while constructing this result, the returned</span></span><br><span class="line"><span class="comment">     * collection is only a best-effort estimate.  The elements of the</span></span><br><span class="line"><span class="comment">     * returned collection are in no particular order.  This method is</span></span><br><span class="line"><span class="comment">     * designed to facilitate construction of subclasses that provide</span></span><br><span class="line"><span class="comment">     * more extensive monitoring facilities.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 返回一个包含可能正在等待获取此锁的线程的集合。 </span></span><br><span class="line"><span class="comment">     * 因为实际的线程集在构造此结果时可能会动态变化，所以返回的集合只是尽力而为的估计。 </span></span><br><span class="line"><span class="comment">     * 返回的集合的元素没有特定的顺序。 </span></span><br><span class="line"><span class="comment">     * 设计此方法是为了便于构造子类，以提供更广泛的监视功能。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the collection of threads</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Collection&lt;Thread&gt; <span class="title">getQueuedThreads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.getQueuedThreads();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Queries whether any threads are waiting on the given condition</span></span><br><span class="line"><span class="comment">     * associated with this lock. Note that because timeouts and</span></span><br><span class="line"><span class="comment">     * interrupts may occur at any time, a &#123;<span class="doctag">@code</span> true&#125; return does</span></span><br><span class="line"><span class="comment">     * not guarantee that a future &#123;<span class="doctag">@code</span> signal&#125; will awaken any</span></span><br><span class="line"><span class="comment">     * threads.  This method is designed primarily for use in</span></span><br><span class="line"><span class="comment">     * monitoring of the system state.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 查询是否有任何线程正在等待与此锁关联的给定条件。 </span></span><br><span class="line"><span class="comment">     * 请注意，由于超时和中断可能随时发生，因此真正的返回并不保证将来的信号会唤醒任何线程。 </span></span><br><span class="line"><span class="comment">     * 此方法主要设计用于监视系统状态。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> condition the condition</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if there are any waiting threads</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalMonitorStateException if this lock is not held</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalArgumentException if the given condition is</span></span><br><span class="line"><span class="comment">     *         not associated with this lock</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NullPointerException if the condition is null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasWaiters</span><span class="params">(Condition condition)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (condition == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        <span class="keyword">if</span> (!(condition <span class="keyword">instanceof</span> AbstractQueuedSynchronizer.ConditionObject))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"not owner"</span>);</span><br><span class="line">        <span class="keyword">return</span> sync.hasWaiters((AbstractQueuedSynchronizer.ConditionObject)condition);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns an estimate of the number of threads waiting on the</span></span><br><span class="line"><span class="comment">     * given condition associated with this lock. Note that because</span></span><br><span class="line"><span class="comment">     * timeouts and interrupts may occur at any time, the estimate</span></span><br><span class="line"><span class="comment">     * serves only as an upper bound on the actual number of waiters.</span></span><br><span class="line"><span class="comment">     * This method is designed for use in monitoring of the system</span></span><br><span class="line"><span class="comment">     * state, not for synchronization control.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 返回等待与此锁关联的给定条件的线程数的估计值。 </span></span><br><span class="line"><span class="comment">     * 请注意，由于超时和中断可能随时发生，因此估算值仅用作实际侍者数的上限。 </span></span><br><span class="line"><span class="comment">     * 此方法设计用于监视系统状态，而不用于同步控制。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> condition the condition</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the estimated number of waiting threads</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalMonitorStateException if this lock is not held</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalArgumentException if the given condition is</span></span><br><span class="line"><span class="comment">     *         not associated with this lock</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NullPointerException if the condition is null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getWaitQueueLength</span><span class="params">(Condition condition)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (condition == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        <span class="keyword">if</span> (!(condition <span class="keyword">instanceof</span> AbstractQueuedSynchronizer.ConditionObject))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"not owner"</span>);</span><br><span class="line">        <span class="keyword">return</span> sync.getWaitQueueLength((AbstractQueuedSynchronizer.ConditionObject)condition);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns a collection containing those threads that may be</span></span><br><span class="line"><span class="comment">     * waiting on the given condition associated with this lock.</span></span><br><span class="line"><span class="comment">     * Because the actual set of threads may change dynamically while</span></span><br><span class="line"><span class="comment">     * constructing this result, the returned collection is only a</span></span><br><span class="line"><span class="comment">     * best-effort estimate. The elements of the returned collection</span></span><br><span class="line"><span class="comment">     * are in no particular order.  This method is designed to</span></span><br><span class="line"><span class="comment">     * facilitate construction of subclasses that provide more</span></span><br><span class="line"><span class="comment">     * extensive condition monitoring facilities.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 返回一个包含那些可能正在等待与此锁相关的给定条件的线程的集合。 </span></span><br><span class="line"><span class="comment">     * 因为实际的线程集在构造此结果时可能会动态变化，所以返回的集合只是尽力而为的估计。 </span></span><br><span class="line"><span class="comment">     * 返回的集合的元素没有特定的顺序。 </span></span><br><span class="line"><span class="comment">     * 设计此方法是为了便于构造提供更广泛的状态监视工具的子类。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> condition the condition</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the collection of threads</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalMonitorStateException if this lock is not held</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalArgumentException if the given condition is</span></span><br><span class="line"><span class="comment">     *         not associated with this lock</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NullPointerException if the condition is null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Collection&lt;Thread&gt; <span class="title">getWaitingThreads</span><span class="params">(Condition condition)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (condition == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        <span class="keyword">if</span> (!(condition <span class="keyword">instanceof</span> AbstractQueuedSynchronizer.ConditionObject))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"not owner"</span>);</span><br><span class="line">        <span class="keyword">return</span> sync.getWaitingThreads((AbstractQueuedSynchronizer.ConditionObject)condition);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns a string identifying this lock, as well as its lock state.</span></span><br><span class="line"><span class="comment">     * The state, in brackets, includes either the String &#123;<span class="doctag">@code</span> "Unlocked"&#125;</span></span><br><span class="line"><span class="comment">     * or the String &#123;<span class="doctag">@code</span> "Locked by"&#125; followed by the</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> Thread#getName name&#125; of the owning thread.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 返回标识此锁定及其锁定状态的字符串。 </span></span><br><span class="line"><span class="comment">     * 括号中的状态包括字符串"Unlocked"或字符串"Locked by"，后跟拥有线程的名称。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> a string identifying this lock, as well as its lock state</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Thread o = sync.getOwner();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.toString() + ((o == <span class="keyword">null</span>) ?</span><br><span class="line">                                   <span class="string">"[Unlocked]"</span> :</span><br><span class="line">                                   <span class="string">"[Locked by thread "</span> + o.getName() + <span class="string">"]"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="demo-示例"><a href="#demo-示例" class="headerlink" title="demo 示例"></a>demo 示例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Condition;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OtherTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(OtherTest.class);</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Condition condition = lock.newCondition();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Thread t1 = <span class="keyword">new</span> Thread(<span class="string">"Thread 1"</span>) &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                logger.info(Thread.currentThread().getName() + <span class="string">" 正在运行 ....."</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">2</span> * <span class="number">1000</span>);</span><br><span class="line">                    logger.info(Thread.currentThread().getName() + <span class="string">" 停止运行, 等待一个 signal "</span>);</span><br><span class="line">                    condition.await();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                logger.info(Thread.currentThread().getName() + <span class="string">" 获取一个 signal, 继续执行 "</span>);</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        t1.start();</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> Thread t2 = <span class="keyword">new</span> Thread(<span class="string">"Thread 2"</span>) &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                logger.info(Thread.currentThread().getName() + <span class="string">" 正在运行 ....."</span>);</span><br><span class="line">                t1.interrupt();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">2</span> * <span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    <span class="comment">// do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">                logger.info(Thread.currentThread().getName() + <span class="string">" 发送一个 signal "</span>);</span><br><span class="line">                condition.signal();</span><br><span class="line">                logger.info(Thread.currentThread().getName() + <span class="string">" 发送 signal 结束"</span>);</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (Thread.activeCount() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行步骤：</p>
+<ol>
+<li>线程 1 开始执行, 获取 lock, 然后开始睡眠 2 秒</li>
+<li>当线程 1 睡眠到 1秒时, 线程  开始执行, 但是 lock 被线程1获取, 所以等待</li>
+<li>线程 1 睡足 2 秒 调用 condition.await() 进行锁的释放, 并且将线程 1 封装成一个 node 放到 condition 的 Condition Queue里面, 等待其他获取锁的线程给他 signal, 或对其进行中断(中断后可以到 Sync Queue里面进而获取锁)</li>
+<li>线程 2 获取锁成功, 中断线程 1, 线程被中断后, node 从 Condition Queue 转移到 Sync Queue 里面, 但是 lock 还是被线程 2 获取者, 所以 node 呆在 Sync Queue 里面等待获取 lock</li>
+<li>线程 2 睡了 2 秒, 开始用 signal 唤醒 Condition Queue 里面的节点(此时代表线程 1 的 node 已经到 Sync Queue 里面)</li>
+<li>线程 2 释放lock, 并且在 Sync Queue 里面进行唤醒等待获取锁的节点 node</li>
+<li>线程 1 得到唤醒, 获取锁</li>
+<li>线程 1 释放锁</li>
+</ol>
+<p>执行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Connected to the target VM, address: &apos;127.0.0.1:54489&apos;, transport: &apos;socket&apos;</span><br><span class="line">11:33:39.005 [Thread 1] INFO com.OtherTest - Thread 1 正在运行 .....</span><br><span class="line">11:33:41.012 [Thread 1] INFO com.OtherTest - Thread 1 停止运行, 等待一个 signal </span><br><span class="line">11:33:41.012 [Thread 2] INFO com.OtherTest - Thread 2 正在运行 .....</span><br><span class="line">11:33:43.016 [Thread 2] INFO com.OtherTest - Thread 2 发送一个 signal </span><br><span class="line">11:33:43.016 [Thread 2] INFO com.OtherTest - Thread 2 发送 signal 结束</span><br><span class="line">11:33:43.018 [Thread 1] INFO com.OtherTest - Thread 1 获取一个 signal, 继续执行 </span><br><span class="line">java.lang.InterruptedException</span><br><span class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)</span><br><span class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)</span><br><span class="line">	at com.OtherTest$1.run(OtherTest.java:24)</span><br><span class="line">Disconnected from the target VM, address: &apos;127.0.0.1:54489&apos;, transport: &apos;socket&apos;</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参考：<a href="https://www.jianshu.com/p/3f3417dbcac4" target="_blank" rel="noopener">ReentrantLock 源码分析 (基于Java 8)</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JUC/" rel="tag"># JUC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/21/concurrent/AbstractQueuedSynchronizer源码学习/" rel="next" title="AbstractQueuedSynchronizer源码学习">
+                <i class="fa fa-chevron-left"></i> AbstractQueuedSynchronizer源码学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/22/concurrent/Semaphore源码学习/" rel="prev" title="Semaphore源码学习">
+                Semaphore源码学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码分析"><span class="nav-number">2.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#demo-示例"><span class="nav-number">3.</span> <span class="nav-text">demo 示例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

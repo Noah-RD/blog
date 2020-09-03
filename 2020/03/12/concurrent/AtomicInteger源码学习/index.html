@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JUC,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="AtomicInteger 是 J.U.C 下的一个原子性操作 int 类型的工具包，其底层使用 CAS 来进行原子操作。">
+<meta name="keywords" content="JUC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AtomicInteger源码学习">
+<meta property="og:url" content="http://blog.intersico.com/2020/03/12/concurrent/AtomicInteger源码学习/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="AtomicInteger 是 J.U.C 下的一个原子性操作 int 类型的工具包，其底层使用 CAS 来进行原子操作。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2020/03/12/concurrent/AtomicInteger源码学习/head.jpg">
+<meta property="og:updated_time" content="2020-09-03T08:28:11.027Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AtomicInteger源码学习">
+<meta name="twitter:description" content="AtomicInteger 是 J.U.C 下的一个原子性操作 int 类型的工具包，其底层使用 CAS 来进行原子操作。">
+<meta name="twitter:image" content="http://blog.intersico.com/2020/03/12/concurrent/AtomicInteger源码学习/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2020/03/12/concurrent/AtomicInteger源码学习/">
+
+
+
+
+
+  <title>AtomicInteger源码学习 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/03/12/concurrent/AtomicInteger源码学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AtomicInteger源码学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-12T10:58:23+08:00">
+                2020-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2020/03/12/concurrent/AtomicInteger源码学习/head.jpg">
+
+<p>AtomicInteger 是 J.U.C 下的一个原子性操作 int 类型的工具包，其底层使用 CAS 来进行原子操作。</p>
+<a id="more"></a>
+
+<h4 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicInteger</span> <span class="keyword">extends</span> <span class="title">Number</span> <span class="keyword">implements</span> <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span></span></span><br></pre></td></tr></table></figure>
+
+<p>一个可以自动更新的 int 值。有关原子变量的属性的描述，请参见 <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">java.util.concurrent.atomic</a> 软件包规范。AtomicInteger 用于原子递增计数器之类的应用程序，并且不能用作 Integer 的替代品。但是，此类确实扩展了 Number，以允许处理基于数字的类的工具和实用程序进行统一访问。</p>
+<p><strong>java.util.concurrent.atomic 描述</strong></p>
+<p>一个小的类工具包，支持对单个变量进行无锁线程安全编程。该程序包中的类将 volatile 的值，字段和数组元素的概念扩展到那些还提供了以下形式的原子条件的更新操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(expectedValue, updateValue)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>定义新的实用函数很简单，就像 getAndIncrement 一样，将一个函数自动应用于一个值。 例如，进行一些转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">transform</span><span class="params">(<span class="keyword">long</span> input)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>如下编写您的实用程序方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndTransform</span><span class="params">(AtomicLong <span class="keyword">var</span>)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">long</span> prev, next;</span><br><span class="line">   <span class="keyword">do</span> &#123;</span><br><span class="line">     prev = <span class="keyword">var</span>.get();</span><br><span class="line">     next = transform(prev);</span><br><span class="line">   &#125; <span class="keyword">while</span> (!<span class="keyword">var</span>.compareAndSet(prev, next));</span><br><span class="line">   <span class="keyword">return</span> prev; <span class="comment">// return next; for transformAndGet</span></span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>原子性访问和更新内存效果，与volatiles遵循同样的规则，如 The <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java Language Specification (17.4 Memory Model)</a> 所述：</p>
+<ul>
+<li>get 与 volatile 读效果一样</li>
+<li>set 与 volatile 写效果一样</li>
+<li>lazySet 具有写入(分配) volatile 变量的内存效果，除了它允许对后续(但不是先前)的内存操作进行重排序，而这些内存操作本身不会对普通的 非volatile 写入施加强加约束。</li>
+<li>compareAndSet 和所有其他读取和更新操作(如getAndIncrement)一样，与 volatile 变量读取和写入具有相同的内存效果。</li>
+</ul>
+<blockquote>
+<p>lazySet是使用Unsafe.putOrderedObject方法，这个方法在对低延迟代码是很有用的，它能够实现非阻塞的写入，这些写入不会被Java的JIT重新排序指令(instruction reordering)，这样它使用快速的存储-存储(store-store) barrier, 而不是较慢的存储-加载(store-load) barrier, 后者总是用在volatile的写操作上，这种性能提升是有代价的，虽然便宜，也就是写后结果并不会被其他线程看到，甚至是自己的线程，通常是几纳秒后被其他线程看到，这个时间比较短，所以代价可以忍受。<br>  设想如下场景: 设置一个 volatile 变量为 null，让这个对象被 GC 掉，volatile write 是消耗比较大（store-load 屏障）的，但是 putOrderedInt 只会加 store-store 屏障，损耗会小一些。</p>
+</blockquote>
+<p>除了表示单个值的类之外，package中还包含Updater类，可用于在类的volatile字段上执行compareAndSet操作。 AtomicReferenceFieldUpdater、AtomicIntegerFieldUpdater和AtomicLongFieldUpdater是基于反射的，可提供对相关字段类型的访问。这些主要用于原子数据结构，同一节点的几个volatile字段（例如，树节点的链接）独立地原子更新。这些类在如何以及何时使用原子更新方面提供了更大的灵活性，但代价是更加笨拙的基于反射的设置、更不方便的使用和更弱的保证。</p>
+<p>AtomicIntegerArray、AtomicLongArray和AtomicReferenceArray类进一步将原子操作支持扩展到这些类型的数组。这些类还提供了数组元素的volatile访问语义，这是普通数组不支持的。</p>
+<p>AtomicMarkableReference 类将单个布尔值与引用相关联。例如，该位可能在数据结构中使用，表示被引用的对象在逻辑上已被删除。AtomicStampedReference类将整数值与引用相关联。例如，这可以用于表示与一系列更新相对应的版本号。</p>
+<p>原子类主要设计为用于实现非阻塞数据结构和相关基础结构类的构建。 compareAndSet方法不是锁定的一般替代方法。 仅当对象的关键更新仅限于单个变量时，它才适用。</p>
+<p>原子类不是 java.lang.Integer 和相关类的通用替换。它们没有定义 equals，hashCode 和 compareTo 等方法(由于原子变量预期会发生变化，所以它们不适合作为哈希表键)。</p>
+<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><p>J.U.C 并发包中，大量使用了 sun.misc.Unsafe 类，关于这个类的解读，参考 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> java.util.concurrent.atomic;</span><br><span class="line"><span class="keyword">import</span> java.util.function.IntUnaryOperator;</span><br><span class="line"><span class="keyword">import</span> java.util.function.IntBinaryOperator;</span><br><span class="line"><span class="keyword">import</span> sun.misc.Unsafe;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicInteger</span> <span class="keyword">extends</span> <span class="title">Number</span> <span class="keyword">implements</span> <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">6214790243416807050L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// setup to use Unsafe.compareAndSwapInt for updates</span></span><br><span class="line">    <span class="comment">//使用 Unsafe 类中的 compareAndSwapInt 方法来执行更新操作</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Unsafe unsafe = Unsafe.getUnsafe();</span><br><span class="line">    <span class="comment">//变量 value 在 AtomicInteger 类中的偏移量(关于偏移量，需要先明白 Unsafe 类的操作原理)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> valueOffset;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//通过 Unsafe 类的 objectFieldOffset 获取 value 成员变量的偏移量</span></span><br><span class="line">            valueOffset = unsafe.objectFieldOffset</span><br><span class="line">                (AtomicInteger.class.getDeclaredField(<span class="string">"value"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123; <span class="keyword">throw</span> <span class="keyword">new</span> Error(ex); &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//要操作的值，被 volatile 修饰，具有可见性与有序性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> value;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new AtomicInteger with the given initial value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 使用给定值创建一个新的 AtomicInteger</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> initialValue the initial value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AtomicInteger</span><span class="params">(<span class="keyword">int</span> initialValue)</span> </span>&#123;</span><br><span class="line">        value = initialValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new AtomicInteger with initial value &#123;<span class="doctag">@code</span> 0&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 创建一个新的 AtomicInteger ，其 value 初始值为 0</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AtomicInteger</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Gets the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 获取当前的值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the current value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Sets to the given value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 设置当前的值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> newValue the new value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> newValue)</span> </span>&#123;</span><br><span class="line">        value = newValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Eventually sets to the given value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 最终设置为给定值。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> newValue the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.6</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> newValue)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// putOrderedInt 方法，参考 Unsafe 源码</span></span><br><span class="line">        unsafe.putOrderedInt(<span class="keyword">this</span>, valueOffset, newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically sets to the given value and returns the old value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 以原子方式设置为给定值并返回旧值。返回旧值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> newValue the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> newValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.getAndSetInt(<span class="keyword">this</span>, valueOffset, newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically sets the value to the given updated value</span></span><br><span class="line"><span class="comment">     * if the current value &#123;<span class="doctag">@code</span> ==&#125; the expected value.</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * 如果 当前值(value) == 期望值(expect)，则以原子方式将该值设置为给定的更新值(update)。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> expect the expected value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> update the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if successful. False return indicates that</span></span><br><span class="line"><span class="comment">     * the actual value was not equal to the expected value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 如果成功，则为true。错误返回表示实际值不等于期望值。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// unsafe 的 CAS 操作</span></span><br><span class="line">        <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically sets the value to the given updated value</span></span><br><span class="line"><span class="comment">     * if the current value &#123;<span class="doctag">@code</span> ==&#125; the expected value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;&lt;a href="package-summary.html#weakCompareAndSet"&gt;May fail</span></span><br><span class="line"><span class="comment">     * spuriously and does not provide ordering guarantees&lt;/a&gt;, so is</span></span><br><span class="line"><span class="comment">     * only rarely an appropriate alternative to &#123;<span class="doctag">@code</span> compareAndSet&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> expect the expected value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> update the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if successful</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically increments by one the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 以原子方式将当前值增加一。返回旧值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndIncrement</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.getAndAddInt(<span class="keyword">this</span>, valueOffset, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically decrements by one the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 以原子方式将当前值减一。返回旧值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndDecrement</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.getAndAddInt(<span class="keyword">this</span>, valueOffset, -<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically adds the given value to the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 以原子方式将给定值添加到当前值。返回旧值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> delta the value to add</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> delta)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.getAndAddInt(<span class="keyword">this</span>, valueOffset, delta);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically increments by one the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 以原子方式将当前值增加一。返回新值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.getAndAddInt(<span class="keyword">this</span>, valueOffset, <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically decrements by one the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 以原子方式将当前值减一。返回新值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">decrementAndGet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.getAndAddInt(<span class="keyword">this</span>, valueOffset, -<span class="number">1</span>) - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically adds the given value to the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 以原子方式将给定值添加到当前值。返回新值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> delta the value to add</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> delta)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.getAndAddInt(<span class="keyword">this</span>, valueOffset, delta) + delta;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function, returning the previous value. The</span></span><br><span class="line"><span class="comment">     * function should be side-effect-free, since it may be re-applied</span></span><br><span class="line"><span class="comment">     * when attempted updates fail due to contention among threads.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 使用给定函数的结果以原子方式更新当前值，并返回先前的值。</span></span><br><span class="line"><span class="comment">     * 该函数应无副作用，因为当尝试更新由于线程间争用而失败时，可能会重新应用该函数。</span></span><br><span class="line"><span class="comment">     * 返回旧值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> updateFunction a side-effect-free function</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndUpdate</span><span class="params">(IntUnaryOperator updateFunction)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> prev, next;</span><br><span class="line">        <span class="comment">//将函数返回的新值，替换为旧值。如果 CAS 失败，则会一直进行尝试，所以这个函数应该没有副作用</span></span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="comment">//获取旧值</span></span><br><span class="line">            prev = get();</span><br><span class="line">            <span class="comment">//调用无副作用函数，生成新值</span></span><br><span class="line">            next = updateFunction.applyAsInt(prev);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next)); <span class="comment">//使用 CAS，将旧值替换为新值</span></span><br><span class="line">        <span class="keyword">return</span> prev;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function, returning the updated value. The</span></span><br><span class="line"><span class="comment">     * function should be side-effect-free, since it may be re-applied</span></span><br><span class="line"><span class="comment">     * when attempted updates fail due to contention among threads.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 使用给定函数的结果以原子方式更新当前值，并返回更新后的值。 </span></span><br><span class="line"><span class="comment">     * 该函数应无副作用，因为当尝试更新由于线程间争用而失败时，可能会重新应用该函数。</span></span><br><span class="line"><span class="comment">     * 返回新值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> updateFunction a side-effect-free function</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//源码分析参考 getAndUpdate 方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">updateAndGet</span><span class="params">(IntUnaryOperator updateFunction)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> prev, next;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            prev = get();</span><br><span class="line">            next = updateFunction.applyAsInt(prev);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">        <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function to the current and given values,</span></span><br><span class="line"><span class="comment">     * returning the previous value. The function should be</span></span><br><span class="line"><span class="comment">     * side-effect-free, since it may be re-applied when attempted</span></span><br><span class="line"><span class="comment">     * updates fail due to contention among threads.  The function</span></span><br><span class="line"><span class="comment">     * is applied with the current value as its first argument,</span></span><br><span class="line"><span class="comment">     * and the given update as the second argument.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 将给定函数应用于当前值(value)和给定值(x)，以原子方式更新当前值，并返回先前的值。 </span></span><br><span class="line"><span class="comment">     * 该函数应无副作用，因为当尝试更新由于线程间争用而失败时，可能会重新应用该函数。 </span></span><br><span class="line"><span class="comment">     * 应用该函数时，将当前值作为其第一个参数，并将给定的 x 作为第二个参数。</span></span><br><span class="line"><span class="comment">     * 返回旧值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> x the update value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> accumulatorFunction a side-effect-free function of two arguments</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndAccumulate</span><span class="params">(<span class="keyword">int</span> x,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      IntBinaryOperator accumulatorFunction)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> prev, next;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            prev = get();</span><br><span class="line">            next = accumulatorFunction.applyAsInt(prev, x);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">        <span class="keyword">return</span> prev;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function to the current and given values,</span></span><br><span class="line"><span class="comment">     * returning the updated value. The function should be</span></span><br><span class="line"><span class="comment">     * side-effect-free, since it may be re-applied when attempted</span></span><br><span class="line"><span class="comment">     * updates fail due to contention among threads.  The function</span></span><br><span class="line"><span class="comment">     * is applied with the current value as its first argument,</span></span><br><span class="line"><span class="comment">     * and the given update as the second argument.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 将给定函数应用于当前值和给定值，以原子方式更新当前值，并返回更新后的值。 </span></span><br><span class="line"><span class="comment">     * 该函数应无副作用，因为当尝试更新由于线程间争用而失败时，可能会重新应用该函数。 </span></span><br><span class="line"><span class="comment">     * 应用该函数时，将当前值作为其第一个参数，并将给定的 x 作为第二个参数。</span></span><br><span class="line"><span class="comment">     * 返回新值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> x the update value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> accumulatorFunction a side-effect-free function of two arguments</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">accumulateAndGet</span><span class="params">(<span class="keyword">int</span> x,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      IntBinaryOperator accumulatorFunction)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> prev, next;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            prev = get();</span><br><span class="line">            next = accumulatorFunction.applyAsInt(prev, x);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">        <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//以下是各种 int 类型转换方法</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the String representation of the current value.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the String representation of the current value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Integer.toString(get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the value of this &#123;<span class="doctag">@code</span> AtomicInteger&#125; as an &#123;<span class="doctag">@code</span> int&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">intValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the value of this &#123;<span class="doctag">@code</span> AtomicInteger&#125; as a &#123;<span class="doctag">@code</span> long&#125;</span></span><br><span class="line"><span class="comment">     * after a widening primitive conversion.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@jls</span> 5.1.2 Widening Primitive Conversions</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">longValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">long</span>)get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the value of this &#123;<span class="doctag">@code</span> AtomicInteger&#125; as a &#123;<span class="doctag">@code</span> float&#125;</span></span><br><span class="line"><span class="comment">     * after a widening primitive conversion.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@jls</span> 5.1.2 Widening Primitive Conversions</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">floatValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">float</span>)get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the value of this &#123;<span class="doctag">@code</span> AtomicInteger&#125; as a &#123;<span class="doctag">@code</span> double&#125;</span></span><br><span class="line"><span class="comment">     * after a widening primitive conversion.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@jls</span> 5.1.2 Widening Primitive Conversions</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">doubleValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">double</span>)get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h4><p>运行 100 个并发线程，每个线程计数自增 100 次，查看计数结果是否等于 100 * 100，也就是 10000.</p>
+<p><strong>普通 int 类型</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OtherTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count = <span class="number">0</span>; <span class="comment">//原始基本类型</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">incr</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        count++; <span class="comment">//计数自增</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//运行 100 个并发线程，每个线程计数自增 100 次</span></span><br><span class="line">        IntStream.range(<span class="number">0</span>, <span class="number">100</span>).forEach(i -&gt; <span class="keyword">new</span> Thread(() -&gt; IntStream.range(<span class="number">0</span>, <span class="number">100</span>).forEach(j -&gt; incr())).start());</span><br><span class="line">        <span class="comment">//debug 下 &gt; 1 , run 下 &gt; 2</span></span><br><span class="line">        <span class="comment">//当活动线程只剩下主线程后，退出循环</span></span><br><span class="line">        <span class="keyword">while</span> (Thread.activeCount() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="comment">//让出 CPU 切片</span></span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>多次运行后，发现每次结果都不一样。相同的是，每次都达不到 10000。如果将 count 使用 volatile 关键词修饰呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">incr</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//这里，如果你用 intellij IDE 的话，会有黄色警告 : Non-atomic operation on volatile field 'count'</span></span><br><span class="line">    <span class="comment">//就是说，count 操作不是原子性的</span></span><br><span class="line">    count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样多次运行后，结果依然是不同的，同时也达不到 10000。<br>虽然 volatile 保证了可见性，即一个线程对共享变量的修改对其他线程可见，但是由于 count++ 这个操作不是原子性的，所以无法保证其获取到的值与修改的值是相同的。</p>
+<p><strong>AtomicInteger 原子类型</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">incr</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        count.incrementAndGet();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        IntStream.range(<span class="number">0</span>, <span class="number">100</span>).forEach(i -&gt; <span class="keyword">new</span> Thread(() -&gt; IntStream.range(<span class="number">0</span>, <span class="number">100</span>).forEach(j -&gt; incr())).start());</span><br><span class="line">        <span class="keyword">while</span> (Thread.activeCount() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>多次运行后，结果都为 10000。</p>
+<h4 id="引申问题"><a href="#引申问题" class="headerlink" title="引申问题"></a>引申问题</h4><p>AtomicInteger 使用 CAS 无锁的方式解决并发修改效率很高，其结果也让人满意，但是在某些场景下，却有一个很大的问题，那就是 ABA 问题。</p>
+<p>什么是 ABA 问题？又该如何解决呢？请看我的另一篇文章：</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JUC/" rel="tag"># JUC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/11/concurrent/Unsafe源码学习/" rel="next" title="Unsafe源码学习">
+                <i class="fa fa-chevron-left"></i> Unsafe源码学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/12/concurrent/AtomicStampedReference源码学习/" rel="prev" title="AtomicStampedReference源码学习">
+                AtomicStampedReference源码学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码分析"><span class="nav-number">2.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试用例"><span class="nav-number">3.</span> <span class="nav-text">测试用例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#引申问题"><span class="nav-number">4.</span> <span class="nav-text">引申问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
