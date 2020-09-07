@@ -83,26 +83,26 @@
 <meta name="keywords" content="J.U.C">
 <meta property="og:type" content="article">
 <meta property="og:title" content="并发到底怎么来的?">
-<meta property="og:url" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的">
+<meta property="og:url" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/index.html">
 <meta property="og:site_name" content="Every Day">
 <meta property="og:description" content="到底什么是并发，并发又是怎么来的呢？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/head.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/cpu.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/MESI.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/cpu.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/barriers.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/monitor.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/MESA.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/data_area.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/markword_1.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/markword_2.jpg">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/synchronized.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/head.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/cpu.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/MESI.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/cpu.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/barriers.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/monitor.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/MESA.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/data_area.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/markword_1.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/markword_2.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/synchronized.jpg">
 <meta property="og:updated_time" content="2020-09-07T08:51:46.306Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="并发到底怎么来的?">
 <meta name="twitter:description" content="到底什么是并发，并发又是怎么来的呢？">
-<meta name="twitter:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/head.jpg">
+<meta name="twitter:image" content="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/head.jpg">
 
 
 
@@ -132,7 +132,7 @@
 
 
 
-  <link rel="canonical" href="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的">
+  <link rel="canonical" href="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/">
 
 
 
@@ -265,7 +265,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的?/">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/09/07/concurrent/并发到底怎么来的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="R.D">
@@ -354,7 +354,7 @@
       
 
       
-        <img src="/2020/09/07/concurrent/并发到底怎么来的?/head.jpg">
+        <img src="/2020/09/07/concurrent/并发到底怎么来的/head.jpg">
 
 <p>到底什么是并发，并发又是怎么来的呢？</p>
 <a id="more"></a>
@@ -370,7 +370,7 @@
 </ul>
 <p>而正是这三个系统级别的优化，给我们这个多核时代带来了可见性、有序性、原子性问题。如果是在单核时代，那就没那么多问题了，而且这个优化对于程序的性能提升很大。为什么多核会有问题呢？</p>
 <h3 id="CPU-结构"><a href="#CPU-结构" class="headerlink" title="CPU 结构"></a>CPU 结构</h3><p>一个最简单的 CPU 结构如下：</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/cpu.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/cpu.jpg">
 
 <p>真实的 CPU 会有多级缓存L1、L1d、L1i、共享缓存等，而且不同厂商的 CPU 还会有各种其他的缓存。图中 CPU0 和 CPU1 各有一个缓存，最下面的 Memory 是主存。 CPU0 和 CPU1 都从主存拿一条数据，一开始大家都是读，相安无事。然后 CPU0 修改了这个数据，但是在没有写回主存前，对 CPU1 是不可见的，而 CPU1 呢还在傻傻的使用，这就是可见性问题。</p>
 <h2 id="可见性问题的诞生"><a href="#可见性问题的诞生" class="headerlink" title="可见性问题的诞生"></a>可见性问题的诞生</h2><p>可见性存在于两个层面，一个是硬件层面(也叫缓存一致性问题)，一个存在于软件层面(也叫内存一致性问题)，我们先说硬件层面。</p>
@@ -387,7 +387,7 @@
 <p>Exclusive  和 Shared 都是有效且和主存中一样的数据，区别就是前者只是本核的缓存有，而其他人没有。后者则是不止我有，很多其他人也有。</p>
 <p>Modified：当某核更改了自己缓存中的这条数据时，会通知其他也有这条数据的人，让他们把这条数据标记为 Invalid，也就是脏数据。</p>
 <p>多核的缓存，通过这个四个状态流转，从而保证缓存一致性。每个 Cache 的 Cache控制器不仅知道自己的读写操作，也会监听(snoop)其他 cache 的读写操作。当内核需要访问的数据不在本 cache 中，而其他 cache 有这份数据的备份时，本 cache 可以选择从主存导入数据，也可以从其他 cache 中导入数据，不同的处理器会有不同的实现。MESI 并没有定义这些细节，只是定义了状态之间的转移。其流转状态如下(假设本cache从主存导入数据)：</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/MESI.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/MESI.jpg">
 
 <p><strong>Local Read:</strong> 本内核读本 cache 中的值<br><strong>Local Write:</strong> 本内核写本 cache 中的值<br><strong>Remote Read:</strong> 其他内核读其cache 中的值<br><strong>Remote Write:</strong> 其他内核写其cache 中的值</p>
 <p>上面所述，就是硬件层面的缓存一致性问题。那软件层面的呢？</p>
@@ -460,7 +460,7 @@
 <p>那如何解决指令重排序的问题呢？引出下一个概念，内存屏障。</p>
 <h4 id="内存屏障-Memory-Barrier-Fence"><a href="#内存屏障-Memory-Barrier-Fence" class="headerlink" title="内存屏障(Memory Barrier/Fence)"></a>内存屏障(Memory Barrier/Fence)</h4><p>内存屏障可以解决硬件层面的可见性与重排性问题。有人问，可见性不是上面由 MESI 协议解决了吗？其实还有一部分缓存是 MESI 没有解决的，可以回顾最开始 CPU 架构图，有个store buffer 和Invalidate Queue。</p>
 <p>CPU 架构中传统的MESI 协议中有两个行为的执行成本比较大，一个是将某个cache line标记为 Invalid 状态，另一个是当某 cache line 当前状态为 Invalid 时写入新的数据。所以 CPU 通过 store buffer 和 Invalidate Queue 组件来降低这类操作的延迟。</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/cpu.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/cpu.jpg">
 
 <p>当一个 core 在 Invalid 状态进行写入时，首先会给其它 core 发送 Invalid 消息，然后把当前写入的数据写入到 Store Buffer 中。然后异步在某个时刻真正的写入到 Cache Line中。当前 core 如果要读 Cache Line 中的数据，需要先扫描 Store Buffer 之后再读取Cache Line（Store-Buffer Forwarding）。但是此时其它 core 是看不到当前 core 的Store Buffer 中的数据的，要等到  Store Buffer中的数据被刷到了Cache Line 之后才会触发失效操作。</p>
 <p>而当一个 core 收到 Invalid 消息时，会把消息写入自身的Invalidate Queue中，随后异步将其设为Invalid状态。和Store Buffer不同的是，当前core使用Cache时并不扫描Invalidate Queue部分，所以可能会有极短时间的脏读问题。</p>
@@ -470,7 +470,7 @@
 <li><strong>store：</strong> 将处理器缓存的数据刷新到内存中</li>
 <li><strong>load：</strong> 将内存存储的数据拷贝到处理器的缓存中</li>
 </ol>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/barriers.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/barriers.jpg">
 
 <p>StoreLoad Barriers同时具备其他三个屏障的效果，因此也称之为全能屏障（mfence），是目前大多数处理器所支持的；但是相对其他屏障，该屏障的开销相对昂贵。然而，除了mfence，不同的CPU架构对内存屏障的实现方式与实现程度非常不一样。</p>
 <p>Intel为此提供三种内存屏障指令：</p>
@@ -507,11 +507,11 @@
 <p>要了解锁的概念，首先要知道管程模型，然后在谈锁的优化。管程是操作系统线程之间的通信原语，是解决多线程同步与互斥的根本。</p>
 <h4 id="管程-Monitor"><a href="#管程-Monitor" class="headerlink" title="管程(Monitor)"></a>管程(Monitor)</h4><p>管程(Monitor)，很多文章也翻译为监视器，但是管程更适合，指的是管理共享变量以及对共享变量的操作过程，让他们支持并发。管程的发展中，有三个模型：Hasen 模型、Hoare 模型和 MESA 模型，我们这里只说应用最广泛的MESA模型。</p>
 <p>管程通过将共享变量以及对共享变量的操作，进行统一的封装来达到资源互斥的目的。对外只提供enq()和deq()进队和出队的操作，当多个线程想要读写共享变量时，同一时刻只能有一个线程进队操作。</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/monitor.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/monitor.jpg">
 
 <p>在管程模型里，共享变量和对共享变量的操作是被封装起来的，图中最外层的框就代表封装的意思。框的上面只有一个入口，并且在入口旁边还有一个入口等待队列。当多个线程同时试图进入管程内部时，只允许一个线程进入，其他线程则在入口等待队列中等待。</p>
 <p>管程里还引入了条件变量的概念，而且每个条件变量都对应有一个等待队列，如下图，条件变量 A 和条件变量 B 分别都有自己的等待队列。</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/MESA.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/MESA.jpg">
 
 <p>假设有个线程 T1 执行出队操作，不过需要注意的是执行出队操作，有个前提条件，就是队列不能是空的，而队列不空这个前提条件就是管程里的条件变量。 如果线程 T1 进入管程后恰好发现队列是空的，那怎么办呢？等待啊，去哪里等呢？就去条件变量对应的等待队列里面等。此时线程 T1 就去“队列不空”这个条件变量的等待队列中等待。</p>
 <p>再假设之后另外一个线程 T2 执行入队操作，入队操作执行成功之后，“队列不空”这个条件对于线程 T1 来说已经满足了，此时线程 T2 要通知 T1，告诉它需要的条件已经满足了。当线程 T1 得到通知后，会从等待队列里面出来，但是出来之后不是马上执行，而是重新进入到入口等待队列里面。</p>
@@ -523,7 +523,7 @@
 </ol>
 <p>synchronized会导致争用不到锁的线程进入阻塞状态，所以说它是java语言中一个重量级的同步操纵，被称为重量级锁，为了缓解上述性能问题，JVM从1.5开始，引入了轻量锁与偏向锁，默认启用了自旋锁，他们都属于乐观锁。</p>
 <h4 id="synchronized锁优化"><a href="#synchronized锁优化" class="headerlink" title="synchronized锁优化"></a>synchronized锁优化</h4><p>首先我们要先说一下markword。markword是java 对象数据结构中的一部分，我们知道java程序在运行时，会为 JVM单独划分出一块内存区域，而这块内存区域又可以再次划分出一块运行时数据区，运行时数据区域大致可以分为五个部分：</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/data_area.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/data_area.jpg">
 
 <p>从上面的图中，有两种颜色不同的区域，红色的是线程共享区域，绿色的是线程私有区域，对象就是创建在堆中的。对象在堆中的存储布局可以分为三个部分：</p>
 <ol>
@@ -532,10 +532,10 @@
 <li>对齐填充：没有实际的意义，起着占位符的作用</li>
 </ol>
 <p>markword 就是存储对象头第一类信息的数据结构，markword数据的长度在 32 位和 64 位的虚拟机(未开启压缩指针)中分别是32bit和64 bit，它的最后 2bit是锁状态标志位，用来标记当前对象的状态，对象所处的状态，决定了markword存储的内容。</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/markword_1.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/markword_1.jpg">
 
 <p>32位虚拟机在不同状态下markword结构如下图所示：</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/markword_2.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/markword_2.jpg">
 
 <p>synchronized是如何利用markword进行锁优化的呢？</p>
 <ol>
@@ -544,7 +544,7 @@
 <li>竞争的线程太多了，导致很多线程长时间无法 CAS 拿到锁，此时锁再次升级为重量级锁，切换到核心态，把锁的管理工作交给管程，所有等待锁的线程将会被阻塞。</li>
 </ol>
 <p>以上几个步骤，其实就是对 synchronized 的优化过程，注意：只能升锁不能降锁，且synchronized是非公平锁。接下来我们在详细说一下优化的具体过程。</p>
-<img src="/2020/09/07/concurrent/并发到底怎么来的?/synchronized.jpg">
+<img src="/2020/09/07/concurrent/并发到底怎么来的/synchronized.jpg">
 
 <p><strong>偏向锁</strong></p>
 <p>Java偏向锁(Biased Locking)是Java6引入的一项多线程优化。偏向锁，顾名思义，它会偏向于第一个访问锁的线程，如果在运行过程中，同步锁只有一个线程访问，不存在多线程争用的情况，则线程是不需要触发同步的，这种情况下，就会给线程加一个偏向锁。</p>
