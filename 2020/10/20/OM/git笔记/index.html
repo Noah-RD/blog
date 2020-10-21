@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Git,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Git 学习笔记">
+<meta name="keywords" content="Git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git笔记">
+<meta property="og:url" content="http://blog.intersico.com/2020/10/20/OM/git笔记/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="Git 学习笔记">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2020/10/20/OM/git笔记/head.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2020/10/20/OM/git笔记/lead.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/10/20/OM/git笔记/2.png">
+<meta property="og:updated_time" content="2020-10-21T10:58:14.778Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="git笔记">
+<meta name="twitter:description" content="Git 学习笔记">
+<meta name="twitter:image" content="http://blog.intersico.com/2020/10/20/OM/git笔记/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2020/10/20/OM/git笔记/">
+
+
+
+
+
+  <title>git笔记 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/10/20/OM/git笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">git笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-20T14:44:21+08:00">
+                2020-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/运维/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2020/10/20/OM/git笔记/head.jpg">
+
+<p>Git 学习笔记</p>
+<a id="more"></a>
+
+<img src="/2020/10/20/OM/git笔记/lead.png">
+
+<h3 id="中央式-VS-分布式"><a href="#中央式-VS-分布式" class="headerlink" title="中央式 VS 分布式"></a>中央式 VS 分布式</h3><p>Git 是一个分布式版本控制系统(DVCS)。我们先说一下什么是版本控制系统(VCS)，然后在说什么是分布式的。</p>
+<p>所谓版本控制系统，就是在文件的修改历程中保留修改历史，让你可以方便地撤销之前对文件的修改操作。最经典的就是中央式 VCS，例如 SVN。</p>
+<p><strong>中央式 VCS</strong> 就是有一个远程的中央仓库，所有人的改动都上传到这里，想看到其他人的改动，就从这里下载。所有人的版本历史记录都在这个远程仓库中。总结一下就是：保存版本历史、同步团队代码。</p>
+<p>而 Git 是一个分布式的 VCS，所谓分布式，就是把中央式 VCS 的保存版本历史这个功能也添加到了本地。也就是说，你在本地机器上，就包含所有代码的版本历史，你代码的改动、提交等工作不需要连接到远程仓库了，<br>因为在你本地就有历史版本信息。那分布式 VCS 的中央仓库干什么呢？主要是就是用来同步团队代码的，而其版本历史主要是用来作为团队间的同步中转站。</p>
+<p><strong>分布式 VCS：</strong></p>
+<p><strong>优点</strong></p>
+<ul>
+<li>大多数的操作可以在本地进行，所以速度更快，而且由于无需联网，所以即使不在公司甚至没有在联网，你也可以提交代码、查看历史，从而极大地减小了开发者的网络条件和物理位置的限制（例如，你可以在飞机上提交代码、切换分支等等）</li>
+<li>由于可以提交到本地，所以你可以分步提交代码，把代码提交做得更细，而不是一个提交包含很多代码，难以 review 也难以回溯</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>由于每一个机器都有完整的本地仓库，所以初次获取项目（Git 术语：clone）的时候会比较耗时</li>
+<li>由于每个机器都有完整的本地仓库，所以本地占用的存储比中央式 VCS 要高</li>
+</ul>
+<p>从上面可以看出来，Git 和 SVN 一样都具有远程仓库，不同的就是 Git 在你本机有版本历史记录，只要你不提交到远程仓库(唯一需要联网的地方)，你可以在本地随意增加、变更、删除、合并你的代码历史版本，这使得本地开发变得随心所欲。</p>
+<img src="/2020/10/20/OM/git笔记/2.png">
+
+<h3 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h3><p><strong>分支branch</strong></p>
+<p>就像树枝一样，有一条一条的分叉。一般我们项目的代码库，都会包含很多分支，比如 master、develop 等。是以字符串的形式，存储在 .git 文件中的。</p>
+<ol>
+<li>在 Git 中，所有分支的地位都是平等的，理解这一点对理解分支很重要。只不过通常公司会将 master 作为主分支，以保持开发的主线不会混乱。但从版本控制本身来说，master 也只是其中一个分支而已。</li>
+<li>在新建立的仓库中，会创建一个默认主分支，也就是 master(github 上现在叫 main) 和 一个远程仓库名，通常是 origin。<ol>
+<li>origin : 在用 clone 初始化本地仓库时，中央仓库的默认名，由 git 自动起的</li>
+<li>master : origin上的分支名称</li>
+</ol>
+</li>
+</ol>
+<p>一般分支包含以下几种类型，用于不同的开发目的</p>
+<ul>
+<li>master<ol>
+<li>主分支，用于部署生产环境的分支，确保稳定性</li>
+<li>master分支一般由develop以及hotfix分支合并，任何情况下都不能直接修改代码</li>
+</ol>
+</li>
+<li>develop<ol>
+<li>develop为开发分支，通常情况下，保存最新完成以及bug修复后的代码</li>
+<li>开发新功能时，feature分支都是基于develop分支下创建的</li>
+</ol>
+</li>
+<li>feature<ol>
+<li>开发新功能，基本上以develop为基础创建feature分支</li>
+<li>分支命名：feature/ 开头的为特性分支， 命名规则: feature/user_module、 feature/cart_module</li>
+</ol>
+</li>
+<li>release<ol>
+<li>release 为预上线分支，发布提测阶段，会release分支代码为基准提测</li>
+</ol>
+</li>
+<li>hotfix<ol>
+<li>分支命名：hotfix/ 开头的为修复分支，它的命名规则与 feature 分支类似</li>
+<li>线上出现紧急问题时，需要及时修复，以master分支为基线，创建hotfix分支，修复完成后，需要合并到master分支和develop分支</li>
+</ol>
+</li>
+</ul>
+<p><strong>引用</strong></p>
+<p>在 Git 中有两个重要的引用：HEAD 和 branch(分支名)。Git 就是通过移动这两个引用来管理版本历史的。其指向是：HEAD -&gt; branch -&gt; commit 或 HEAD -&gt; commit。</p>
+<ol>
+<li>HEAD 指向当前分支的最新提交(commit)。</li>
+<li>一个仓库中，只能有一个 HEAD 指针。</li>
+</ol>
+<p>其实我们对于 Git 中绝大部分的命令，都是通过移动 HEAD 来实现的。</p>
+<p><strong>commit</strong></p>
+<p>每次执行 commit 命令，都会生成一个新的 commit 结点，该结点具有唯一的 hash 值，可以通过 hash 值直接找到这个 commit 结点。</p>
+<p>我们的版本历史记录就是由所有这些 commits 组成的。而分支就是由一串 commits 所组成。</p>
+<p><strong>.git</strong></p>
+<p>在我们本地工作目录中，会有一个 .git 文件，版本历史记录就存放在里面。.git 文件另外一个作用就是它在创建的时候，会自动创建 master 分支，并且将 HEAD 指针指向 master 分支。</p>
+<ul>
+<li>工作区：就是你当前写代码的文件位置</li>
+<li>暂存区(Index/Stage)：是一个缓冲区，用于缓存临时文件。比如使用 add 命令，会将代码变动先放到暂存区，等待下一步的指示。对应文件系统是 .git 目录中的 index 文件</li>
+<li>本地仓库：当执行 commit 命令提交时，会将暂存区的内容存储到本地仓库。</li>
+</ul>
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><blockquote>
+<p>config                    配置</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 某账号下所有的 Git 仓库都有效</span><br><span class="line">git config --global user.name &apos;youname&apos;</span><br><span class="line">git config --global user.email &apos;your-email&apos;</span><br><span class="line"></span><br><span class="line"># 只对当前 Git 仓库有效</span><br><span class="line">git config --local user.name &apos;youname&apos;</span><br><span class="line">git config --local user.email &apos;your-email&apos;</span><br><span class="line"></span><br><span class="line"># 查看配置</span><br><span class="line">git config --global --list</span><br><span class="line">git config --local --list</span><br><span class="line"></span><br><span class="line"># 清除配置项</span><br><span class="line">git config --unset --global 某一个配置项</span><br><span class="line">git config --unset --local 某一个配置项</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>clone                     克隆</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 克隆项目到本地，并自定义目录名(默认克隆 master 分支)</span><br><span class="line">git clone 远程仓库url 本地目录名</span><br><span class="line"></span><br><span class="line"># 指定分支克隆</span><br><span class="line">git clone -b 指定分支名 远程仓库url</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>remote                    操作远程仓库</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 列出所有 remote</span><br><span class="line">git remote -v</span><br><span class="line"></span><br><span class="line"># 增加 remote</span><br><span class="line">git remote add url地址</span><br><span class="line"></span><br><span class="line"># 删除 remote</span><br><span class="line">git remote remove remote的名称</span><br><span class="line"></span><br><span class="line"># 改变 remote 的 name</span><br><span class="line">git remote rename 旧名称 新名称</span><br><span class="line"></span><br><span class="line"># 删除远端 origin 已不存在的所有本地分支</span><br><span class="line">git remote prune origin</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>status</p>
+</blockquote>
+<p>查看当前版本状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>fetch &amp; pull              从远程仓库拉取</p>
+</blockquote>
+<p>fetch</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 将远端所有的分支和标签的变更都拉到本地</span><br><span class="line">git fetch origin</span><br><span class="line"></span><br><span class="line"># 取回特定分支</span><br><span class="line">git fetch origin 分支名</span><br><span class="line"></span><br><span class="line"># 将某个分支的内容取回到本地下某个分支</span><br><span class="line">git fetch origin 远程分支名:本地分支名</span><br></pre></td></tr></table></figure>
+
+<p>pull<br>pull 需要说明一下。pull 其实默认的是两个操作的合并：fetch 和 merge。</p>
+<ol>
+<li>git fetch ： 下载远程仓库内容，并更新本地 origin/master(对远程仓库 master 的镜像) 与 origin/HEAD(对远程仓库  HEAD 的镜像) 镜像指向到最新的 commit。</li>
+<li>git merge origin/HEAD ： 合并远程仓库 HEAD 所指向的 commit，也就是 origin/HEAD。然后本地 HEAD 带着 master 移动到最新的 commit 处。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 如果你在主分支，则直接 pull</span><br><span class="line">git pull</span><br><span class="line"></span><br><span class="line"># 如果你处于其他分支，则需要写全</span><br><span class="line">git pull origin 分支名</span><br><span class="line"></span><br><span class="line"># 使用 rebase 而非 merge</span><br><span class="line">git pull --rebase</span><br></pre></td></tr></table></figure>
+
+<p>对于 rebase 和 merge 请往下看。</p>
+<blockquote>
+<p>branch                    分支操作</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># 从当前 commit 处创建分支</span><br><span class="line">git branch 分支名</span><br><span class="line"></span><br><span class="line"># 从已有分支创建分支</span><br><span class="line">git branch 新分支名 已有分支</span><br><span class="line"></span><br><span class="line"># 从某个 commit 创建分支</span><br><span class="line">git branch 新分支名 commitID</span><br><span class="line"></span><br><span class="line"># 列出本地分支</span><br><span class="line">git branch -v</span><br><span class="line"></span><br><span class="line"># 列出本地和远端分支</span><br><span class="line">git branch -av</span><br><span class="line"></span><br><span class="line"># 列出远端所有分支</span><br><span class="line">git branch -rv</span><br><span class="line"></span><br><span class="line"># 删除分支</span><br><span class="line">git branch -d 分支名</span><br><span class="line"></span><br><span class="line"># 强制删除分支</span><br><span class="line">git branch -D 分支名</span><br></pre></td></tr></table></figure>
+
+<p>删除分支需要注意：</p>
+<ol>
+<li>HEAD 指向的 branch 不能删除，需要先 checkout 到其他分支</li>
+<li>删除的只是 branch 这个引用，实际的 commit 不会被删除。</li>
+<li>未合并到 master 的分支不能删除。如果确认删除，则使用 -D 强制删除</li>
+</ol>
+<blockquote>
+<p>checkout                  检出</p>
+</blockquote>
+<ol>
+<li>常用于切换分支。本质：签出指定的 commit，并使 HEAD 指向此 commit。参数后可以跟分支名、commitID，并支持通配符。</li>
+<li>在修改暂存区文件后，也可以使用 checkout –文件名 的方式，将工作区指定文件恢复成和暂存区一样。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 切换到指定分支</span><br><span class="line">git checkout 分支名</span><br><span class="line"></span><br><span class="line"># 创建新分支，并切换到此分支</span><br><span class="line">git checkout -b 分支名</span><br></pre></td></tr></table></figure>
+
+<p>checkout 与 reset 比较：</p>
+<ul>
+<li>相同：都可以切换 HEAD 的位置</li>
+<li>不同：reset 移动 HEAD 会带着 branch 一起移动。而 checkout 不会。(使用 checkout 移动时，HEAD 会和 branch 分开)</li>
+</ul>
+<p>如果想不移动 HEAD，只让 HEAD 和 branch 引用分开：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 让 HEAD 和 branch 分开，而不移动 HEAD</span><br><span class="line">git checkout --detach</span><br><span class="line"></span><br><span class="line"># 重新绑定，HEAD 回到 branch 的位置</span><br><span class="line">git checkout 分支名</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>add                       添加改动</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 添加指定文件改动到暂存区</span><br><span class="line">git add 文件名1 文件名2 文件名3</span><br><span class="line"></span><br><span class="line"># 把当前目录及其子目录下所有变更都加入到暂存区</span><br><span class="line">git add .</span><br><span class="line"></span><br><span class="line"># 把存库内所有变更都加入到暂存区</span><br><span class="line">git add -A</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>commit                    提交改动</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 提交修改到本地仓库(会弹出修改界面，编写修改原因后，按两下大写 Z 退出)。生成新的 commit 记录</span><br><span class="line">git commit</span><br><span class="line"></span><br><span class="line"># 对最新一条 commit 进行修正，不会产生新的 commit</span><br><span class="line">git commit --amend</span><br></pre></td></tr></table></figure>
+
+<p>amend 背后实现为生成一条新的 commit，替换掉当前 commit。</p>
+<p>在使用 amend 参数时，如果 commit 已经 push 到了仓库，那 amend 后，再次 push 需要加 -f 参数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -f</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>diff &amp; difftool           差异比较</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 比较工作区和暂存区的所有差异</span><br><span class="line">git diff</span><br><span class="line"></span><br><span class="line"># 比较某文件工作区和暂存区的差异</span><br><span class="line">git diff 某文件</span><br><span class="line"></span><br><span class="line"># 比较某文件暂存区和 HEAD 的差异</span><br><span class="line">git diff --cached 某文件</span><br><span class="line"></span><br><span class="line"># 比较某文件工作区和 HEAD 的差异</span><br><span class="line">git diff HEAD 某文件</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>merge &amp; mergetool         合并</p>
+</blockquote>
+<p>merge : 从目标 commit 和当前 commit （即 HEAD 所指向的 commit）分叉的位置起，把目标 commit 的路径上的所有 commit 的内容一并应用到当前 commit，然后自动生成一个新的 commit。</p>
+<p>使用场景：</p>
+<ol>
+<li>单独开发的 branch 用完了以后，合并回原先的 branch</li>
+<li>git pull 的内部自动操作</li>
+</ol>
+<p><strong>注意:</strong> 在 merge 后，对于版本历史记录有两种情况：(假如两个分支，一个是 master 一个是 branch)</p>
+<ol>
+<li>如果从 master 和 branch 的分叉点开始，两个分支都在向前移动，在 merge 到主分支后，会生成一个新的 commit 记录，并且 branch 的分支版本历史记录都会保留。也就是版本历史图中，会看到两个分支分叉然后交叉。</li>
+<li>如果从分叉点开始，master 始终没变，那当 branch 合并到主后，Git 会采用 fast forward 技术，直接将 master 的 HEAD 移动到最新的 commit 处。</li>
+</ol>
+<p>如果你的 branch 从项目上讲，并没有重要的意义，而只是技术上的处理，你可能不需要保留合并后的 branch 分支历史信息，那你可以选择 rebase。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 将目标分支合并到当前分支，生成新的 commit ，本地 HEAD 会跟随过去</span><br><span class="line">git merge 目标分支</span><br><span class="line"></span><br><span class="line"># 处于冲突时，放弃本次合并</span><br><span class="line">git merge --abort</span><br><span class="line"></span><br><span class="line"># (no-fast-forward) 不使用 fast-forward 方式合并，保留分支的commit历史</span><br><span class="line">git merge --no-ff 分支名</span><br><span class="line"></span><br><span class="line"># 当合并代码产生冲突时，以下命令用于解决冲突</span><br><span class="line">git mergetool</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>rebase                    变基</p>
+</blockquote>
+<p>所谓变基，就是改变分支的基础提交点，即改变基点。比如 ：<br>branch1 分支点为 1 -&gt; 2 -&gt; 3 -&gt; 4，其中 1 -&gt; 2 为其 base commits。<br>branch2 分支点为 1 -&gt; 2 -&gt; 5 -&gt; 6，其中 1 -&gt; 2 为其 base commits。<br>那么以 branch1 为 base commits ，重新给 branch2 变基，则为 1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; 5 -&gt; 6。可以看到 rebase 后的 branch2 以 branch1 为 base，变成了一条新链。</p>
+<p>场景：</p>
+<ol>
+<li>可以清理 commit 分支，不会像 merge 一样保留分支</li>
+<li>可用于从主更新最新变更到当前分支，也就是把当前分支重新 rebase 到主最新的 commit 上。</li>
+</ol>
+<p>NOTE:</p>
+<ol>
+<li>rebase 操作会重建 commit 的 hash 值，老的 hash 值将无法使用</li>
+<li>不要对主分支进行变基，否则将无法进行 push 操作</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 分支变基操作</span><br><span class="line">1. git checkout 需要变基的分支</span><br><span class="line">2. git rebase 目标分支(也就是需要当做 base 的分支)</span><br><span class="line"></span><br><span class="line"># 合并变基的分支</span><br><span class="line">3. git checkout 目标分支</span><br><span class="line">4. git merge 需要变基的分支</span><br></pre></td></tr></table></figure>
+
+<p><strong>交互式 rebase</strong></p>
+<p>使用 -i 参数(–interactive的缩写)。可以对曾经的一系列 commit 进行编辑、合并、删除等操作。</p>
+<p>两个占位符：</p>
+<ol>
+<li>^  : HEAD^^ 表示从当前 commit 往回数 1 个。有几个 ^ 就从当前(包含当前)往回数几个</li>
+<li>~  : HEAD~2 同上<br>note : 和 reset、revert 不一样。reset、revert 中，HEAD 就表示第一个</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 对最新两个 commit 进行一些列操作</span><br><span class="line">git rebase -i HEAD^^|HEAD~2</span><br><span class="line"></span><br><span class="line"># 继续 rebase</span><br><span class="line">git push rebase --continue</span><br><span class="line"></span><br><span class="line"># 解决冲突并 add 后，继续变基</span><br><span class="line">git rebase commitID --continue</span><br><span class="line"></span><br><span class="line"># 出现冲突，但是放弃本次 rebase</span><br><span class="line">git rebase --abort</span><br></pre></td></tr></table></figure>
+
+<p>交互式 rebase 会弹出编辑界面，其常用参数:</p>
+<ul>
+<li>pick             -&gt; 使用此 commit</li>
+<li>reword        -&gt; 使用此 commit，但是编辑其 commit 信息</li>
+<li>edit            -&gt; 使用此 commit，但是暂停，先进行 amending 修改</li>
+<li>squash        -&gt; 使用此 commit，但是将其合并到之前的 commit 中</li>
+<li>fixup            -&gt; 和 squash 差不多，但会忽略此 commit 的提交信息</li>
+<li>break            -&gt; 先暂停，之后在通过 git rebase –continue 恢复</li>
+<li>drop            -&gt; 删除此条 commit(或直接删除该行)</li>
+</ul>
+<blockquote>
+<p>reset &amp; revert            重置</p>
+</blockquote>
+<p><strong>reset</strong></p>
+<p>移动 HEAD 以及它所指向的 branch(它是用来重置 HEAD 以及它所指向的 branch 的位置的)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --参数 HEAD^|commitID</span><br></pre></td></tr></table></figure>
+
+<p>其常用参数如下：</p>
+<ul>
+<li>mixed(默认) : 移动 HEAD 与 branch指针，但工作目录不变。暂存区会被清空</li>
+<li>soft : 移动 HEAD 与 branch指针，但工作目录不变。暂存区为：重置 HEAD 所带来的新的差异</li>
+<li>hard : 重置 HEAD、缓存区、工作目录到当前 commit</li>
+</ul>
+<p><strong>revert</strong></p>
+<p>反转某一次 commit 中的内容，并生成一个新的 commit</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git revert commitID</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>log &amp; reflog              日志</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 看着提交记录，按 q 退出</span><br><span class="line">git log</span><br><span class="line"></span><br><span class="line"># 查看每一条记录更详细的修改内容(-p 是 -patch 的缩写)</span><br><span class="line">git log -p</span><br><span class="line"></span><br><span class="line"># 查看简要统计</span><br><span class="line">git log --stat</span><br><span class="line"></span><br><span class="line"># 查看某一 commit 的具体信息。后面也可以在跟文件名</span><br><span class="line">git show commitID</span><br><span class="line"></span><br><span class="line"># 当前分支的 commit 用一行显示</span><br><span class="line">git log --oneline</span><br><span class="line"></span><br><span class="line"># 默认查看 HEAD 的移动记录。可指定分支名查看具体分支的记录</span><br><span class="line">git reflog 分支名</span><br></pre></td></tr></table></figure>
+
+<p><strong>误删除分支操作：</strong></p>
+<ol>
+<li>git reflog</li>
+<li>git checkout commitID</li>
+<li>git checkout -b 分支名</li>
+</ol>
+<p>note : 不再被引用直接或间接指向的 commits 会在一定时间后被 Git 回收，所以删除找回操作一定要及时。</p>
+<blockquote>
+<p>stash &amp; pop               修改暂存/挂起</p>
+</blockquote>
+<p>临时存放当前工作目录的改动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 暂存当前工作目录的修改。未 add 的文件无法暂存。</span><br><span class="line">git stash</span><br><span class="line"></span><br><span class="line"># -u 是 --include-untracked 的缩写，将当前未 add 的文件一起暂存</span><br><span class="line">git stash -u</span><br><span class="line"></span><br><span class="line"># 恢复暂存修改，删除 stash。(pop 后记得看下 list)</span><br><span class="line">git stash pop</span><br><span class="line"></span><br><span class="line"># 恢复暂存修改，保留 stash。</span><br><span class="line">git stash apply</span><br><span class="line"></span><br><span class="line"># 查看当前暂存区</span><br><span class="line">git stash list</span><br><span class="line"></span><br><span class="line"># 取回某次 stash 的变更</span><br><span class="line">git stash pop stash@&#123;数字 n&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>push                      推送到远程仓库</p>
+</blockquote>
+<p>就是将当前本地 brach 的 commits 提交到仓库，默认只会提交到 clone 后的分支中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 推送到 clone 时的默认分支</span><br><span class="line">git push</span><br><span class="line"></span><br><span class="line"># 推送本地分支到仓库，其分支名称必须相同</span><br><span class="line">git push origin 本地分支名</span><br><span class="line"></span><br><span class="line"># 强制 push，并覆盖远程仓库</span><br><span class="line">git push origin 分支名 -f</span><br><span class="line"></span><br><span class="line"># 删除远程仓库分支</span><br><span class="line">git push origin -d 分支名</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><blockquote>
+<p><a href="https://juejin.im/book/6844733697996881928" target="_blank" rel="noopener">Git 原理详解及实用指南</a><br><a href="https://www.cnblogs.com/kidsitcn/p/5339382.html" target="_blank" rel="noopener">git rebase vs git merge详解</a><br><a href="https://juejin.im/post/6869519303864123399#comment" target="_blank" rel="noopener">一劳永逸」一张脑图带你掌握Git命令</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Git/" rel="tag"># Git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/30/OM/常用命令记录/" rel="next" title="常用命令记录">
+                <i class="fa fa-chevron-left"></i> 常用命令记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#中央式-VS-分布式"><span class="nav-number">1.</span> <span class="nav-text">中央式 VS 分布式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#几个概念"><span class="nav-number">2.</span> <span class="nav-text">几个概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用命令"><span class="nav-number">3.</span> <span class="nav-text">常用命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
