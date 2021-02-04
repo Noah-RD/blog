@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JVM,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="真是没想到，一个小小的类从诞生到消亡，JVM 要做这么多的事情呀~">
+<meta name="keywords" content="JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM类加载与回收">
+<meta property="og:url" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="真是没想到，一个小小的类从诞生到消亡，JVM 要做这么多的事情呀~">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/head.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/3.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/4.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/5.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/6.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/7.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/1.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/2.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/8.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/9.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/10.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/11.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/5.png">
+<meta property="og:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/12.png">
+<meta property="og:updated_time" content="2021-02-04T07:21:16.904Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM类加载与回收">
+<meta name="twitter:description" content="真是没想到，一个小小的类从诞生到消亡，JVM 要做这么多的事情呀~">
+<meta name="twitter:image" content="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/">
+
+
+
+
+
+  <title>JVM类加载与回收 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2021/02/03/java/JVM类加载与回收/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JVM类加载与回收</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-03T16:50:11+08:00">
+                2021-02-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2021/02/03/java/JVM类加载与回收/head.jpg">
+
+<p>真是没想到，一个小小的类从诞生到消亡，JVM 要做这么多的事情呀~</p>
+<a id="more"></a>
+
+<blockquote>
+<p>本文所参考的文章链接都在文章最后列出，感谢这些作者的付出，我在此只是重新做了一下归纳整理。</p>
+</blockquote>
+<blockquote>
+<p>本文篇幅较长，请耐心阅读。</p>
+</blockquote>
+<h3 id="导语"><a href="#导语" class="headerlink" title="导语"></a>导语</h3><p>平时我们写的都是 <code>.java</code> 文件，然后通过 IDE 运行，或者通过 maven 等打包工具放到 tomcat 等容器中运行。可是你有没有想过，从你写完代码到代码正常运行，这些代码经历了什么呢？它们又是怎么跑在机器上的呢？</p>
+<p>首先，我们都知道 java 的运行依靠 JVM，JVM 可以把 .java 文件中的源代码，编译为机器可以识别(其实就是 JVM 可以识别)的字节码文件 .class。也正因为这个特性，JVM 可以做到一次编译处处运行，并且支持多种语言。</p>
+<p>一次编译处处运行好理解，只要有 JVM 的地方就能运行 .class 文件。那支持多语言呢？其实，只要把其他的语言编译为同样规则对应的 .class 文件，不就可以了。解决了这个问题，剩下的问题就只有一个了，JVM 如何运行 .class 文件中的内容。</p>
+<h3 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h3><p>在学习类加载和垃圾回收前，得先对 JVM 有个简单的结构认识。</p>
+<h4 id="JVM-基本结构"><a href="#JVM-基本结构" class="headerlink" title="JVM 基本结构"></a>JVM 基本结构</h4><p>根据《java虚拟机规范》规定，JVM的基本结构一般如下图所示:</p>
+<img src="/2021/02/03/java/JVM类加载与回收/3.png">
+
+<p><strong>类加载器</strong> 在JVM启动时或者在类运行时将需要的class加载到JVM中。</p>
+<p><strong>执行引擎</strong> 负责执行class文件中包含的字节码指令。</p>
+<p><strong>内存区(也叫运行时数据区)</strong> 是在JVM运行的时候操作所分配的内存区。</p>
+<p><strong>本地方法接口</strong> 主要是调用C或C++实现的本地方法及返回结果。</p>
+<h4 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h4><p>什么是运行时数据区域？Java程序在运行时，会为JVM单独划出一块内存区域，而这块内存区域又可以再次划分出一块运行时数据区，运行时数据区域大致可以分为五个部分。</p>
+<img src="/2021/02/03/java/JVM类加载与回收/4.png">
+
+<p>从上面的图中，有两种颜色不同的区域，红色的是线程共享区域(非线程安全)，绿色的是线程私有区域(线程安全)。</p>
+<p><strong>堆(Heap)</strong></p>
+<p>Java堆区具有下面几个特点:</p>
+<ol>
+<li>存储的是我们new来的对象，不存放基本类型和对象引用。</li>
+<li>由于创建了大量的对象，垃圾回收器主要工作在这块区域。</li>
+<li>线程共享区域，因此是线程不安全的。</li>
+<li>能够发生OutOfMemoryError。</li>
+</ol>
+<p>其实，Java堆区还可以划分为新生代和老年代，新生代又可以进一步划分为Eden区、Survivor 1区、Survivor 2区。</p>
+<img src="/2021/02/03/java/JVM类加载与回收/5.png">
+
+<p><strong>虚拟机栈(VM Stack)</strong></p>
+<p>Java虚拟机栈具有下面几个特点:</p>
+<ol>
+<li>线程私有区域，每一个线程都有独享一个虚拟机栈，因此这是线程安全的区域。</li>
+<li>存放基本数据类型以及对象的引用。</li>
+<li>每一个方法执行的时候会在虚拟机栈中创建一个相应栈帧，方法执行完毕后该栈帧就会被销毁。方法栈帧是以先进后出的方式虚拟机栈的。</li>
+<li>每一个栈帧又可以划分为<strong>局部变量表</strong>、<strong>操作数栈</strong>、<strong>动态链接</strong>、<strong>方法出口</strong>以及额外的附加信息。</li>
+<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出 <code>StackOverflowError</code> 异常(通常是递归导致的)。JVM动态扩展时无法申请到足够内存则抛出 <code>OutOfMemoryError</code> 异常。</li>
+</ol>
+<p><strong>本地方法栈(Native Method Stack)</strong></p>
+<p>本地方法栈其实可以和 Java 虚拟机栈进行对比理解，唯一不同的是本地方法栈是 Java 程序在调用本地方法的时候创建栈帧的地方。和 JVM 栈一样，这个区域也会抛出 <code>StackOverflowError</code> 和 <code>OutOfMemoryError</code>。</p>
+<p><strong>方法区(Method Area)</strong></p>
+<p>Java方法区具有下面几个特点:</p>
+<ol>
+<li>线程共享区域，因此这是线程不安全的区域。</li>
+<li>方法区也是一个可能会发生OutOfMemoryError的区域。</li>
+<li>方法区存储的是从 Class 文件加载进来的静态变量、类信息、常量池以及编译器编译后的代码。</li>
+</ol>
+<p>对于方法区，我觉得重点应该说一下常量池。常量池可以分为 Class 文件常量池以及运行时常量池，Java 程序运行后，Class 文件中的信息被字节码执行引擎加载到了方法区，从而形成了运行时常量池。<br>另外，说起方法区，可能还有人会把它与永久代、元空间混为一谈。那么他们之间的区别到底是什么？方法区是 Java 虚拟机规范中的定义，是一种规范，而永久代是一种实现，一个是标准一个是实现。不过 Java 8 以后就没有永久代这个说法了，元空间取代了永久代。</p>
+<p><strong>程序计数器(Program Counter Register)</strong></p>
+<p>程序计数器涉及到 CPU 的线程调度。</p>
+<p>进程是资源分配的最小单位，线程是 CPU 调度的最小单位，一个进程可以包含多个线程， Java 线程通过抢占的方法获得 CPU 的执行权。</p>
+<p>比如：某一次，线程 A 获得 CPU 的执行权，开始执行内部程序。但是线程 A 的程序还没有执行完，在某一时刻 CPU 的执行权被另一个线程 B 抢走了。后来经过线程 A 的不懈努力，又抢回了 CPU 的执行权，那么线程 A 的程序又要从头开始执行？</p>
+<p>而程序计数器它的作用就是记录当前线程所执行的位置。 这样，当线程重新获得 CPU 的执行权的时候，就直接从记录的位置开始执行，分支、循环、跳转、异常处理也都依赖这个程序计数器来完成。此外，程序计数器还具有以下特点：</p>
+<ol>
+<li>线程私有，每一个线程都有一个程序计数器，因此它是线程安全的。</li>
+<li>唯一一块不存在 <code>OutOfMemoryError</code> 的区域，可能是设计者觉得没必要。</li>
+</ol>
+<h4 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h4><p>当虚拟机遇到字节码 new 指令时，就会去运行时常量池寻找该实例化对象相对应的类是否被”加载、解析和初始化”(这部分类加载内容，在后面有讲解)。如果没有被加载，就会先加载该类的信息，否则就为新生对象分配内存。</p>
+<p>Java 的内存分配原理与 C/C++ 不同，C/C++ 每次申请内存时都要 <code>malloc</code> 进行系统调用，而系统调用发生在内核空间，每次都要中断进行切换，这需要一定的开销，而 Java 虚拟机是先一次性分配一块较大的空间，然后每次 new 时都在该空间上进行分配和释放，减少了系统调用的次数，节省了一定的开销，这有点类似于内存池的概念；二是有了这块空间过后，如何进行分配和回收就跟 GC 机制有关了。</p>
+<p>java一般内存申请有两种：静态内存和动态内存。很容易理解，编译时就能够确定的内存就是静态内存，即内存是固定的，系统一次性分配，比如int类型变量；动态内存分配就是在程序执行时才知道要分配的存储空间大小，比如java对象的内存空间。根据上面我们知道，java栈、程序计数器、本地方法栈都是线程私有的，线程生就生，线程灭就灭，栈中的栈帧随着方法的结束也会撤销，内存自然就跟着回收了。所以这几个区域的内存分配与回收是确定的，我们不需要管的。但是java堆和方法区则不一样，我们只有在程序运行期间才知道会创建哪些对象，所以这部分内存的分配和回收都是动态的。一般我们所说的垃圾回收也是针对的这一部分。</p>
+<p>总之栈的内存管理是顺序分配的，而且定长，不存在内存回收问题；而堆则是为 java 对象的实例随机分配内存，不定长度，所以存在内存分配和回收的问题。</p>
+<h4 id="对象的内存布局与访问定位"><a href="#对象的内存布局与访问定位" class="headerlink" title="对象的内存布局与访问定位"></a>对象的内存布局与访问定位</h4><p>对象在堆中的存储布局可以分为三个部分：</p>
+<ol>
+<li>对象头<ol>
+<li>第一类信息：存储对象自身的运行时数据，例如哈希码、GC分代年龄、锁状态标志等等。</li>
+<li>第二类信息：指针类型，Java虚拟机通过这个指针来确定该对象是那个类的实例。</li>
+</ol>
+</li>
+<li>实例数据：对象真正存储的有效信息。</li>
+<li>对齐填充：没有实际的意义，起着占位符的作用。</li>
+</ol>
+<p>我们前面说到过，Java虚拟机栈中存储的是基本数据类型和对象引用。基本数据类型我们已经很清楚了，那对象引用呢？对象实例存储在Java堆中，通过这个对象引用我们就可以找到对象在堆中的位置。但是，对于如何定位到这个对象，不同的Java虚拟机又有不同的方法。</p>
+<p>通常情况下，有下面两种方法：</p>
+<ol>
+<li>使用句柄访问，通常会在Java堆中划分一块句柄池。</li>
+<li>使用直接指针，这样Java虚拟机栈中存储的就是该对象在堆中的地址。</li>
+</ol>
+<img src="/2021/02/03/java/JVM类加载与回收/6.png">
+
+<img src="/2021/02/03/java/JVM类加载与回收/7.png">
+
+<p>这两种访问对象的方法各有优势。使用直接指针进行访问，就可以直接定位到对象，减小了一次指针定位的时间开销（使用句柄的话会通过句柄池的指针二次定位对象），最大的好处就是速度更快。但是使用句柄的话，就是当对象发生移动的时候，可以不用改变栈中存储的 reference，只需要改变句柄池中实例数据的指针。</p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>JVM 类加载的方式大概描述为：虚拟机把描述类的数据，从 .class 文件加载到内存，并对数据进行校验、解析、初始化等步骤，最终形成可被虚拟机直接使用的 Java 类型的过程。</p>
+<p>细化这一过程，分为：加载(Loading) -&gt; 验证(Verfication) -&gt; 准备(Preparation) -&gt; 解析(Resolution) -&gt; 初始化(Initialization) -&gt; 使用(Using) -&gt; 卸载(UnLoading)</p>
+<img src="/2021/02/03/java/JVM类加载与回收/1.png">
+
+<ol>
+<li>上图加载过程的验证、准备、解析，一般统称为连接。<ol>
+<li>加载 -&gt; 验证 -&gt; 准备 -&gt; 初始化 -&gt; 卸载 这五个阶段的顺序是确定的，而解析，为了支持 java 的动态绑定能力，可能会在初始化后才开始。</li>
+<li>上述阶段通常都是互相交叉混合的方式进行，比如会在一个阶段执行的过程中调用、激活另一个阶段。</li>
+</ol>
+</li>
+</ol>
+<blockquote>
+<p>静态绑定与动态绑定（主要针对多态重载）</p>
+<ol>
+<li>静态绑定（前期绑定/编译时绑定）</li>
+</ol>
+<p>所谓静态绑定，就是在程序运行前，也就是编译时期 JVM 就能够确定，一个方法应该由谁来调用，这个机制叫静态绑定。</p>
+<p>由 private、static、final 任意一个关键词修饰的方法，就是前期绑定的。构造方法也属于。</p>
+<ol>
+<li><p>private：私有方法，只能由定义此方法的类调用，所以属于本类所特有的，所以在编译器就可以绑定在一起。</p>
+</li>
+<li><p>final：被 final 修饰的方法不能被子类重载，但可以被子类调用，不产生多态重载问题。</p>
+</li>
+<li><p>static：被 static 修饰的方式，使用 类名.方法名 的方式调用，由于类名是确定的，并且 static 修饰的方法，对子类是不可见的，所以不会产生多态重载的问题。</p>
+</li>
+<li><p>动态绑定（后期绑定/运行时绑定）</p>
+</li>
+</ol>
+<p>JVM 在运行期间决定方法由哪个对象调用的过程，称为动态绑定机制。一般发生在继承关系时，存在多态重载方法时使用。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"foo"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">Father</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"bar"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Father son = <span class="keyword">new</span> Son();</span><br><span class="line">        son.eat();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>比如上述代码中的 <code>Father son = new Son()</code> ，只有在代码运行期间，才能知道 Father 类型的 son 变量保存的指针，指向的是 Son 类型。</p>
+<p>动态绑定的过程为：</p>
+<ol>
+<li>虚拟机提取对象的实际类型的方法表</li>
+<li>虚拟机搜索方法签名</li>
+<li>调用方法</li>
+</ol>
+<p>优点：</p>
+<ol>
+<li>静态绑定：<ol>
+<li>编译器触发，能够提早知道代码的错误</li>
+<li>提高程序运行效率</li>
+</ol>
+</li>
+<li>动态绑定<ol>
+<li>提高代码的可用性，是代码更加灵活</li>
+<li>多态是设计模式的基础，能够降低耦合性</li>
+</ol>
+</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>类加载是在运行期进行的。类的加载、连接、初始化过程都是在程序<strong>运行期</strong>完成的，从而通过牺牲一些性能开销来换取 java 程序的高度灵活性。<ol>
+<li>编译期：指编译器将源代码翻译为 JVM 能识别的字节码文件的过程</li>
+<li>运行期：java 代码运行的过程<blockquote>
+<p>JVM 运行期动态加载 + 动态连接  -&gt; Java的动态扩展特性</p>
+</blockquote>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h3><h4 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h4><ol>
+<li>通过类的全限定名来获取定义此类的二进制字节流。如从 Zip 包读取、从网络中读取、通过运行时计算生成、由其他文件生成、从数据库中读取等等途径。</li>
+<li>将该二进制字节流所代表的的，<strong>静态存储结构</strong>转化为<strong>方法区</strong>的运行时数据结构，该数据的存储结构由虚拟机实现自行定义（注意，此时的数据，并没有进入方法区，而只是在内存中，因为还没有经过验证步骤）。</li>
+<li>在内存中生成一个代表这个类的 <code>java.lang.Class</code> 对象，作为方法区这个类的各种数据的访问入口。</li>
+</ol>
+<h4 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h4><p>是<strong>连接</strong>阶段的第一步，且工作量在 JVM 类加载子系统中，占了相当大的一部分。其目的，是为了确保 Class 文件的字节流中，包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。</p>
+<blockquote>
+<p>由此可见，它能直接决定 JVM 能否承受恶意代码的攻击，因此验证阶段很重要。但由于它对程序运行期没有影响，所以并不一定必要，可以考虑使用 <code>-Xverify:none</code> 参数来关闭大部分的类验证措施，以缩短虚拟机类加载的时间。</p>
+</blockquote>
+<p><strong>验证过程包含以下四个阶段</strong></p>
+<ol>
+<li>文件格式验证</li>
+</ol>
+<p>验证字节流是否符合 Class 文件格式的规范，以及是否能被当前版本的虚拟机处理。</p>
+<p>其目的，在于输入的字节流能正确的解析并存储于方法区内，且格式上符合描述一个 Java 类型信息的要求。只有在保证二进制字节流通过了该验证后，它才会进入内存的方法区中进行存储，所以后续的三个验证阶段，全部是基于方法区的而不再是字节流了。</p>
+<p>比如：<br>1). 是否以魔法数字 0xCAFEBABE 开头<br>2). 主次版本号是否在 JVM 接受范围内<br>3). 索引值是否有指向不存在/不符合类型的常量</p>
+<ol start="2">
+<li>元数据验证</li>
+</ol>
+<p>对字节码描述的信息进行语义分析，以保证其描述的信息符合 Java 语言规范要求。</p>
+<p>其目的，在于对类的<strong>元数据信息</strong>进行语义校验，保证不存在不符合 Java 语言规范的元数据信息。</p>
+<p>比如：<br>1). 类是否有父类(除了 <code>java.lang.Object</code> 之外，所有类都应该有父类)<br>2). 是否继承了不允许被继承的类(final 修饰的类)<br>3). 如果该类不是抽象类，是否实现了其父类或接口要求实现的所有方法</p>
+<ol start="3">
+<li>字节码验证</li>
+</ol>
+<p>对类的方法体进行校验分析，保证被校验类的方法在运行时，不会做出危害虚拟机安全的事件。是验证过程中最复杂的一个阶段。</p>
+<p>其目的，在于通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的。</p>
+<p>比如：<br>1). 保证任意时刻操作数栈的数据类型与指令代码序列都能配合工作，例如不会出现“在操作数栈的数据类型中放置了int类型的数据，使用时却按long类型来载入本地变量表中。<br>2). 保证任何跳转指令都不会跳转到方法体外的字节码指令上。</p>
+<ol start="4">
+<li>符号引用验证</li>
+</ol>
+<p>对类自身以外(如常量池中的各种符号引用)的信息进行匹配性校验。</p>
+<p>其目的，在于确保解析动作能正常执行，如果无法通过符号引用验证，那么将会抛出一个 <code>java.lang.IncompatibleClassChangeError</code> 异常的子类。</p>
+<blockquote>
+<p>注意：该验证发生在虚拟机将符号引用转化为直接引用的时候，即<strong>解析</strong>阶段。</p>
+</blockquote>
+<h4 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h4><ol>
+<li>为类变量(静态变量)分配内存。因为这里的变量是由方法区分配内存的，所以仅包括类变量而不包括实例变量。实例变量将会在对象实例化时，随着对象一起在Java堆中分配。</li>
+<li>设置类变量<strong>初始值</strong>，即赋零值。</li>
+</ol>
+<h4 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h4><p>解析阶段，就是虚拟机将<strong>常量池</strong>内的<strong>符号引用</strong>解析为<strong>直接引用</strong>的过程。</p>
+<ol>
+<li>符号引用：以一组符号来描述所引用的目标<ol>
+<li>可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可。</li>
+<li>与虚拟机实现的内存布局无关，因为符号引用的字面量形式明确定义在 Java 虚拟机规范的 Class 文件格式中，所以即使各种虚拟机实现的内存布局不同，但是能接受符号引用都是一致的</li>
+</ol>
+</li>
+<li>直接引用：<ol>
+<li>可以是直接指向目标的指针、相对偏移量或是一个能间接定位到目标的句柄。</li>
+<li>与虚拟机实现的内存布局相关，同一个符号引用在不同虚拟机实例上翻译出来的直接引用一般不同。</li>
+</ol>
+</li>
+</ol>
+<p>JVM 会根据需要来判断，是在类被加载器加载时就对常量池中的符号引用进行解析，还是等到一个符号引用将要被使用前才去解析。</p>
+<p>比如：设当前代码所处的为类 <code>D</code>，把一个从未解析过的符号引用 <code>N</code> 解析为一个类或接口 <code>C</code> 的直接引用，解析过程分三步：</p>
+<ol>
+<li>若 <code>C</code> 不是数组类型，JVM 将会把代表 <code>N</code> 的全限定名传递给 <code>D</code> 类加载器去加载这个类 <code>C</code>。在加载过程中，由于元数据验证、字节码验证的需要，又可能触发其他相关类的加载动作。一旦这个加载过程出现了任何异常，解析过程就宣告失败。</li>
+<li>若 <code>C</code> 是数组类型且数组元素类型为对象，JVM 也会按照上述规则加载数组元素类型。</li>
+<li>若上述步骤无任何异常，此时 <code>C</code> 在 JVM中 已成为一个有效的类或接口，但在解析完成前还需进行符号引用验证，来确认 <code>D</code> 是否具备对 <code>C</code> 的访问权限。如果发现不具备访问权限，将抛出 <code>java.lang.IllegalAccessError</code> 异常。</li>
+</ol>
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><p>是类加载过程的最后一步，会开始真正执行类中定义的 Java 代码。而之前的类加载过程中，除了在<strong>加载</strong>阶段用户应用程序可通过自定义类加载器参与之外，其余阶段均由虚拟机主导和控制。</p>
+<p>在初始化这个阶段，根据程序员通过程序制定的主观计划去初始化类变量和其他资源。或者可以从另外一个角度来表达：初始化阶段是执行类构造器 <code>＜clinit＞()</code> 方法的过程。</p>
+<blockquote>
+<p>与<strong>准备</strong>阶段的区别<br>准备阶段：类变量赋初始零值。<br>初始化阶段： 根据 Java 程序的设定去初始化类变量和其他资源，或者说是执行类构造器 <code>clinit</code> 的过程。</p>
+<p>init 与 clinit 区别</p>
+<ol>
+<li>init 和 clinit 的执行时机不同。<code>init</code> 是对象构造器方法，也就是说在程序执行 <code>new</code> 一个对象调用该对象类的 <code>constructor</code> 方法时才会执行 <code>init</code> 方法。而 <code>clinit</code> 是类构造器方法，也就是在 JVM 进行初始化阶段时才会调用clinit方法。</li>
+<li>init 和 clinit 的执行目的不同。<code>init</code> 是 <code>instance</code> 实例构造器，是对非静态变量解析初始化。而 <code>clinit</code> 是 <code>class</code> 类构造器对静态变量、静态代码块进行初始化的。</li>
+</ol>
+<p>clinit：由编译器自动收集类中的所有类变量(静态变量)的赋值动作，和静态语句块 <code>static{}</code> 中的语句合并产生。编译器收集的顺序是由语句在源文件中出现的顺序所决定的，静态语句块中只能访问到定义在静态语句块<strong>之前</strong>的变量，定义在它之后的变量，在前面的静态语句块可以赋值，但是<strong>不能访问</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">&gt;     <span class="keyword">static</span>&#123;</span><br><span class="line">&gt;         i=<span class="number">0</span>; <span class="comment">//给变量赋值可以正常编译通过</span></span><br><span class="line">&gt;         System.out.print(i); <span class="comment">//这句编译器会提示"非法向前引用"</span></span><br><span class="line">&gt;     &#125;</span><br><span class="line">&gt; </span><br><span class="line">&gt;     <span class="keyword">static</span> <span class="keyword">int</span> i=<span class="number">1</span>;</span><br><span class="line">&gt; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>虚拟机会保证在子类的 <code>＜clinit＞()</code> 方法执行之前，父类的 <code>＜clinit＞()</code> 方法已经执行完毕。因此在虚拟机中第一个被执行的 <code>＜clinit＞()</code> 方法的类肯定是 <code>java.lang.Object</code>。由于父类的 <code>＜clinit＞()</code> 方法先执行，也就意味着父类中定义的静态语句块要优先于子类的变量赋值操作。</p>
+<p>接口中不能使用静态语句块，但仍然有变量初始化的赋值操作，因此接口与类一样都会生成 <code>＜clinit＞()</code> 方法。但接口与类不同的是，执行接口的 <code>＜clinit＞()</code> 方法不需要先执行父接口的 <code>＜clinit＞()</code> 方法。只有当父接口中定义的变量使用时，父接口才会初始化。另外，接口的实现类在初始化时也一样不会执行接口的 <code>＜clinit＞()</code> 方法。</p>
+<ol>
+<li>由 JVM 保证是线程安全的，在多线程环境中被正确地加锁、同步。</li>
+<li>对于类或接口来说是非必需的，如果一个类中没有静态语句块，也没有对类变量的赋值操作，那么编译器可以不为这个类生成 <code>clinit</code>。</li>
+<li>接口中的属性都是 <code>static final</code> 类型的常量，因此在准备阶段就已经初始化话。</li>
+</ol>
+</blockquote>
+<p>在虚拟机规范中，规定了有且只有五种情况<strong>必须立即</strong>对类进行<strong>初始化</strong>操作：</p>
+<ol>
+<li>遇到 <code>new</code>、<code>getstatic</code>、<code>putstatic</code> 或 <code>invokestatic</code> 这4条字节码指令时。</li>
+<li>使用 <code>java.lang.reflect</code> 包的方法对类进行反射调用的时候。</li>
+<li>当初始化一个类的时候，若发现其父类还未进行初始化，需先触发其父类的初始化。</li>
+<li>在虚拟机启动时，需指定一个要执行的<strong>主类</strong>，虚拟机会先初始化它</li>
+<li>当使用 JDK1.7 的动态语言支持时，若一个 <code>java.lang.invoke.MethodHandle</code> 实例最后的解析结果为 <code>REF_getStatic</code>、<code>REF_putStatic</code>、<code>REF_invokeStatic</code> 的方法句柄，且这个方法句柄所对应的类未进行初始化，需先触发其初始化。</li>
+</ol>
+<p><strong>总结一下</strong>，以上几个阶段，就是 JVM 将一个类加载到内存运行时数据区域的完整过程。但这还没有完，毕竟我们加载类是要去运行使用的，那就不得不提到 JVM 的类加载器。</p>
+<h3 id="类加载器与双亲委派机制"><a href="#类加载器与双亲委派机制" class="headerlink" title="类加载器与双亲委派机制"></a>类加载器与双亲委派机制</h3><h4 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h4><p>首先类的加载需要类加载器，每个类加载器，都拥有一个独立的命名空间，它不仅用于加载类，还和这个类本身一起作为在JVM中的唯一标识。所以比较两个类是否相等，只要看它们是否由同一个类加载器加载，即使它们来源于同一个Class文件且被同一个JVM加载，只要加载它们的类加载器不同，这两个类就必定不相等。</p>
+<p>从 JVM 角度，可将类加载器分为两种：启动类加载器(由 c++ 实现，是虚拟机自身的一部分)和其他类加载器(由 java 实现，独立于虚拟机外，并且全都继承自抽象类 <code>java.lang.ClassLoader</code>，可被 Java 程序直接引用)。</p>
+<img src="/2021/02/03/java/JVM类加载与回收/2.png">
+
+<p><strong>启动类加载器</strong></p>
+<ol>
+<li>由 C++ 语言实现，是虚拟机自身的一部分。java程序无法直接操作这个类.</li>
+<li>它用来加载 Java 核心类库，如：JAVA_HOME/jre/lib/rt.jar、resources.jar、sun.boot.class.path 路径下的包，用于提供 jvm 运行所需的包。</li>
+<li>并不是继承自java.lang.ClassLoader，它没有父类加载器。</li>
+<li>它加载<strong>扩展类加载器</strong>和<strong>应用程序类加载器</strong>，并成为他们的父类加载器。</li>
+<li>出于安全考虑，启动类只加载包名为：java、javax、sun 开头的类。</li>
+</ol>
+<p><strong>扩展类加载器</strong></p>
+<ol>
+<li>由 <code>sun.misc.Launcher$ExtClassLoader</code> 实现。我们可以用 Java 程序操作这个加载器。其派生继承自 <code>java.lang.ClassLoader</code>，父类加载器为启动类加载器。</li>
+<li>负责加载 <code>＜JAVA_HOME＞\lib\ext</code> 目录中的、或者被 <code>java.ext.dirs</code> 系统变量所指定的路径中的所有类库。</li>
+</ol>
+<p><strong>应用程序类加载器</strong></p>
+<ol>
+<li>是默认的类加载器，是 <code>ClassLoader#getSystemClassLoader()</code> 的返回值，故又称为系统类加载器。</li>
+<li>由 <code>sun.misc.Launcher$AppClassLoader</code> 实现。其派生继承自 <code>java.lang.ClassLoader</code>，父类加载器为启动类加载器。</li>
+<li>它负责加载环境变量 <code>classpath</code> 或者系统属性 <code>java.class.path</code> 指定路径下的类库。</li>
+<li>它是程序中默认的类加载器，我们Java程序中的类，都是由它加载完成的。</li>
+</ol>
+<p><strong>自定义类加载器</strong></p>
+<p>一般情况下，以上3种加载器能满足我们日常的开发工作，不满足时，我们还可以自定义加载器。比如用网络加载 Java 类，为了保证传输中的安全性，采用了加密操作，那么以上3种加载器就无法加载这个类，这时候就需要自定义加载器。</p>
+<p>想要实现自定义类加载器，需要继承 <code>java.lang.ClassLoader</code> 类，重写 <code>findClass()</code> 方法。如果没有太复杂的需求，可以直接继承 <code>URLClassLoader</code> 类，重写 <code>loadClass</code> 方法，具体可参考 <code>AppClassLoader</code> 和 <code>ExtClassLoader</code>。</p>
+<p>获取 <code>ClassLoader</code> 的几种方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 方式一：获取当前类的 ClassLoader</span><br><span class="line">clazz.getClassLoader()</span><br><span class="line"></span><br><span class="line">// 方式二：获取当前线程上下文的 ClassLoader</span><br><span class="line">Thread.currentThread().getContextClassLoader()</span><br><span class="line"></span><br><span class="line">// 方式三：获取系统的 ClassLoader</span><br><span class="line">ClassLoader.getSystemClassLoader()</span><br><span class="line"></span><br><span class="line">// 方式四：获取调用者的 ClassLoader</span><br><span class="line">DriverManager.getCallerClassLoader()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>需要注意的是，虽然数组类不通过类加载器创建而是由 JVM 直接创建的，但仍与类加载器有密切关系，因为数组类的元素类型最终还要靠类加载器去创建。</p>
+</blockquote>
+<h4 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h4><p>JVM 对 class 文件采用的是按需加载的方式，当需要使用该类时，JVM 才会将它的 class 文件加载到内存中产生 class 对象。</p>
+<p>首先明确一点，就是除了顶层的启动类加载器外，其余类加载器都应当有自己的父类加载器，且它们之间关系一般不会以继承关系来实现，而是通过组合关系来复用父加载器的代码。</p>
+<p><strong>机制描述：</strong>当一个类加载器收到了类加载的请求，它先会把这个请求委派给父类加载器，并向上传递，最终请求都传送到顶层的启动类加载器中。只有当父加载器反馈自己无法完成这个加载请求时，才会逐层回退到子加载器去尝试自己加载。</p>
+<p><strong>注意：</strong>不是一个强制性的约束模型，而是Java设计者推荐给开发者的一种类加载器实现方式</p>
+<p><strong>双亲委派的优点</strong></p>
+<ol>
+<li>类会随着它的类加载器一起具备带有优先级的层次关系，可保证Java程序的稳定运作</li>
+<li>保证所要加载的类不会重复加载。并且具有沙箱安全机制。</li>
+</ol>
+<p>比如：</p>
+<ol>
+<li>某些类加载器要加载 <code>java.lang.Object</code> 类，最终都会委派给最顶端的启动类加载器去加载，这样 <code>Object</code> 类在程序的各种类加载器环境中都是同一个类。</li>
+<li>自定义 String 类，但是在加载自定义 String 类的时候会率先使用引导类加载器加载，而引导类加载器在加载的过程中会先加载 JDK 自带的文件（rt.jar 包中的 javalangString.class），报错信息说没有 main 方法就是因为加载的 rt.jar 包中的 String 类。这样可以保证对 Java 核心源代码的保护，这就是沙箱安全机制。</li>
+</ol>
+<p>当然，在某些场景下，我们需要打破双亲委派机制，比如第三方包加载方式，我们就需要使用反向委派机制。常见的使用如JDBC、JNDI 等SPI(服务提供者接口) 场景。具体可以参考<a href="https://segmentfault.com/a/1190000037574626" target="_blank" rel="noopener">这篇文章</a>的<strong>第三方包加载方式：反向委派机制</strong>部分。</p>
+<h3 id="类回收过程-GC"><a href="#类回收过程-GC" class="headerlink" title="类回收过程(GC)"></a>类回收过程(GC)</h3><p>前面说的都是类的加载，加载完成后的对象我们就可以随便使用了。但我们知道，对象不可能永久存在的，毕竟内存是有限的。那对象应该在什么时候销毁呢？</p>
+<p>通常，判断一个对象是否被销毁有两种方法：</p>
+<ol>
+<li><strong>引用计数算法：</strong>为对象添加一个引用计数器，每当对象在一个地方被引用，则该计数器加 1；每当对象引用失效时，计数器减 1。但计数器为 0 的时候，就表白该对象没有被引用。</li>
+<li><strong>可达性分析算法：</strong>通过一系列被称之为 “GC Roots” 的根节点开始，沿着引用链进行搜索，凡是在引用链上的对象都不会被回收。</li>
+</ol>
+<img src="/2021/02/03/java/JVM类加载与回收/8.png">
+
+<p>就像上图的那样，绿色部分的对象都在GC Roots的引用链上，就不会被垃圾回收器回收，灰色部分的对象没有在引用链上，自然就被判定为可回收对象。</p>
+<p>那么，问题来了，这个GC Roots又是什么？下面列举可以作为GC Roots的对象：</p>
+<ol>
+<li>Java虚拟机栈中被引用的对象，各个线程调用的参数、局部变量、临时变量等。</li>
+<li>方法区中类静态属性引用的对象，比如引用类型的静态变量。</li>
+<li>方法区中常量引用的对象。</li>
+<li>本地方法栈中所引用的对象。</li>
+<li>Java虚拟机内部的引用，基本数据类型对应的Class对象，一些常驻的异常对象。</li>
+<li>被同步锁（synchronized）持有的对象。</li>
+</ol>
+<p>现在，我们已经知道哪些对像是可以回收的。那么又要采取什么方式对对象进行回收呢？垃圾回收算法主要有三种，依次是<strong>标记-清除算法、标记-复制算法、标记-整理算法</strong>。</p>
+<h4 id="垃圾回收算法"><a href="#垃圾回收算法" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h4><p><strong>标记-清除</strong></p>
+<p>标记–清除算法就是对无效的对象进行标记，然后清除。</p>
+<img src="/2021/02/03/java/JVM类加载与回收/9.png">
+
+<p>对于标记–清除算法，你一定会清楚看到，在进行垃圾回收之后，堆空间有大量的碎片，出现了不规整的情况。在给大对象分配内存的时候，由于无法找到足够的连续的内存空间，就不得不再一次触发垃圾收集。另外，如果 Java 堆中存在大量的垃圾对象，那么垃圾回收的就必然进行大量的标记和清除动作，这个势必造成回收效率的降低。</p>
+<p><strong>标记-复制</strong></p>
+<p>标记–复制算法就是把Java堆分成两块，每次垃圾回收时只使用其中一块，然后把存活的对象全部移动到另一块区域。</p>
+<img src="/2021/02/03/java/JVM类加载与回收/10.png">
+
+<p>标记–复制算法有一个很明显的缺点，那就是每次只使用堆空间的一半，造成了Java堆空间使用率的的下降。</p>
+<p><strong>标记-整理</strong></p>
+<p>现在大部分 Java 虚拟机的垃圾回收器使用的就是标记–复制算法，但是，对于Java堆空间的划分，并不是简单地一分为二。</p>
+<p>标记–整理算法算是一种折中的垃圾收集算法，在对象标记的过程，和前面两个执行的是一样步骤。但是，进行标记之后，存活的对象会移动到堆的一端，然后直接清理存活对象以外的区域就可以了。这样，既避免了内存碎片，也不存在堆空间浪费的说法了。</p>
+<img src="/2021/02/03/java/JVM类加载与回收/11.png">
+
+<p>但是，每次进行垃圾回收的时候，都要暂停所有的用户线程，特别是对老年代的对象回收，则需要更长的回收时间，这对用户体验是非常不好的。</p>
+<blockquote>
+<p>为什么要停止所有用户线程呢，因为在标记的过程中，如果用户线程还在活动，那标记的对象集是不准确的(比如又产生了垃圾对象，或重新激活了已准备回收的对象等)，这时在产生的垃圾对象也叫做浮动垃圾。<br>所以，为了确保标记的准确性，才会使所有用户线程暂停(或者进入安全区，下面会讲)，这个过程也叫做 <strong>stop the world</strong>。</p>
+</blockquote>
+<p>现在的垃圾回收器，都是按照不同的内存划分来进行收集的。主要分为两部分：<strong>年轻代</strong>和<strong>老年代</strong>。</p>
+<img src="/2021/02/03/java/JVM类加载与回收/5.png">
+
+<p>首先得从两个分代收集理论说起：</p>
+<ol>
+<li>弱分代假说：大多数对象的生命存活时间很短。</li>
+<li>强分代假说：经过越多次垃圾收集的对象，存活的时间就越久。</li>
+</ol>
+<p>正是这两个分代假说，使得设计者对Java堆的划分更加合理。下面，来说一下GC的分类：</p>
+<ol>
+<li><strong>Minor GC/Young GC：</strong>针对新生代的垃圾收集。</li>
+<li><strong>Major GC/Old GC：</strong>针对老年代的垃圾收集。</li>
+<li><strong>Full GC：</strong>针对整个Java堆以及方法区的垃圾收集。</li>
+</ol>
+<p><strong>GC 流程</strong><br>通常情况下，初次被创建的对象存放在新生代的 Eden 区，当第一次触发 Minor GC，Eden 区存活的对象被转移到 Survivor 区的某一块区域。以后再次触发 Minor GC 的时候，Eden 区的对象连同一块 Survivor 区的对象一起，被转移到了另一块 Survivor 区。可以看到，这两块 Survivor 区我们每一次只使用其中的一块，这样也仅仅是浪费了一块 Survivor 区。</p>
+<p>每经历过一次垃圾回收的对象，它的分代年龄就加 1，当分代年龄达到 15 以后，就直接被存放到老年代中。</p>
+<p>还有一种情况，给大对象分配内存的时候，Eden区已经没有足够的内存空间了，这时候该怎么办？对于这种情况，大对象就会直接进入老年代。</p>
+<h4 id="HotSpot的算法细节"><a href="#HotSpot的算法细节" class="headerlink" title="HotSpot的算法细节"></a>HotSpot的算法细节</h4><p><strong>根节点枚举</strong><br>根节点枚举，其实就是找出可以作为GC Roots的对象，在这个过程中，所有的用户线程都必须停下。到目前为止，几乎还没有虚拟机可以做到GC Roots遍历与用户线程并发执行。当然，可达性分析算法中最耗时的寻找引用链的过程已经可以做到和用户线程并发执行了。那么，为什么需要在根节点枚举的时候停止用户线程？</p>
+<p>其实也不难考虑，如果进行GC Roots遍历的时候，用户线程没有暂停，根节点集合的对象引用关系还在不断发生变化，这样遍历到的结果是不准确的。那么，Java虚拟机在查找GC Roots的时候，是真的需要进行全局遍历？</p>
+<p>其实不是这样的，HotSpot虚拟机通过一个叫做OopMap的数据结构，可以知道哪些地方存储了对象引用。这样，大大减小了GC Roots的遍历时间。</p>
+<p><strong>安全点</strong><br>安全点，是线程能够中断的点。我们在GC Roots遍历的时候，是一定要让用户线程停下来的。问题来了，线程是可以在任意位置停下来吗？为了使得线程到达最近的安全点停下来，有两种思路：</p>
+<ol>
+<li><strong>抢先式中断：</strong> 暂停所有的用户线程，如果哪条线程没有在安全点，就恢复这条线程执行，直到它跑到安全点上在中断。不过没有Java虚拟机采用这种思路。</li>
+<li><strong>主动式中断：</strong> 不对线程进行操作，仅仅设置一个简单的标志位，线程执行的时候不断区轮询这个标志位，当这个标志位为真的时候，线程就在离自己最近的安全点挂起。</li>
+</ol>
+<p><strong>安全区域</strong><br>安全区域是安全点的拉伸和扩展，安全点解决了如何让线程停下，却没有解决如何让虚拟机进入垃圾回收状态。</p>
+<p>安全区域是指能能够确保在某一代码片段中，引用关系不会发生变化的区域。因此，一旦线程进入了安全区域，就可以不去理会这些处于安全区域的线程。当线程离开安全区域的时候，虚拟机就会检查是否完成了根节点枚举。</p>
+<p><strong>记忆集与卡表</strong><br>不知道大家是否考虑过这样的一个问题？既然 Java 堆有新生代老年代的划分，那么对象引用是否会存在跨代？如果存在跨代，又该如何解决老年代的 GC Roots 遍历问题？</p>
+<p>首先，跨代引用是存在的。因此，垃圾收集器在新生代建立了一个叫做记忆集的数据结构，用来避免把整个老年代假如 GC Roots 的扫描范围。</p>
+<p>记忆集是抽象的数据结构，而卡表是记忆集的具体实现，这种关系就类似与方法区与元空间。</p>
+<p><strong>写屏障</strong><br>写屏障的作用很简单，就是对卡表进行维护和更新。</p>
+<h4 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h4><img src="/2021/02/03/java/JVM类加载与回收/12.png">
+
+<p>上面有7中收集器，分为两块，上面为新生代收集器，下面是老年代收集器。如果两个收集器之间存在连线，就说明它们可以搭配使用。</p>
+<p><strong>Serial(串行GC)收集器</strong></p>
+<p>Serial收集器是一个新生代收集器，单线程执行，使用复制算法。它在进行垃圾收集时，必须暂停其他所有的工作线程(用户线程)。是Jvm client模式下默认的新生代收集器。对于限定单个CPU的环境来说，Serial收集器由于没有线程交互的开销，专心做垃圾收集自然可以获得最高的单线程收集效率。</p>
+<p><strong>ParNew(并行GC)收集器</strong></p>
+<p>ParNew收集器其实就是serial收集器的多线程版本，除了使用多条线程进行垃圾收集之外，其余行为与Serial收集器一样。</p>
+<p><strong>Parallel Scavenge(并行回收GC)收集器</strong></p>
+<p>Parallel Scavenge收集器也是一个新生代收集器，它也是使用复制算法的收集器，又是并行多线程收集器。parallel Scavenge收集器的特点是它的关注点与其他收集器不同，CMS等收集器的关注点是尽可能地缩短垃圾收集时用户线程的停顿时间，而parallel Scavenge收集器的目标则是达到一个可控制的吞吐量。吞吐量= 程序运行时间/(程序运行时间 + 垃圾收集时间)，虚拟机总共运行了100分钟。其中垃圾收集花掉1分钟，那吞吐量就是99%。</p>
+<p><strong>Serial Old(串行GC)收集器</strong></p>
+<p>Serial Old是Serial收集器的老年代版本，它同样使用一个单线程执行收集，使用“标记-整理”算法。主要使用在Client模式下的虚拟机。</p>
+<p><strong>Parallel Old(并行GC)收集器</strong></p>
+<p>Parallel Old是Parallel Scavenge收集器的老年代版本，使用多线程和“标记-整理”算法。</p>
+<p><strong>CMS(并发GC)收集器</strong></p>
+<p>CMS(Concurrent Mark Sweep)收集器是一种以获取最短回收停顿时间为目标的收集器。CMS收集器是基于“标记-清除”算法实现的，整个收集过程大致分为4个步骤：</p>
+<ol>
+<li>初始标记(CMS initial mark)</li>
+<li>并发标记(CMS concurrenr mark)</li>
+<li>重新标记(CMS remark)</li>
+<li>并发清除(CMS concurrent sweep)</li>
+</ol>
+<p>其中初始标记、重新标记这两个步骤任然需要停顿其他用户线程。初始标记仅仅只是标记出 GC ROOTS 能直接关联到的对象，速度很快，并发标记阶段是进行 GC ROOTS 根搜索算法阶段，会判定对象是否存活。而重新标记阶段则是为了修正并发标记期间，因用户程序继续运行而导致标记产生变动的那一部分对象的标记记录，这个阶段的停顿时间会被初始标记阶段稍长，但比并发标记阶段要短。</p>
+<p>由于整个过程中耗时最长的并发标记和并发清除过程中，收集器线程都可以与用户线程一起工作，所以整体来说，CMS 收集器的内存回收过程是与用户线程一起并发执行的。</p>
+<p>CMS 收集器的优点：并发收集、低停顿，但是 CMS 还远远达不到完美，器主要有三个显著缺点：</p>
+<p>CMS 收集器对 CPU 资源非常敏感。在并发阶段，虽然不会导致用户线程停顿，但是会占用 CPU 资源而导致引用程序变慢，总吞吐量下降。CMS 默认启动的回收线程数是：(CPU数量 + 3) / 4。</p>
+<p>CMS 收集器无法处理浮动垃圾，可能出现 “Concurrent Mode Failure”，失败后而导致另一次 Full GC 的产生。由于 CMS 并发清理阶段用户线程还在运行，伴随程序的运行自热会有新的垃圾不断产生，这一部分垃圾出现在标记过程之后，CMS 无法在本次收集中处理它们，只好留待下一次 GC 时将其清理掉。这一部分垃圾称为“浮动垃圾”。也是由于在垃圾收集阶段用户线程还需要运行，</p>
+<p>即需要预留足够的内存空间给用户线程使用，因此 CMS 收集器不能像其他收集器那样等到老年代几乎完全被填满了再进行收集，需要预留一部分内存空间提供并发收集时的程序运作使用。在默认设置下，CMS 收集器在老年代使用了 68% 的空间时就会被激活，也可以通过参数 <code>-XX:CMSInitiatingOccupancyFraction</code> 的值来提供触发百分比，以降低内存回收次数提高性能。要是 CMS 运行期间预留的内存无法满足程序其他线程需要，就会出现 “Concurrent Mode Failure” 失败，这时候虚拟机将启动后备预案：临时启用 Serial Old 收集器来重新进行老年代的垃圾收集，这样停顿时间就很长了。所以说参数 <code>-XX:CMSInitiatingOccupancyFraction</code> 设置的过高将会很容易导致 “Concurrent Mode Failure” 失败，性能反而降低。</p>
+<p>最后一个缺点，CMS 是基于“标记-清除”算法实现的收集器，使用“标记-清除”算法收集后，会产生大量碎片。空间碎片太多时，将会给对象分配带来很多麻烦，比如说大对象，内存空间找不到连续的空间来分配不得不提前触发一次 Full GC。为了解决这个问题，CMS收集器提供了一个 <code>-XX:UseCMSCompactAtFullCollection</code> 开关参数，用于在 Full GC 之后增加一个碎片整理过程，还可通过 <code>-XX:CMSFullGCBeforeCompaction</code> 参数设置执行多少次不压缩的 Full GC 之后，跟着来一次碎片整理过程。</p>
+<p><strong>G1收集器</strong></p>
+<p>G1(Garbage First)收集器是 JDK1.7 提供的一个新收集器，G1 收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。还有一个特点之前的收集器进行收集的范围都是整个新生代或老年代，而 G1 将整个 Java 堆(包括新生代，老年代)。</p>
+<p>如果像看图的话，可以看<a href="https://juejin.cn/post/6856958647445291021" target="_blank" rel="noopener">这篇文章</a>最后面的 GC 部分。</p>
+<p>关于一些 GC 参数，目前还在研究中。我参考的<a href="https://blog.csdn.net/java2000_wl/article/details/8030172" target="_blank" rel="noopener">这篇文章</a>中，也有一点简单的介绍。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://juejin.cn/post/6844904113726193671" target="_blank" rel="noopener">一夜搞懂 | JVM 类加载机制</a><br><a href="https://www.jianshu.com/p/9ea809edebb6" target="_blank" rel="noopener">要点提炼| 理解JVM之类加载机制</a><br><a href="https://juejin.cn/post/6844904113726193671" target="_blank" rel="noopener">一夜搞懂 | JVM 类加载机制</a><br><a href="https://segmentfault.com/a/1190000037574626" target="_blank" rel="noopener">jvm类加载器，类加载机制详解，看这一篇就够了</a><br><a href="https://juejin.cn/post/6844903953931436040#heading-0" target="_blank" rel="noopener">理解静态绑定与动态绑定</a><br><a href="https://blog.csdn.net/u013309870/article/details/72975536" target="_blank" rel="noopener">深入理解jvm–Java中init和clinit区别完全解析</a><br><a href="https://blog.csdn.net/tonytfjing/article/details/44278233" target="_blank" rel="noopener">JVM结构、GC工作机制详解</a><br><a href="https://juejin.cn/post/6856958647445291021" target="_blank" rel="noopener">「总结篇」别再说自己不会JVM了，看完这篇能和面试官扯上半小时（上）</a><br><a href="https://blog.csdn.net/java2000_wl/article/details/8030172" target="_blank" rel="noopener">Java虚拟机学习 - 垃圾收集器</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/10/20/OM/git笔记/" rel="next" title="git笔记">
+                <i class="fa fa-chevron-left"></i> git笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#导语"><span class="nav-number">1.</span> <span class="nav-text">导语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预备知识"><span class="nav-number">2.</span> <span class="nav-text">预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JVM-基本结构"><span class="nav-number">2.1.</span> <span class="nav-text">JVM 基本结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行时数据区域"><span class="nav-number">2.2.</span> <span class="nav-text">运行时数据区域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存分配"><span class="nav-number">2.3.</span> <span class="nav-text">内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象的内存布局与访问定位"><span class="nav-number">2.4.</span> <span class="nav-text">对象的内存布局与访问定位</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">3.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载过程"><span class="nav-number">4.</span> <span class="nav-text">类加载过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#加载"><span class="nav-number">4.1.</span> <span class="nav-text">加载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证"><span class="nav-number">4.2.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#准备"><span class="nav-number">4.3.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解析"><span class="nav-number">4.4.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化"><span class="nav-number">4.5.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器与双亲委派机制"><span class="nav-number">5.</span> <span class="nav-text">类加载器与双亲委派机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#类加载器"><span class="nav-number">5.1.</span> <span class="nav-text">类加载器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#双亲委派机制"><span class="nav-number">5.2.</span> <span class="nav-text">双亲委派机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类回收过程-GC"><span class="nav-number">6.</span> <span class="nav-text">类回收过程(GC)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#垃圾回收算法"><span class="nav-number">6.1.</span> <span class="nav-text">垃圾回收算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HotSpot的算法细节"><span class="nav-number">6.2.</span> <span class="nav-text">HotSpot的算法细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#垃圾回收器"><span class="nav-number">6.3.</span> <span class="nav-text">垃圾回收器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
