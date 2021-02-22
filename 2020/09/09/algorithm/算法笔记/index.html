@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="二叉树,">
+  <meta name="keywords" content="二叉树,BFS&DFS,">
 
 
 
@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="二叉树、二叉搜索树">
-<meta name="keywords" content="二叉树">
+<meta name="description" content="极客大学算法训练营笔记。">
+<meta name="keywords" content="二叉树,BFS&amp;DFS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二叉树">
-<meta property="og:url" content="http://blog.intersico.com/2020/09/09/algorithm/二叉树/index.html">
+<meta property="og:title" content="算法笔记">
+<meta property="og:url" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/index.html">
 <meta property="og:site_name" content="Every Day">
-<meta property="og:description" content="二叉树、二叉搜索树">
+<meta property="og:description" content="极客大学算法训练营笔记。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/二叉树/head.jpg">
-<meta property="og:updated_time" content="2020-09-09T04:30:40.374Z">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/head.jpg">
+<meta property="og:updated_time" content="2021-02-09T10:20:15.878Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="二叉树">
-<meta name="twitter:description" content="二叉树、二叉搜索树">
-<meta name="twitter:image" content="http://blog.intersico.com/2020/09/09/algorithm/二叉树/head.jpg">
+<meta name="twitter:title" content="算法笔记">
+<meta name="twitter:description" content="极客大学算法训练营笔记。">
+<meta name="twitter:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/head.jpg">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.intersico.com/2020/09/09/algorithm/二叉树/">
+  <link rel="canonical" href="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/">
 
 
 
 
 
-  <title>二叉树 | Every Day</title>
+  <title>算法笔记 | Every Day</title>
   
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/09/09/algorithm/二叉树/">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="R.D">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">二叉树</h1>
+          <h1 class="post-title" itemprop="name headline">算法笔记</h1>
         
 
         <div class="post-meta">
@@ -344,14 +344,14 @@
       
 
       
-        <img src="/2020/09/09/algorithm/二叉树/head.jpg">
+        <img src="/2020/09/09/algorithm/算法笔记/head.jpg">
 
-<p>二叉树、二叉搜索树</p>
+<p>极客大学算法训练营笔记。</p>
 <a id="more"></a>
 
 <h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>遍历：</strong></p>
 <p><strong>前序：</strong> 根 -&gt; 左 -&gt; 右<br><strong>中序：</strong> 左 -&gt; 根 -&gt; 右<br><strong>后序：</strong> 左 -&gt; 右 -&gt; 根</p>
-<h3 id="二叉搜索树-BST"><a href="#二叉搜索树-BST" class="headerlink" title="二叉搜索树(BST)"></a>二叉搜索树(BST)</h3><p>定义：二叉搜索树(Binary Search Tree)，也叫有序二叉树(Ordered Binary Tree)、排序二叉树(Sorted Binary Tree)，是指一棵<strong>空树</strong>或具有下列性质的二叉树：</p>
+<h4 id="二叉搜索树-BST"><a href="#二叉搜索树-BST" class="headerlink" title="二叉搜索树(BST)"></a>二叉搜索树(BST)</h4><p>定义：二叉搜索树(Binary Search Tree)，也叫有序二叉树(Ordered Binary Tree)、排序二叉树(Sorted Binary Tree)，是指一棵<strong>空树</strong>或具有下列性质的二叉树：</p>
 <ol>
 <li>左子树上<strong>所有结点</strong>的值均<strong>小于</strong>它的根结点的值</li>
 <li>右子树上<strong>所有结点</strong>的值均<strong>大于</strong>它的根结点的值</li>
@@ -362,7 +362,7 @@
 </blockquote>
 <p><strong>删除操作：</strong> 如果删除的是叶子结点，则比较大小找到该结点直接删除即可。如果是某根结点，则需要找到第一个大于该根结点值的结点，然后作为新的根结点。通常是右子树中，最左边的那个结点(也就是右子树中，最小的那个结点)</p>
 <p><strong>时间复杂度</strong> O(logn) <strong>特殊情况下</strong>，退化为链表，则为 O(n)</p>
-<h3 id="遍历模板"><a href="#遍历模板" class="headerlink" title="遍历模板"></a>遍历模板</h3><p>定义结点</p>
+<h4 id="遍历模板"><a href="#遍历模板" class="headerlink" title="遍历模板"></a>遍历模板</h4><p>定义结点</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> val;</span><br><span class="line">    <span class="keyword">public</span> TreeNode left, right;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TreeNode</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.val = val;</span><br><span class="line">        <span class="keyword">this</span>.left = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">this</span>.right = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>前、中、后遍历</p>
@@ -372,7 +372,23 @@
 
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">postorder</span><span class="params">(self, root)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> root:</span><br><span class="line">        self.postorder(root.left)</span><br><span class="line">        self.postorder(root.right)</span><br><span class="line">        self.traverse_path.append(root.val)</span><br></pre></td></tr></table></figure>
 
+<h3 id="BFS-amp-DFS"><a href="#BFS-amp-DFS" class="headerlink" title="BFS&amp;DFS"></a>BFS&amp;DFS</h3><p><strong>DFS模板</strong></p>
+<blockquote>
+<p>从根节点开始，递归其中一个子树，到达叶子节点后，回退，在递归其他子树，重复上述步骤</p>
+</blockquote>
+<p>二叉树</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def dfs(node);</span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">in</span> visited:</span><br><span class="line">        <span class="comment"># already visited</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    visited.add(node)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># process current node</span></span><br><span class="line">    <span class="comment"># ...logic here</span></span><br><span class="line"></span><br><span class="line">    dfs(node.left)</span><br><span class="line">    dfs(node.right)</span><br></pre></td></tr></table></figure>
 
+<p>多叉树</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">def dfs(node);</span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">in</span> visited:</span><br><span class="line">        <span class="comment"># already visited</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    visited.add(node)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># process current node</span></span><br><span class="line">    <span class="comment"># ...logic here</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历所有子节点</span></span><br><span class="line">    <span class="keyword">for</span> next_node <span class="keyword">in</span> node.children():</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> next_node <span class="keyword">in</span> visited:</span><br><span class="line">            dfs(next_node, visited)</span><br></pre></td></tr></table></figure>
+
+<p><strong>BFS模板</strong></p>
+<blockquote>
+<p>从根节点开始，一层一层扫描。使用队列保存与遍历每一层的节点。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bfs</span><span class="params">(graph, start, end)</span>:</span></span><br><span class="line">    queue = []</span><br><span class="line">    queue.append([start])</span><br><span class="line">    visited.add(start)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> queue:</span><br><span class="line">        node = queue.pop()</span><br><span class="line">        visited.add(node)</span><br><span class="line"></span><br><span class="line">        process(node)</span><br><span class="line">        nodes = generate_related_nodes(node) //将当前结点的所有子节点放入队列</span><br><span class="line">        queue.push(nodes)</span><br></pre></td></tr></table></figure>
+
+<h3 id="贪心算法"><a href="#贪心算法" class="headerlink" title="贪心算法"></a>贪心算法</h3>
       
     </div>
     
@@ -390,6 +406,8 @@
         <div class="post-tags">
           
             <a href="/tags/二叉树/" rel="tag"># 二叉树</a>
+          
+            <a href="/tags/BFS-DFS/" rel="tag"># BFS&DFS</a>
           
         </div>
       
@@ -491,7 +509,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -502,7 +520,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -513,7 +531,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -547,7 +565,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉树"><span class="nav-number">1.</span> <span class="nav-text">二叉树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉搜索树-BST"><span class="nav-number">2.</span> <span class="nav-text">二叉搜索树(BST)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历模板"><span class="nav-number">3.</span> <span class="nav-text">遍历模板</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉树"><span class="nav-number">1.</span> <span class="nav-text">二叉树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#二叉搜索树-BST"><span class="nav-number">1.1.</span> <span class="nav-text">二叉搜索树(BST)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遍历模板"><span class="nav-number">1.2.</span> <span class="nav-text">遍历模板</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BFS-amp-DFS"><span class="nav-number">2.</span> <span class="nav-text">BFS&amp;DFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#贪心算法"><span class="nav-number">3.</span> <span class="nav-text">贪心算法</span></a></li></ol></div>
             
 
           </div>
