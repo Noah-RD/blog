@@ -88,7 +88,7 @@
 <meta property="og:description" content="极客大学算法训练营笔记。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/head.jpg">
-<meta property="og:updated_time" content="2021-02-09T10:20:15.878Z">
+<meta property="og:updated_time" content="2021-03-03T11:46:57.243Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法笔记">
 <meta name="twitter:description" content="极客大学算法训练营笔记。">
@@ -388,7 +388,26 @@
 </blockquote>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bfs</span><span class="params">(graph, start, end)</span>:</span></span><br><span class="line">    queue = []</span><br><span class="line">    queue.append([start])</span><br><span class="line">    visited.add(start)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> queue:</span><br><span class="line">        node = queue.pop()</span><br><span class="line">        visited.add(node)</span><br><span class="line"></span><br><span class="line">        process(node)</span><br><span class="line">        nodes = generate_related_nodes(node) //将当前结点的所有子节点放入队列</span><br><span class="line">        queue.push(nodes)</span><br></pre></td></tr></table></figure>
 
-<h3 id="贪心算法"><a href="#贪心算法" class="headerlink" title="贪心算法"></a>贪心算法</h3>
+<h3 id="贪心算法-Greedy"><a href="#贪心算法-Greedy" class="headerlink" title="贪心算法(Greedy)"></a>贪心算法(Greedy)</h3><p>贪心算法是一种，在每一步选择中，都采取在当前状态下最好或最优(即最有利)的选择，从而希望导致结果是全局最好或最优的算法。</p>
+<p>贪心算法与动态规划的不同在于，它对每个子问题的解决方案都做出选择，不能回退。而动态规划则会保存以前的运算结果，并根据以前的结果对当前进行选择，有回退功能。</p>
+<p>简单来说，贪心算法每一步都做出一个当前阶段最好的决定，且不能回退。</p>
+<blockquote>
+<p>贪心： 当下做局部最优判断<br>回溯： 能够回退<br>动态规划： 最优判断 + 回退</p>
+</blockquote>
+<p>贪心算法可以解决一些最优化问题，如：求图中的最小生成树、求哈弗曼编码等。然后对于工程和生活中的问题，贪心法一般不能得到我们所要求的答案。</p>
+<p>一旦一个问题可以通过贪心法来解决，那么贪心法一般是解决这个问题的最好办法。</p>
+<p>由于贪心法的高效性，以及其所求得的答案比较接近最优结果，贪心法也可以用作辅助算法，或者直接解决一些要求结果不特别精确的问题。</p>
+<h3 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h3><p><strong>使用二分查找的前提</strong></p>
+<ol>
+<li>目标函数单调性(单调递增或递减)</li>
+<li>存在上下界</li>
+<li>能够通过索引(下标)访问</li>
+</ol>
+<p>二分查找就是在一个单调递增/减的数列上，每次一分为二，不断向中间夹逼的过程。所以使用二分法就要满足以上的三点。</p>
+<p><strong>模板</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">left = <span class="number">0</span>, right = len(array) - <span class="number">1</span></span><br><span class="line"><span class="keyword">while</span> left &lt;= right: //有的情况下，只是 &lt;</span><br><span class="line">    mid = (left + right) / <span class="number">2</span></span><br><span class="line">    <span class="keyword">if</span> array[mid] == target:</span><br><span class="line">        // find the target!!</span><br><span class="line">        <span class="keyword">break</span> <span class="keyword">or</span> <span class="keyword">return</span> result</span><br><span class="line">    <span class="keyword">elif</span> array[mid] &lt; target:</span><br><span class="line">        left = mid + <span class="number">1</span> //在 int 的情况下，+ - <span class="number">1</span>，如果是实数，直接 = mid 就行</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        right = mid - <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h3>
       
     </div>
     
@@ -509,7 +528,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -565,7 +584,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉树"><span class="nav-number">1.</span> <span class="nav-text">二叉树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#二叉搜索树-BST"><span class="nav-number">1.1.</span> <span class="nav-text">二叉搜索树(BST)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遍历模板"><span class="nav-number">1.2.</span> <span class="nav-text">遍历模板</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BFS-amp-DFS"><span class="nav-number">2.</span> <span class="nav-text">BFS&amp;DFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#贪心算法"><span class="nav-number">3.</span> <span class="nav-text">贪心算法</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉树"><span class="nav-number">1.</span> <span class="nav-text">二叉树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#二叉搜索树-BST"><span class="nav-number">1.1.</span> <span class="nav-text">二叉搜索树(BST)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遍历模板"><span class="nav-number">1.2.</span> <span class="nav-text">遍历模板</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BFS-amp-DFS"><span class="nav-number">2.</span> <span class="nav-text">BFS&amp;DFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#贪心算法-Greedy"><span class="nav-number">3.</span> <span class="nav-text">贪心算法(Greedy)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二分查找"><span class="nav-number">4.</span> <span class="nav-text">二分查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态规划"><span class="nav-number">5.</span> <span class="nav-text">动态规划</span></a></li></ol></div>
             
 
           </div>
