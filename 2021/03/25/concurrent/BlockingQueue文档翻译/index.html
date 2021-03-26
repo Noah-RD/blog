@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="文档翻译,并发,队列,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="文本为对 JAVA SE 8 J.U.C 包下 Interface BlockingQueue&amp;lt;E&amp;gt; 文档的翻译。">
+<meta name="keywords" content="文档翻译,并发,队列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BlockingQueue文档翻译">
+<meta property="og:url" content="http://blog.intersico.com/2021/03/25/concurrent/BlockingQueue文档翻译/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="文本为对 JAVA SE 8 J.U.C 包下 Interface BlockingQueue&amp;lt;E&amp;gt; 文档的翻译。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2021/03/25/concurrent/BlockingQueue文档翻译/head.jpg">
+<meta property="og:image" content="http://blog.intersico.com/2021/03/25/concurrent/BlockingQueue文档翻译/form.png">
+<meta property="og:updated_time" content="2021-03-25T05:30:05.021Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BlockingQueue文档翻译">
+<meta name="twitter:description" content="文本为对 JAVA SE 8 J.U.C 包下 Interface BlockingQueue&amp;lt;E&amp;gt; 文档的翻译。">
+<meta name="twitter:image" content="http://blog.intersico.com/2021/03/25/concurrent/BlockingQueue文档翻译/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2021/03/25/concurrent/BlockingQueue文档翻译/">
+
+
+
+
+
+  <title>BlockingQueue文档翻译 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2021/03/25/concurrent/BlockingQueue文档翻译/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">BlockingQueue文档翻译</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T11:35:21+08:00">
+                2021-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2021/03/25/concurrent/BlockingQueue文档翻译/head.jpg">
+
+<p>文本为对 JAVA SE 8 <code>J.U.C</code> 包下 <code>Interface BlockingQueue&lt;E&gt;</code> 文档的翻译。</p>
+<a id="more"></a>
+
+<h3 id="接口概述"><a href="#接口概述" class="headerlink" title="接口概述"></a>接口概述</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">Queue</span>&lt;<span class="title">E</span>&gt;</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继承自 <code>Queue</code> 并提供额外的操作来支持阻塞特性：当队列没有元素可用或队列已满而无法插入新的元素时，则等待。</p>
+<p><code>BlockingQueue</code> 的方法分为四种情况，以不同的方式处理当某些操作无法立即满足，但将来可能会满足的情况。四种情况分别是：抛出异常、返回一个特定值(取决于不同实现，返回 null 或 false)、无限期的阻塞当前线程，直到操作成功、阻塞给定的最大时长，超时后放弃。相关方法如下图所示：</p>
+<img src="/2021/03/25/concurrent/BlockingQueue文档翻译/form.png">
+
+<p>阻塞队列<strong>不接受</strong> null 元素。当企图使用 add、put、offer 等方法插入一个 null 值时，会抛出 <code>NullPointerException</code> 异常。Null 值用作标记值，以指示 poll 操作失败。</p>
+<p>一个阻塞队列可能是有界的，在任何给定的时间，它都有可能有一个剩余的容量(remainingCapacity),超过容量后在插入元素，则会被阻塞。如果是无界的阻塞队列，则剩余容量方法(remainingCapacity)始终返回 Integer.MAX_VALUE。</p>
+<p>阻塞队列主要设计给生产者-消费者模式使用的队列，但是也额外的支持 <code>Collection</code> 接口。所以，比如可以使用 remove(X) 方法删除队列中的任意一个元素。然而，这样的操作通常性能很差，所以仅适用于偶尔使用，例如取消排队的消息时。</p>
+<p>阻塞队列是<strong>线程安全</strong>的。其所有的方法都使用内部锁或以其他形式的并发控制，来原子的实现其效果。然而，一些批量操作如 addAll、containsAll、retainAll、removeAll 并不必原子执行，除非在实现中另行指定。</p>
+<p>阻塞队列本质上，不支持任何 <code>close</code> 或 <code>shutdown</code> 方法来指示无法在添加任何元素。此类功能的需求和使用往往取决于实现。例如，一种常见的策略是让生产者插入特殊的流尾对象或有毒对象，当消费者采取这种方法时会对其进行相应的解释。</p>
+<p>以下的示例，基于典型的生产者-消费者模型。注意，阻塞队列可以安全的被多个消费者或多个生产者使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> BlockingQueue queue;</span><br><span class="line">   Producer(BlockingQueue q) &#123; queue = q; &#125;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="keyword">while</span> (<span class="keyword">true</span>) &#123; queue.put(produce()); &#125;</span><br><span class="line">     &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123; ... handle ...&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="function">Object <span class="title">produce</span><span class="params">()</span> </span>&#123; ... &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> BlockingQueue queue;</span><br><span class="line">   Consumer(BlockingQueue q) &#123; queue = q; &#125;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="keyword">while</span> (<span class="keyword">true</span>) &#123; consume(queue.take()); &#125;</span><br><span class="line">     &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123; ... handle ...&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">consume</span><span class="params">(Object x)</span> </span>&#123; ... &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Setup</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     BlockingQueue q = <span class="keyword">new</span> SomeQueueImplementation();</span><br><span class="line">     Producer p = <span class="keyword">new</span> Producer(q);</span><br><span class="line">     Consumer c1 = <span class="keyword">new</span> Consumer(q);</span><br><span class="line">     Consumer c2 = <span class="keyword">new</span> Consumer(q);</span><br><span class="line">     <span class="keyword">new</span> Thread(p).start();</span><br><span class="line">     <span class="keyword">new</span> Thread(c1).start();</span><br><span class="line">     <span class="keyword">new</span> Thread(c2).start();</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>内存一致性：一个线程将一个对象放入队列，happen-before 于另一个线程对这个对象的访问或删除操作(也就是，一个线程放入的对象，对其他线程是可见的)。</p>
+<p>这个接口是 java 集合框架的一员。</p>
+<h3 id="方法概览"><a href="#方法概览" class="headerlink" title="方法概览"></a>方法概览</h3><h4 id="add"><a href="#add" class="headerlink" title="add"></a>add</h4><blockquote>
+<p><strong><code>boolean add(E e)</code></strong></p>
+</blockquote>
+<p>在不违反容量限制的情况下，如果可能则立即插入一个指定的元素到队列，如果成功则返回 true，如果当前队列没有可用的空间，则抛出 IllegalStateException 异常。当使用有界队列时，更推荐使用 offer() 方法。</p>
+<h4 id="offer"><a href="#offer" class="headerlink" title="offer"></a>offer</h4><blockquote>
+<p><strong><code>boolean offer(E e)</code></strong></p>
+</blockquote>
+<p>在不违反容量限制的情况下，如果可能则立即插入一个指定的元素到队列，如果成功则返回 true，如果当前队列没有可用空间，则返回 false。当使用有界队列时，这个方法通常比 add() 方法更合适，因为后者只能通过抛出异常来表示插入失败。</p>
+<h4 id="put"><a href="#put" class="headerlink" title="put"></a>put</h4><blockquote>
+<p><strong><code>void put(E e) throws InterruptedException</code></strong></p>
+</blockquote>
+<p>插入指定的元素到队列，如果当前没有可用的空间，则等待。</p>
+<h4 id="offer-1"><a href="#offer-1" class="headerlink" title="offer"></a>offer</h4><blockquote>
+<p><strong><code>boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException</code></strong></p>
+</blockquote>
+<p>插入指定的元素到队列，如果当前没有可用的空间，则等待指定时间。</p>
+<h4 id="take"><a href="#take" class="headerlink" title="take"></a>take</h4><blockquote>
+<p><strong><code>E take() throws InterruptedException</code></strong></p>
+</blockquote>
+<p>检索并移除队列的头元素，当没有元素可用时，则等待。</p>
+<h4 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h4><blockquote>
+<p><strong><code>E poll(long timeout, TimeUnit unit) throws InterruptedException</code></strong></p>
+</blockquote>
+<p>检索并移除队列的头元素，当没有元素可用时，则等待指定的时间。</p>
+<h4 id="remainingCapacity"><a href="#remainingCapacity" class="headerlink" title="remainingCapacity"></a>remainingCapacity</h4><blockquote>
+<p><strong><code>int remainingCapacity()</code></strong></p>
+</blockquote>
+<p>返回此队列在理想情况下(在没有内存或资源限制的情况下)，还可以不阻塞的接受元素的数量。如果是无界队列，则返回 Integer.MAX_VALUE。</p>
+<p>请注意，您无法始终通过检查剩余容量来判断插入元素的尝试是否会成功，因为可能是另一个线程即将插入或删除元素的情况。</p>
+<h4 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h4><blockquote>
+<p><strong><code>boolean remove(Object o)</code></strong></p>
+</blockquote>
+<p>移除队列中指定的元素实例，如果存在。更正式的说，删除队列中包含的一个或多个符合元素 e，其符合 o.equals(e)。如果队列包含指定的元素，则返回 true(或者等效的来说，队列由于调用而发生改变)。</p>
+<h4 id="contains"><a href="#contains" class="headerlink" title="contains"></a>contains</h4><blockquote>
+<p><strong><code>boolean contains(Object o)</code></strong></p>
+</blockquote>
+<p>如果队列包含指定的元素，则返回 true。更正式的说，当且仅当队列包含至少一个元素 e 满足 o.equals(e)时，则返回 true。</p>
+<h4 id="drainTo"><a href="#drainTo" class="headerlink" title="drainTo"></a>drainTo</h4><blockquote>
+<p><strong><code>int drainTo(Collection&lt;? super E&gt; c)</code></strong></p>
+</blockquote>
+<p>从此队列中删除所有可用的元素，并将它们添加到给定的集合中。与重复轮询此队列相比，此操作可能更有效。尝试将元素添加到集合 c 时遇到故障，可能会导致在引发关联异常时元素既不在两个集合中，又不在两个集合中。尝试将队列转移到自身会导致 IllegalArgumentException 异常。 此外，如果在操作进行过程中修改了指定的集合，则此操作的行为是不确定的。</p>
+<p>返回：传输的元素数量</p>
+<h4 id="drainTo-1"><a href="#drainTo-1" class="headerlink" title="drainTo"></a>drainTo</h4><blockquote>
+<p><strong><code>int drainTo(Collection&lt;? super E&gt; c, int maxElements)</code></strong></p>
+</blockquote>
+<p>从此队列中最多删除给定数量的可用元素，并将它们添加到给定的集合中。其他行为与 <code>int drainTo(Collection&lt;? super E&gt; c)</code> 相同。</p>
+<p>返回：传输的元素数量</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/文档翻译/" rel="tag"># 文档翻译</a>
+          
+            <a href="/tags/并发/" rel="tag"># 并发</a>
+          
+            <a href="/tags/队列/" rel="tag"># 队列</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/24/concurrent/Queue文档翻译/" rel="next" title="Queue文档翻译">
+                <i class="fa fa-chevron-left"></i> Queue文档翻译
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#接口概述"><span class="nav-number">1.</span> <span class="nav-text">接口概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法概览"><span class="nav-number">2.</span> <span class="nav-text">方法概览</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#add"><span class="nav-number">2.1.</span> <span class="nav-text">add</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#offer"><span class="nav-number">2.2.</span> <span class="nav-text">offer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#put"><span class="nav-number">2.3.</span> <span class="nav-text">put</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#offer-1"><span class="nav-number">2.4.</span> <span class="nav-text">offer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#take"><span class="nav-number">2.5.</span> <span class="nav-text">take</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#poll"><span class="nav-number">2.6.</span> <span class="nav-text">poll</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#remainingCapacity"><span class="nav-number">2.7.</span> <span class="nav-text">remainingCapacity</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#remove"><span class="nav-number">2.8.</span> <span class="nav-text">remove</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#contains"><span class="nav-number">2.9.</span> <span class="nav-text">contains</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#drainTo"><span class="nav-number">2.10.</span> <span class="nav-text">drainTo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#drainTo-1"><span class="nav-number">2.11.</span> <span class="nav-text">drainTo</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -88,7 +88,12 @@
 <meta property="og:description" content="极客大学算法训练营笔记。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/head.jpg">
-<meta property="og:updated_time" content="2021-03-03T11:46:57.243Z">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/trie.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/trie_in_node.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/disjoint_set_1.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/disjoint_set_2.png">
+<meta property="og:image" content="http://blog.intersico.com/2020/09/09/algorithm/算法笔记/disjoint_set_3.png">
+<meta property="og:updated_time" content="2021-03-26T12:49:33.298Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法笔记">
 <meta name="twitter:description" content="极客大学算法训练营笔记。">
@@ -407,7 +412,52 @@
 <p><strong>模板</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">left = <span class="number">0</span>, right = len(array) - <span class="number">1</span></span><br><span class="line"><span class="keyword">while</span> left &lt;= right: //有的情况下，只是 &lt;</span><br><span class="line">    mid = (left + right) / <span class="number">2</span></span><br><span class="line">    <span class="keyword">if</span> array[mid] == target:</span><br><span class="line">        // find the target!!</span><br><span class="line">        <span class="keyword">break</span> <span class="keyword">or</span> <span class="keyword">return</span> result</span><br><span class="line">    <span class="keyword">elif</span> array[mid] &lt; target:</span><br><span class="line">        left = mid + <span class="number">1</span> //在 int 的情况下，+ - <span class="number">1</span>，如果是实数，直接 = mid 就行</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        right = mid - <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h3>
+<h3 id="字典树-Trie"><a href="#字典树-Trie" class="headerlink" title="字典树(Trie)"></a>字典树(Trie)</h3><p>字典树，即 Trie 树，又称单词查找树或键树，是一种树形结构。典型应用是用于统计和排序大量的字符串(但不仅限于字符串)，所以经常被搜索引擎系统用于文本词频统计。</p>
+<p>优点：最大限度地减少所谓的字符串比较，查询效率比哈希表高。</p>
+<img src="/2020/09/09/algorithm/算法笔记/trie.png">
+
+<p>其中结点下的数字，表示统计的词频(根据这个词频，可以做一些推荐)。结点还可以存一些其他的数据。</p>
+<p><strong>基本性质</strong></p>
+<ol>
+<li>结点本身不存完整单词</li>
+<li>从根结点到某一结点，路径上经过的字符连接起来，为该节点对应的字符串</li>
+<li>每个结点的所有子结点路径代表的字符都不相同。</li>
+</ol>
+<img src="/2020/09/09/algorithm/算法笔记/trie_in_node.png">
+
+<p><strong>核心思想</strong></p>
+<ol>
+<li>Trie 树的核心思想是空间换时间</li>
+<li>利用字符串的公共前缀，来降低查询时间的开销，以达到提高效率的目的</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Trie</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Trie[] tries;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    Trie() &#123;</span><br><span class="line">        tries = <span class="keyword">new</span> Trie[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insert</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        Trie trie = find(word, <span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">assert</span> trie != <span class="keyword">null</span>;</span><br><span class="line">        trie.isEnd = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">search</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        Trie trie = find(word, <span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span> != trie &amp;&amp; trie.isEnd;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">startsWith</span><span class="params">(String prefix)</span> </span>&#123;</span><br><span class="line">        Trie trie = find(prefix, <span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span> != trie;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Trie <span class="title">find</span><span class="params">(String word, <span class="keyword">boolean</span> insert)</span> </span>&#123;</span><br><span class="line">        Trie curr = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">char</span> ch : word.toCharArray()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">null</span> == curr.tries[ch - <span class="string">'a'</span>])</span><br><span class="line">                <span class="keyword">if</span> (insert) curr.tries[ch - <span class="string">'a'</span>] = <span class="keyword">new</span> Trie();</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            curr = curr.tries[ch - <span class="string">'a'</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> curr;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="并查集-Disjoint-Set"><a href="#并查集-Disjoint-Set" class="headerlink" title="并查集(Disjoint Set)"></a>并查集(Disjoint Set)</h3><p>适用场景：组团、配对。当你需要很快的判断，两个个体是不是在一个集合当中的时候，或判断两个群组是不是一个群组，以及快速地合并群组。</p>
+<p>基本操作：</p>
+<ol>
+<li>makeSet(s): 建立一个新的并查集，其中包含 s 个单元素集合。</li>
+<li>unionSet(x,y): 把元素 x 和元素 y 所在的集合合并，要求 x 和 y 所在的集合不想交，如果相交则不合并。</li>
+<li>find(x): 找到元素 x 所在的集合的代表，该操作也可以用于判断两个元素是否位于同一集合，只要将他们各自的代表比较一下就可以了。</li>
+</ol>
+<p>逻辑：</p>
+<ol>
+<li>先把每个人都初始化一个自己独有的圈子。</li>
+</ol>
+<img src="/2020/09/09/algorithm/算法笔记/disjoint_set_1.png">
+
+<ol start="2">
+<li>然后对圈子进行合并。</li>
+</ol>
+<img src="/2020/09/09/algorithm/算法笔记/disjoint_set_2.png">
+
+<ol start="3">
+<li>查找是否属于一个圈子，只要找对应的根结点是不是一样就行了(因为同一个圈子都是一个根节点)。在查找期间，还可以做路径压缩，提升性能。</li>
+</ol>
+<img src="/2020/09/09/algorithm/算法笔记/disjoint_set_3.png">
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 并查集</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DisjointSet</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] parent;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> counter;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DisjointSet</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        parent = <span class="keyword">new</span> <span class="keyword">int</span>[counter = n];</span><br><span class="line"></span><br><span class="line">        <span class="comment">//固定写法，一开始每个人就是一个独立的圈子。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            parent[i] = i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> pos)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//最终判断是否到根结点的条件，就是下标和值相同，毕竟也是这么初始化的。</span></span><br><span class="line">        <span class="keyword">while</span> (pos != parent[pos]) &#123;</span><br><span class="line">            <span class="comment">//这句话，其实在做一个路径压缩，而且是每次一小步。</span></span><br><span class="line">            <span class="comment">//路径压缩的最终效果应该是，每个成员结点的值是根结点。</span></span><br><span class="line">            <span class="comment">//而这里，是每次做 find 的时候，压缩成父节点，如果 find 调用次数多了，自然最终会压到根结点。</span></span><br><span class="line">            <span class="comment">//当然，也可以这个 while 先不压缩，只找出根结点。然后在写一个 while，一次性压缩到根结点。</span></span><br><span class="line">            parent[pos] = parent[parent[pos]];</span><br><span class="line">            pos = parent[pos];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pos;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">union</span><span class="params">(<span class="keyword">int</span> p, <span class="keyword">int</span> q)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> p_head_pos = find(p);</span><br><span class="line">        <span class="keyword">int</span> q_head_pos = find(q);</span><br><span class="line">        <span class="comment">//如果根结点相同，则说明是一个圈子的</span></span><br><span class="line">        <span class="keyword">if</span> (p_head_pos == q_head_pos) <span class="keyword">return</span>;</span><br><span class="line">        <span class="comment">//否则，就把一个根结点的值，设置为另一个根结点，表示融合。</span></span><br><span class="line">        parent[q_head_pos] = p_head_pos;</span><br><span class="line">        <span class="comment">//合并一个圈子，就减少一个计数。最终这个 counter 就是还有多少个独立的圈子。</span></span><br><span class="line">        counter--;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
       
     </div>
     
@@ -528,7 +578,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -539,7 +589,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -550,7 +600,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -584,7 +634,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉树"><span class="nav-number">1.</span> <span class="nav-text">二叉树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#二叉搜索树-BST"><span class="nav-number">1.1.</span> <span class="nav-text">二叉搜索树(BST)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遍历模板"><span class="nav-number">1.2.</span> <span class="nav-text">遍历模板</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BFS-amp-DFS"><span class="nav-number">2.</span> <span class="nav-text">BFS&amp;DFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#贪心算法-Greedy"><span class="nav-number">3.</span> <span class="nav-text">贪心算法(Greedy)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二分查找"><span class="nav-number">4.</span> <span class="nav-text">二分查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态规划"><span class="nav-number">5.</span> <span class="nav-text">动态规划</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉树"><span class="nav-number">1.</span> <span class="nav-text">二叉树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#二叉搜索树-BST"><span class="nav-number">1.1.</span> <span class="nav-text">二叉搜索树(BST)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遍历模板"><span class="nav-number">1.2.</span> <span class="nav-text">遍历模板</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BFS-amp-DFS"><span class="nav-number">2.</span> <span class="nav-text">BFS&amp;DFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#贪心算法-Greedy"><span class="nav-number">3.</span> <span class="nav-text">贪心算法(Greedy)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二分查找"><span class="nav-number">4.</span> <span class="nav-text">二分查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字典树-Trie"><span class="nav-number">5.</span> <span class="nav-text">字典树(Trie)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并查集-Disjoint-Set"><span class="nav-number">6.</span> <span class="nav-text">并查集(Disjoint Set)</span></a></li></ol></div>
             
 
           </div>
