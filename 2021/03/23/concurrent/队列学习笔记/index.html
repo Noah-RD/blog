@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="队列,J.U.C,源码,">
+  <meta name="keywords" content="源码,J.U.C,队列,">
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="JDK 队列工具类学习">
-<meta name="keywords" content="队列,J.U.C,源码">
+<meta name="keywords" content="源码,J.U.C,队列">
 <meta property="og:type" content="article">
 <meta property="og:title" content="队列学习笔记">
 <meta property="og:url" content="http://blog.intersico.com/2021/03/23/concurrent/队列学习笔记/index.html">
@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog.intersico.com/2021/03/23/concurrent/队列学习笔记/head.jpg">
 <meta property="og:image" content="http://blog.intersico.com/2021/03/23/concurrent/队列学习笔记/lookover.png">
-<meta property="og:updated_time" content="2021-03-23T07:59:49.931Z">
+<meta property="og:updated_time" content="2021-04-07T08:52:16.102Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="队列学习笔记">
 <meta name="twitter:description" content="JDK 队列工具类学习">
@@ -357,7 +357,23 @@
 
 <p>从图中可以看出，所有的队列类都实现自 <code>Queue</code> 接口，其提供了两类功能的操作：<strong>抛出异常</strong>与<strong>返回默认值</strong>。队列分为<strong>阻塞队列</strong>与<strong>非阻塞队列</strong>，其中阻塞队列的阻塞功能，全部由 <code>BlockingQueue</code> 接口提供，从实现类的名字也可区分出，大部分阻塞队列都包含 <code>BlockingQueue</code> 后缀。</p>
 <p><code>AbstractQueue</code> 抽象类，提供了一些最基础的默认实现。队列除了有阻塞与非阻塞之分，还有<strong>有界队列</strong>与<strong>无界队列</strong>之分。</p>
-<p>TODO() 。。。。</p>
+<p><strong>无界阻塞</strong></p>
+<ul>
+<li>LinkedBlockingQueue(界限可选,线程安全)</li>
+<li>priorityBlockingQueue(线程安全)</li>
+<li>SynchronousQueue(线程安全)</li>
+<li>DaleyQueue(线程安全)</li>
+</ul>
+<p><strong>无界非阻塞</strong></p>
+<ul>
+<li>priorityQueue(非线程安全)</li>
+<li>concurrentLinkedQueue(线程安全)</li>
+</ul>
+<p><strong>有界阻塞</strong></p>
+<ul>
+<li>ArrayBlockingQueue(线程安全)</li>
+<li>LinkedBlockingQueue(界限可选)</li>
+</ul>
 
       
     </div>
@@ -375,11 +391,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/队列/" rel="tag"># 队列</a>
+            <a href="/tags/源码/" rel="tag"># 源码</a>
           
             <a href="/tags/J-U-C/" rel="tag"># J.U.C</a>
           
-            <a href="/tags/源码/" rel="tag"># 源码</a>
+            <a href="/tags/队列/" rel="tag"># 队列</a>
           
         </div>
       
@@ -472,7 +488,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -494,7 +510,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

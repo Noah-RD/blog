@@ -88,7 +88,7 @@
 <meta property="og:description" content="文本为对 JAVA SE 8 java.util 包下 Interface Collection&amp;lt;E&amp;gt; 文档的翻译。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog.intersico.com/2021/03/23/collections/Collection文档翻译/head.jpg">
-<meta property="og:updated_time" content="2021-03-23T09:02:18.242Z">
+<meta property="og:updated_time" content="2021-03-30T11:11:26.495Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Collection文档翻译">
 <meta name="twitter:description" content="文本为对 JAVA SE 8 java.util 包下 Interface Collection&amp;lt;E&amp;gt; 文档的翻译。">
@@ -359,7 +359,7 @@
 <p>由每个集合决定自己的同步策略。在缺乏更强有力的实现保证的情况下，集合上的任何方法被另一个线程变异都可能导致调用未定义行为; 这包括直接调用，将集合传递给可能执行调用的方法，以及使用现有迭代器检查集合。</p>
 <p>集合框架接口中的许多方法都是根据 equals 方法定义的。例如，contains (Object o)方法的规范说: “返回 true，当且仅当这个集合至少包含一个元素 e 使得(o = = null？E = = null: o.equals (e))”这个规范不应该被解释为意味着使用非空参数 o 调用 Collection.contains 将导致对任何元素调用 o.equals (e)。实现可以自由地实现优化，从而避免对 equals 的调用，例如，首先比较两个元素的散列代码。(Object.hashCode ()规范保证两个具有不同哈希码的对象不能相等。)更一般地说，只要实现者认为合适，各种集合框架接口的实现都可以自由地利用基础 Object 方法的特定行为。</p>
 <p>对集合执行递归遍历的某些集合操作可能会失败，对于集合直接或间接包含本身的自引用实例可能会有例外。这包括 clone ()、 equals ()、 hashCode ()和 toString ()方法。实现可以选择性地处理自引用场景，但是大多数当前的实现不这样做。</p>
-<p>这个界面是 Java集合框架的一个成员。</p>
+<p>这个接口是 Java 集合框架的一个成员。</p>
 <p>实现要求: 默认的方法实现(继承的或其他的)不应用任何同步协议。如果 Collection 实现具有特定的同步协议，则它必须重写缺省实现以应用该协议。</p>
 <h3 id="方法概览"><a href="#方法概览" class="headerlink" title="方法概览"></a>方法概览</h3><h4 id="size"><a href="#size" class="headerlink" title="size"></a>size</h4><blockquote>
 <p><strong><code>int size()</code></strong></p>
@@ -556,7 +556,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -578,7 +578,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

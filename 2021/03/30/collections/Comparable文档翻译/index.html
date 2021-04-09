@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="文档翻译,集合,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="文本为对 JAVA SE 8 java.lang 包下 Interface Comparable&amp;lt;T&amp;gt; 文档的翻译。">
+<meta name="keywords" content="文档翻译,集合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Comparable文档翻译">
+<meta property="og:url" content="http://blog.intersico.com/2021/03/30/collections/Comparable文档翻译/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="文本为对 JAVA SE 8 java.lang 包下 Interface Comparable&amp;lt;T&amp;gt; 文档的翻译。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2021/03/30/collections/Comparable文档翻译/head.jpg">
+<meta property="og:updated_time" content="2021-03-30T11:13:36.951Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Comparable文档翻译">
+<meta name="twitter:description" content="文本为对 JAVA SE 8 java.lang 包下 Interface Comparable&amp;lt;T&amp;gt; 文档的翻译。">
+<meta name="twitter:image" content="http://blog.intersico.com/2021/03/30/collections/Comparable文档翻译/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2021/03/30/collections/Comparable文档翻译/">
+
+
+
+
+
+  <title>Comparable文档翻译 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2021/03/30/collections/Comparable文档翻译/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Comparable文档翻译</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-30T17:46:30+08:00">
+                2021-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/集合/" itemprop="url" rel="index">
+                    <span itemprop="name">集合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2021/03/30/collections/Comparable文档翻译/head.jpg">
+
+<p>文本为对 JAVA SE 8 <code>java.lang</code> 包下 <code>Interface Comparable&lt;T&gt;</code> 文档的翻译。</p>
+<a id="more"></a>
+
+<h3 id="接口概述"><a href="#接口概述" class="headerlink" title="接口概述"></a>接口概述</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Comparable</span>&lt;<span class="title">T</span>&gt;</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此接口对实现它的每个类的对象施加总顺序。这种排序称为类的自然排序，而类的 compareTo 方法称为其自然比较方法。</p>
+<p>实现此接口的对象所在的 <code>List</code>(和 <code>Array</code>)可以被 <code>Collections.sort</code>(和 <code>Arrays.sort</code>) 自动排序。当 <code>sorted map</code> 中的 <code>key</code> 或 <code>sorted set</code> 中的元素对象实现此接口后，则无需在指定提供一个比较器(<code>comparator</code>)。</p>
+<p>对于类 <code>C</code> 的每个 <code>e1</code> 和 <code>e2</code> 对象,当且仅当 <code>e1.compareTo(e2) ==0</code> 具有与 <code>e1.equals(e2)</code> 相同的布尔值时，我们才称类 <code>C</code> 的自然顺序与 <code>equals</code> 一致。请注意，<code>null</code> 不是任何类的实例，即使 <code>e.equals(null)</code> 方法返回 <code>false</code>，<code>e.compareTo(null)</code> 也应该抛出 <code>NullPointerException</code>。</p>
+<p>强烈建议(尽管不是必需的)使自然顺序与 <code>equals</code> 行为保持一致。这是因为当使用没有显示指定比较器的 <code>sorted sets</code> 或 <code>sorted maps</code> 时，如果其中的元素 或 <code>key</code> 的自然顺序与 <code>equals</code> 行为不一致时，会引发奇怪的表现。特别是当这样的 <code>sorted set</code>(或 <code>sorted map</code>) 违反了根据 <code>equals</code> 方法定义的 <code>set</code>(或<code>map</code>) 的一般约定。</p>
+<p>例如，如果将两个具有 <code>(!a.equals(b) &amp;&amp; a.compareTo(b) == 0)</code> 关系的对象，作为键放入没有指定显示比较器的 <code>sorted set</code> 时，在添加 <code>a</code> 后在添加 <code>b</code> 则返回 <code>false</code>(并且 <code>sorted set</code> 的大小不会改变)，因为从 <code>sorted set</code> 的角度看，<code>a</code> 和 <code>b</code> 是等价的。</p>
+<p>几乎所有实现 <code>Comparable</code> 的 <code>Java</code> 核心类都具有与 <code>equals</code> 一致的自然顺序。一个例外是 <code>java.math.BigDecimal</code> 类，其自然顺序等同于具有相同值和不同精度的 <code>BigDecimal</code> 对象(例如 4.0 和 4.00)。</p>
+<p>对于数学上倾向的，定义给定 <code>C</code> 类的自然序的关系是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;(x, y) such that x.compareTo(y) &lt;= 0&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总排序的商为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;(x, y) such that x.compareTo(y) == 0&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从 compareTo 的定义中可以立即得出，商是 C 上的等价关系，自然排序是 C 上的总排序。当我们说一个类的自然序与 equals 一致时，我们的意思是，自然排序的商是由类的 equals(Object) 方法定义的等价关系：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;(x, y) such that x.equals(y)&#125;.</span><br></pre></td></tr></table></figure>
+
+<p>这个接口是 Java 集合框架的一个成员。</p>
+<h3 id="方法概览"><a href="#方法概览" class="headerlink" title="方法概览"></a>方法概览</h3><h4 id="compareTo"><a href="#compareTo" class="headerlink" title="compareTo"></a>compareTo</h4><blockquote>
+<p><strong>int compareTo(T o)</strong></p>
+</blockquote>
+<p>将此对象与指定的对象进行比较。当此对象小于、等于或大于指定对象时，返回负整数、零或正整数。</p>
+<p>实现者必须确保所有 <code>x</code> 和 <code>y</code> 的<strong>自反性</strong>： <code>sgn(x.compareTo(y)) == -sgn(y.compareTo(x))</code>(这意味着 <code>x.compareTo(y)</code> 必须在 <code>y.compareTo(x)</code> 抛出异常时抛出异常。)</p>
+<p>实现者还必须确保关系的<strong>传递性</strong>：<code>(x.compareTo(y) &gt; 0 &amp;&amp; y.compareTo(z) &gt; 0)</code> 意味着 <code>x.compareTo(z) &gt; 0</code>。</p>
+<p>最后，实现者必须确保<strong>对等性</strong>：对于所有 <code>z</code>，<code>x.compareTo(y)==0</code> 意味着 <code>sgn(x.compareTo(z)) == sgn(y.compareTo(z))</code>。</p>
+<p>强烈建议，但不是严格要求 <code>(x.compareTo(y) == 0) == (x.equals(y))</code>。一般来说，任何实现可比较接口并违反此条件的类都应该清楚地指出这一事实。推荐的语言是 “注意：这个类有一个与 equals 不一致的自然顺序。”(Note: this class has a natural ordering that is inconsistent with equals.)</p>
+<p>在前面的描述中，符号 <code>sgn(表达式)</code> 指定数学符号函数，该函数被定义为根据表达式的值是负的、零的还是正的来返回 -1、0 或 1 中的一个。</p>
+<p>返回：负数(小于)、0(等于)、正数(大于)</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/文档翻译/" rel="tag"># 文档翻译</a>
+          
+            <a href="/tags/集合/" rel="tag"># 集合</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/30/concurrent/LinkedBlockingQueue/" rel="next" title="LinkedBlockingQueue">
+                <i class="fa fa-chevron-left"></i> LinkedBlockingQueue
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/03/31/collections/PriorityQueue/" rel="prev" title="PriorityQueue">
+                PriorityQueue <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#接口概述"><span class="nav-number">1.</span> <span class="nav-text">接口概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法概览"><span class="nav-number">2.</span> <span class="nav-text">方法概览</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#compareTo"><span class="nav-number">2.1.</span> <span class="nav-text">compareTo</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

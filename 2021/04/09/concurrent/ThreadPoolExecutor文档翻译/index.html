@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="文档翻译,并发,线程池,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="文本为对 JAVA SE 8 J.U.C 包下 ThreadPoolExecutor 文档的翻译。">
+<meta name="keywords" content="文档翻译,并发,线程池">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadPoolExecutor文档翻译">
+<meta property="og:url" content="http://blog.intersico.com/2021/04/09/concurrent/ThreadPoolExecutor文档翻译/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="文本为对 JAVA SE 8 J.U.C 包下 ThreadPoolExecutor 文档的翻译。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2021/04/09/concurrent/ThreadPoolExecutor文档翻译/head.jpg">
+<meta property="og:updated_time" content="2021-04-09T10:44:54.248Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ThreadPoolExecutor文档翻译">
+<meta name="twitter:description" content="文本为对 JAVA SE 8 J.U.C 包下 ThreadPoolExecutor 文档的翻译。">
+<meta name="twitter:image" content="http://blog.intersico.com/2021/04/09/concurrent/ThreadPoolExecutor文档翻译/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2021/04/09/concurrent/ThreadPoolExecutor文档翻译/">
+
+
+
+
+
+  <title>ThreadPoolExecutor文档翻译 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2021/04/09/concurrent/ThreadPoolExecutor文档翻译/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ThreadPoolExecutor文档翻译</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-09T13:51:09+08:00">
+                2021-04-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2021/04/09/concurrent/ThreadPoolExecutor文档翻译/head.jpg">
+
+<p>文本为对 JAVA SE 8 <code>J.U.C</code> 包下 <code>ThreadPoolExecutor</code> 文档的翻译。</p>
+<a id="more"></a>
+
+<h3 id="接口概述"><a href="#接口概述" class="headerlink" title="接口概述"></a>接口概述</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadPoolExecutor</span> <span class="keyword">extends</span> <span class="title">AbstractExecutorService</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ExecutorService</code> 的一个实现，其使用可能的几个池线程之一执行每个提交的任务，通常使用 <code>Executors</code> 工厂方法进行配置。</p>
+<p>线程池解决了两个不同的问题：它们通常在执行大量异步任务时提供更好的性能，这是由于减少了每个任务的调用开销，并且它们提供了一种方法，用于绑定和管理执行任务集合时消耗的资源(包括线程)。每一个 <code>ThreadPoolExecutor</code> 也包含一些基本的统计方法，比如完成任务的数量。</p>
+<p>为了在广泛的上下文中使用，这个类提供了许多可调整的参数和可扩展性的挂钩函数。然后，还是推荐程序员使用更方便的 <code>Executors</code> 工厂类方法来创建不同场景使用的线程池，比如：<code>Executors.newCachedThreadPool()</code> 一个具有自动回收线程功能的无界线程池。<code>Executors.newFixedThreadPool(int)</code> 一个容量固定的线程池。<code>Executors.newSingleThreadExecutor()</code> 一个单线程的线程池。这些工厂方法为最常见的使用场景做了预置配置。否则，如果想手动配置与调整此类时，请遵循以下指导：</p>
+<p><strong>核心线程数与最大线程数</strong></p>
+<p><code>ThreadPoolExecutor</code> 将根据 <code>corePoolSize</code>(见 <code>getCorePoolSize()</code>) 的大小与 <code>maximumPoolSize</code>(见 <code>getMaximumPoolSize()</code>) 的大小自动调整线程池的大小(见 <code>getPoolSize()</code>)。当一个新的任务通过 <code>execute(Runnable)</code> 方法提交时，如果当前线程池的线程数量少于 <code>corePoolSize</code>，则一个新的线程会被创建用来接收请求，及时其他的工作线程处于空闲状态。如果当前线程数比 <code>corePoolSize</code> 多，但少于 <code>maximumPoolSize</code>，只有当队列满了之后，才会创建新的线程。当设置相同的值给 <code>corePoolSize</code> 与 <code>maximumPoolSize</code> 时，便创建了一个固定大小的线程池。如果将 <code>maximumPoolSize</code> 设置到一个最大值，比如 <code>Integer.MAX_VALUE</code>，那么将允许线程池容纳任意数量的并发任务。大部分情况下，核心线程数和最大线程数仅由构造函数来设置，但是也可以通过 <code>setCorePoolSize(int)</code> 与 <code>setMaximumPoolSize(int)</code> 来动态的修改。</p>
+<p><strong>按需构造</strong></p>
+<p>默认的，即使是核心线程，也只是在新任务到达时才开始创建和启动，但是可以使用 <code>prestartCoreThread()</code> 和 <code>prestartAllCoreThreads()</code> 方法动态重写这一机制。你可能想预启动一些线程，当初始的任务队列不为空时。</p>
+<p><strong>创建线程线程</strong></p>
+<p>线程池中，使用 <code>ThreadFactory</code> 创建新的线程，如果没有指定额外的实现，则会使用 <code>Executors.defaultThreadFactory()</code> 默认工厂方法，其创建的所有线程都具有相同的线程组、<code>NORM_PRIORITY</code> 优先级与非守护线程的状态。如果你想改变创建的线程的相关属性，则提供自己的 <code>ThreadFactory</code> 即可。当线程池通过 <code>newThread</code> 方法创建新线程时，但是由于 <code>ThreadFactory</code> 创建失败而返回 <code>null</code> 时，线程池会继续运行，但是可能会无法在运行任何任务了。线程应该具有 “modifyThread” 运行时权限，如果工作线程或其他线程，在使用线程池的过程中没有此权限时，可能会造成服务降级：配置的更改可能不会及时生效，并且关闭线程池后可能仍处于可能终止但尚未终止的状态。</p>
+<p><strong>存活时间</strong></p>
+<p>如果当前线程池中的线程数量比 <code>corePoolSize</code> 多，超出 <code>corePoolSize</code> 的线程如果处于空闲状态，并且也超过了 <code>keepAliveTime</code>(见 <code>getKeepAliveTime(TimeUnit)</code>) 时间，则会被终止掉。这提供了一种在线程池使用率不高时减少资源消耗的方法。如果稍后线程池的使用率提高，会在构建新的线程。<code>keepAliveTime</code> 参数也可以使用 <code>setKeepAliveTime(long, TimeUnit)</code> 来动态调整。如果参数使用 <code>(Long.MAX_VALUE, TimeUnit.NANOSECONDS)</code> 则在线程池关闭前，不会过期掉任何空闲线程。默认的，<code>keep-alive</code> 存活时间策略不对核心线程生效，只对超过核心线程的线程使用。但是也可以使用方法 <code>allowCoreThreadTimeOut(boolean)</code> 对核心线程进行存活时间的控制，只要 <code>keepAliveTime</code> 值不为 <code>0</code>。</p>
+<p><strong>任务队列</strong></p>
+<p>任何阻塞队列(<code>BlockingQueue</code>)都可能传递并持有提交的任务。此队列的使用与池大小调整的交互如下：</p>
+<ul>
+<li>如果当前池中的线程数量少于 <code>corePoolSize</code>，则线程池会创建新的线程来执行任务，而不是把任务加入队列。</li>
+<li>如果当前池中的线程数量超过(大于等于) <code>corePoolSize</code>，则线程池会将新任务放入队列，而不是创建线程。</li>
+<li>如果当前池中的线程数量超过(大于等于) <code>corePoolSize</code>，并且任务无法被加入队列(可能队列已经满了)，则在线程数量不超过 <code>maximumPoolSize</code> 时创建新线程，否则任务将会被拒绝掉。</li>
+</ul>
+<p>通常有三种排队策略：</p>
+<ol>
+<li>直接运行(Direct handoffs)。对于工作队列，一个很好的默认选择是 <code>SynchronousQueue</code>，它将任务交给线程，而不以其他方式持有它们。当有一个任务提交时，如果当前没有可用的线程可以立即执行任务，则将任务放入队列会失败，然后一个新的线程会被创建。此策略可避免在处理可能具有内部依赖关系的请求集时发生锁定。直接运行策略，通常需要最大值的 <code>maximumPoolSizes</code> 来避免拒绝任务的提交。但这也会造成，当任务提交速度大于平均处理任务速度时，线程无限增长的可能。</li>
+<li>无界队列。使用一个无界队列(例如不指定容量的 <code>LinkedBlockingQueue</code>)，可以在当 <code>corePoolSize</code> 的核心线程都在忙时，将所有待执行任务加入队列进行等待。因此，不会有超过 <code>corePoolSize</code> 的线程被创建(因此 <code>maximumPoolSize</code> 参数也没有任何用了)。这种情况适合于队列中的每个任务都独立运行的，而不会相互影响的情况，例如网页服务器。使用无界队列在处理瞬间突发请求时非常有用，但可能会造成，当任务的提交速度比任务的处理速度快时，队列可能会无限增长。</li>
+<li>有界队列。使用一个有界队列(例如 <code>ArrayBlockingQueue</code>)，当与有限的 <code>MaximumPoolSize</code> 一起使用时，可以有助于防止资源耗尽，但是可能更难调整与控制。队列大小和最大池大小应该相互折衷：使用大队列和小池可最大程度地减少 CPU 使用率，操作系统资源和上下文切换开销，但可能导致人为地降低吞吐量。如果任务频繁阻塞(例如它们是 I/O 绑定的)，系统可能能够为更多的线程安排时间，而不是您允许的时间(a system may be able to schedule time for more threads than you otherwise allow.)。使用小队列通常需要更大的池大小，这使得 cpu 更繁忙，但可能会遇到不可接受的调度开销，这也会降低吞吐量。</li>
+</ol>
+<p><strong>任务拒绝策略</strong></p>
+<p>当一个新的任务使用 <code>execute(Runnable)</code> 方法提交时，可能会因为两种情况而被拒绝：线程池已经关闭了，或线程池具有最大线程数量限制，并且使用有界的任务队列，并且队列也满了。在这两种情况下，线程池会调用 <code>RejectedExecutionHandler.rejectedExecution(Runnable, ThreadPoolExecutor)</code> 方法来决绝任务。其预定义了四种决绝策略：</p>
+<ol>
+<li><code>ThreadPoolExecutor.AbortPolicy</code>。默认的拒绝策略，将会抛出一个 <code>RejectedExecutionException</code> 运行时异常来拒绝任务。</li>
+<li><code>ThreadPoolExecutor.CallerRunsPolicy</code>。由提交任务的线程自己来执行。这提供了一种简单的反馈控制机制，该机制将减慢新任务的提交速度。</li>
+<li><code>ThreadPoolExecutor.DiscardPolicy</code>。直接丢弃被拒绝的任务。</li>
+<li><code>ThreadPoolExecutor.DiscardOldestPolicy</code>。如果线程池没有关闭的话，则队列头部的任务将会被废弃掉，然后再次尝试提交任务(如果再次提交失败，则继续重复这一逻辑)</li>
+</ol>
+<p>可以使用自定义的 RejectedExecutionHandler 类。这样做需要特别小心，尤其是当策略设计为仅在特定容量或排队策略下工作时。</p>
+<p><strong>钩子方法</strong></p>
+<p>此类提供了两个可被重载的保护方法 <code>beforeExecute(Thread, Runnable)</code> 和 <code>afterExecute(Runnable, Throwable)</code> 来在任务执行的前后，自定义一些事情。其可以用来操纵执行环境，比如例如，重新初始化 <code>ThreadLocals</code>、收集统计信息或添加日志信息等。另外，一旦执行程序完全终止，可以重写方法 <code>terminate()</code> 来执行需要执行的任何特殊处理。</p>
+<p>如果钩子或回调方法引发异常，内部工作线程可能进而失败并突然终止。</p>
+<p><strong>任务队列维护</strong></p>
+<p><code>getQueue()</code> 方法可以访问当前的工作队列，一般用于监视和调试目的，除了这两个目的以外的任何使用目的，都是强烈不推荐的。当取消大量排队的任务时，可以使用提供的两个方法 <code>remove(Runnable)</code> 和 <code>purge()</code> 来辅助存储回收。</p>
+<p><strong>清理</strong></p>
+<p>程序中不再引用且没有剩余线程的池将自动关闭。如果即使在用户忘记调用 shutdown() 的情况下仍要确保收回未引用的池，则你必须通过设置适当的存活时间、零核心线程数这个最低值，和/或设置 <code>allowCoreThreadTimeOut(boolean)</code> 来管理未使用的线程最终会被终止。</p>
+<p><strong>例子</strong>。大多数扩展了 <code>ThreadPoolExecutor</code> 的子类，都会重写其中一个或多个的钩子方法。比如，以下示例子类添加了一个简单的暂停/恢复功能。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PausableThreadPoolExecutor</span> <span class="keyword">extends</span> <span class="title">ThreadPoolExecutor</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> isPaused;</span><br><span class="line">  <span class="keyword">private</span> ReentrantLock pauseLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">  <span class="keyword">private</span> Condition unpaused = pauseLock.newCondition();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">PausableThreadPoolExecutor</span><span class="params">(...)</span> </span>&#123; <span class="keyword">super</span>(...); &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeExecute</span><span class="params">(Thread t, Runnable r)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.beforeExecute(t, r);</span><br><span class="line">    pauseLock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">while</span> (isPaused) unpaused.await();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">      t.interrupt();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      pauseLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pause</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    pauseLock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      isPaused = <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      pauseLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">resume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    pauseLock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      isPaused = <span class="keyword">false</span>;</span><br><span class="line">      unpaused.signalAll();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      pauseLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><blockquote>
+<p><strong>ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<runnable> workQueue)</runnable></strong></p>
+</blockquote>
+<p>使用给定的初始化参数、默认的线程工厂、默认的拒绝策略来创建一个新的 <code>ThreadPoolExecutor</code>。使用 <code>Executors</code> 工厂方法的其中之一来代替使用这个通用的构造函数，通常更加方便。</p>
+<p>参数：见最后一个构造函数的说明</p>
+<blockquote>
+<p><strong>ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<runnable> workQueue, RejectedExecutionHandler handler)</runnable></strong></p>
+</blockquote>
+<p>使用给定的初始化参数、默认的拒绝策略来创建一个新的 <code>ThreadPoolExecutor</code>。</p>
+<p>参数：见最后一个构造函数的说明</p>
+<blockquote>
+<p><strong>ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<runnable> workQueue, ThreadFactory threadFactory)</runnable></strong></p>
+</blockquote>
+<p>使用给定的初始化参数、默认的线程工厂来创建一个新的 <code>ThreadPoolExecutor</code>。</p>
+<p>参数：见最后一个构造函数的说明</p>
+<blockquote>
+<p><strong>ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler)</runnable></strong></p>
+</blockquote>
+<p>使用给定的初始化参数来创建一个新的 <code>ThreadPoolExecutor</code>。</p>
+<p><strong>参数：</strong></p>
+<p>corePoolSize - 线程池中保持的线程数(即使线程是空闲的，除非设置了 <code>allowCoreThreadTimeOut</code>)</p>
+<p>maximumPoolSize - 线程池中允许的最大线程数量</p>
+<p>keepAliveTime - 当线程池中的线程数量超过 <code>corePoolSize</code> 时，所有超出部分线程的等待新任务时的最大存活时间</p>
+<p>unit - <code>keepAliveTime</code> 参数的时间格式</p>
+<p>workQueue - 用来保存待执行任务的队列。只有当任务以 <code>execute</code> 方法提交的时候，才会保存任务到队列</p>
+<p>threadFactory - 用于当线程池创建新线程时</p>
+<p>handler - 用于处理当线程数已饱和，并且任务队列也满了的时候，如果处理提交被拒绝的任务</p>
+<p><strong>异常</strong></p>
+<p>IllegalArgumentException - 当发生以下情况时抛出</p>
+<ul>
+<li>corePoolSize &lt; 0</li>
+<li>keepAliveTime &lt; 0</li>
+<li>maximumPoolSize &lt;= 0</li>
+<li>maximumPoolSize &lt; corePoolSize</li>
+</ul>
+<p>NullPointerException - 如果 <code>workQueue</code> 或 <code>threadFactory</code> 或 <code>handler</code> 为空时抛出</p>
+<h3 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h3><h4 id="ThreadPoolExecutor-AbortPolicy"><a href="#ThreadPoolExecutor-AbortPolicy" class="headerlink" title="ThreadPoolExecutor.AbortPolicy"></a>ThreadPoolExecutor.AbortPolicy</h4><p>抛出 <code>RejectedExecutionException</code> 异常以拒绝任务。</p>
+<h4 id="ThreadPoolExecutor-CallerRunsPolicy"><a href="#ThreadPoolExecutor-CallerRunsPolicy" class="headerlink" title="ThreadPoolExecutor.CallerRunsPolicy"></a>ThreadPoolExecutor.CallerRunsPolicy</h4><p>直接在调用线程中运行被拒绝的任务，如果线程池已被关闭，则任务被废弃。</p>
+<h4 id="ThreadPoolExecutor-DiscardOldestPolicy"><a href="#ThreadPoolExecutor-DiscardOldestPolicy" class="headerlink" title="ThreadPoolExecutor.DiscardOldestPolicy"></a>ThreadPoolExecutor.DiscardOldestPolicy</h4><p>废弃任务队列中最开始的任务，然后重新尝试提交新任务。如果线程池已被关闭，则新任务被废弃。</p>
+<h4 id="ThreadPoolExecutor-DiscardPolicy"><a href="#ThreadPoolExecutor-DiscardPolicy" class="headerlink" title="ThreadPoolExecutor.DiscardPolicy"></a>ThreadPoolExecutor.DiscardPolicy</h4><p>寂寞的废弃被拒绝的任务。</p>
+<h3 id="方法概览"><a href="#方法概览" class="headerlink" title="方法概览"></a>方法概览</h3><h4 id="execute"><a href="#execute" class="headerlink" title="execute"></a>execute</h4><blockquote>
+<p><strong>public void execute(Runnable command)</strong></p>
+</blockquote>
+<p>在未来的某个时候执行给定的任务。任务可能被新的线程执行也可能是线程池中的某个线程。如果任务是因为线程池关闭，或内部容量已饱和，而未能提交成功，则该任务会被 <code>RejectedExecutionHandler</code> 处理。</p>
+<p><strong>参数：</strong></p>
+<p>command - 待执行任务</p>
+<p><strong>异常：</strong></p>
+<p>RejectedExecutionException - 由 <code>RejectedExecutionHandler</code> 决定，如果任务无法被接受执行<br>NullPointerException - 如果任务为空</p>
+<h4 id="shutdown"><a href="#shutdown" class="headerlink" title="shutdown"></a>shutdown</h4><blockquote>
+<p><strong>public void shutdown()</strong></p>
+</blockquote>
+<p>启动有序的关闭，其之前提交的任务将继续执行，但是不在接受新的任务。如果线程池已关闭，则调用不会产生任何影响。</p>
+<p>这个方法不会等待之前提交的任务执行完成，请使用 <code>awaitTermination</code> 来等待剩余任务完成。</p>
+<p><strong>异常：</strong></p>
+<p>SecurityException - 如果存在一个安全管理器，并且当关闭线程池时，调用方线程没有 RuntimePermission(“modifyThread”) 修改线程池线程的权限，但却想进行操作的时候。或者安全管理器的 <code>checkAccess</code> 方法拒绝访问。</p>
+<h4 id="shutdownNow"><a href="#shutdownNow" class="headerlink" title="shutdownNow"></a>shutdownNow</h4><blockquote>
+<p><strong>public List<runnable> shutdownNow()</runnable></strong></p>
+</blockquote>
+<p>尝试停止所有正在处理的任务，并停止所有等待处理的任务。返回所有等待的任务的集合。当这个方法返回时，任务队列中所有的任务都会被移除。</p>
+<p>这个方法并不等待正在执行任务的终止，请使用 <code>awaitTermination</code> 方法来等待。</p>
+<p>除了尽最大努力停止处理正在执行的任务之外，没有其他保证。其使用 <code>Thread.interrupt()</code> 来取消正在执行的任务，所以任何未响应中断的任务可能永远不会被停止。</p>
+<p><strong>返回：</strong></p>
+<p>还未执行任务的列表</p>
+<p><strong>异常：</strong></p>
+<p>SecurityException - 如果存在一个安全管理器，并且当关闭线程池时，调用方线程没有 <code>RuntimePermission(&quot;modifyThread&quot;)</code> 修改线程池线程的权限，但却想进行操作的时候。或者安全管理器的 <code>checkAccess</code> 方法拒绝访问。</p>
+<h4 id="isShutdown"><a href="#isShutdown" class="headerlink" title="isShutdown"></a>isShutdown</h4><blockquote>
+<p><strong>public boolean isShutdown()</strong></p>
+</blockquote>
+<p>如果线程池停止，则返回 <code>true</code>。</p>
+<p><strong>返回：</strong></p>
+<p>如果线程池停止，则返回 <code>true</code>。</p>
+<h4 id="isTerminating"><a href="#isTerminating" class="headerlink" title="isTerminating"></a>isTerminating</h4><blockquote>
+<p><strong>public boolean isTerminating()</strong></p>
+</blockquote>
+<p>如果在调用 <code>shutdown()</code> 或者 <code>shutdownNow()</code> 之后，线程池处于正在终止的过程中，但尚未完成则返回 true。这个方法可能对 <code>debug</code> 有用。</p>
+<p>如果在关闭后足够长的时间内依然返回 <code>true</code>，则表示提交的任务忽略或抑制了中断，从而导致此执行器无法正确终止。</p>
+<p><strong>返回：</strong></p>
+<p>如果正在终止，但还没有终止结束，则返回 <code>true</code>。 </p>
+<h4 id="isTerminated"><a href="#isTerminated" class="headerlink" title="isTerminated"></a>isTerminated</h4><blockquote>
+<p><strong>public boolean isTerminated()</strong></p>
+</blockquote>
+<p>如果 <code>shut down</code> 后，所有任务都已完成则返回 <code>true</code>。注意，只有当调用了 <code>shutdown</code> 或者 <code>shutdownNow</code> 后，此方法才可能返回 <code>true</code>。</p>
+<p><strong>返回：</strong></p>
+<p>如果如果 <code>shut down</code> 后，所有任务都已完成则返回 <code>true</code>。</p>
+<h4 id="awaitTermination"><a href="#awaitTermination" class="headerlink" title="awaitTermination"></a>awaitTermination</h4><blockquote>
+<p><strong>public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException</strong></p>
+</blockquote>
+<p>在收到 <code>shutdown</code> 请求后阻塞，直到所有任务都执行完毕、或超时、或当前线程被中断(看哪个先发生)。</p>
+<p><strong>返回：</strong></p>
+<p>执行结束则返回 <code>true</code>。如果结束前超时，则返回 <code>false</code>。</p>
+<p><strong>异常：</strong></p>
+<p>InterruptedException - 如果阻塞的过程中被中断</p>
+<h4 id="finalize"><a href="#finalize" class="headerlink" title="finalize"></a>finalize</h4><blockquote>
+<p><strong>protected void finalize()</strong></p>
+</blockquote>
+<p>当此执行器不再被引用并且没有线程时调用 <code>shutdown</code> 方法。</p>
+<p><strong>重写：</strong></p>
+<p>重写了 <code>Object</code> 中的 <code>finalize</code> 方法</p>
+<h4 id="setThreadFactory"><a href="#setThreadFactory" class="headerlink" title="setThreadFactory"></a>setThreadFactory</h4><blockquote>
+<p><strong>public void setThreadFactory(ThreadFactory threadFactory)</strong></p>
+</blockquote>
+<p>设置创建线程时使用的线程工厂。</p>
+<p><strong>异常：</strong></p>
+<p>NullPointerException - 如果 <code>threadFactory</code> 为空。</p>
+<h4 id="getThreadFactory"><a href="#getThreadFactory" class="headerlink" title="getThreadFactory"></a>getThreadFactory</h4><blockquote>
+<p><strong>public ThreadFactory getThreadFactory()</strong></p>
+</blockquote>
+<p>返回创建线程时使用的线程工厂。</p>
+<p><strong>返回：</strong></p>
+<p>当前的线程工厂</p>
+<h4 id="setRejectedExecutionHandler"><a href="#setRejectedExecutionHandler" class="headerlink" title="setRejectedExecutionHandler"></a>setRejectedExecutionHandler</h4><blockquote>
+<p><strong>public void setRejectedExecutionHandler(RejectedExecutionHandler handler)</strong></p>
+</blockquote>
+<p>设置一个新的处理器，用于处理不能被接收执行的任务。</p>
+<p><strong>异常：</strong></p>
+<p>NullPointerException - 如果 <code>handler</code> 为空</p>
+<h4 id="getRejectedExecutionHandler"><a href="#getRejectedExecutionHandler" class="headerlink" title="getRejectedExecutionHandler"></a>getRejectedExecutionHandler</h4><blockquote>
+<p><strong>public RejectedExecutionHandler getRejectedExecutionHandler()</strong></p>
+</blockquote>
+<p>获取当前用于处理，无法被执行的任务的处理器。</p>
+<h4 id="setCorePoolSize"><a href="#setCorePoolSize" class="headerlink" title="setCorePoolSize"></a>setCorePoolSize</h4><blockquote>
+<p><strong>public void setCorePoolSize(int corePoolSize)</strong></p>
+</blockquote>
+<p>设置核心线程的数量。这个方法会覆盖在构造器中设置的任何值。如果新值小于当前值，则多出的线程将会在下次空闲的时候被终止。如果大于当前值，则在需要的情况下，会创建新的线程来执行队列中的任务。</p>
+<p><strong>异常：</strong></p>
+<p>IllegalArgumentException - 如果 <code>corePoolSize &lt; 0</code></p>
+<h4 id="getCorePoolSize"><a href="#getCorePoolSize" class="headerlink" title="getCorePoolSize"></a>getCorePoolSize</h4><blockquote>
+<p><strong>public int getCorePoolSize()</strong></p>
+</blockquote>
+<p>返回线程池中的核心线程数量。</p>
+<h4 id="prestartCoreThread"><a href="#prestartCoreThread" class="headerlink" title="prestartCoreThread"></a>prestartCoreThread</h4><blockquote>
+<p><strong>public boolean prestartCoreThread()</strong></p>
+</blockquote>
+<p>启动一个核心线程，使其处于空闲状态以等待执行任务。这个方法覆盖了默认的启动核心线程的策略：只有当新任务执行时，才会创建核心线程。如果所有核心线程都已经启动了，则此方法会返回 <code>false</code>。</p>
+<p><strong>返回：</strong></p>
+<p>如果启动了一个线程</p>
+<h4 id="prestartAllCoreThreads"><a href="#prestartAllCoreThreads" class="headerlink" title="prestartAllCoreThreads"></a>prestartAllCoreThreads</h4><blockquote>
+<p><strong>public int prestartAllCoreThreads()</strong></p>
+</blockquote>
+<p>启动所有的核心线程。使这些线程处于空闲状态以等待执行任务。这个方法覆盖了默认的启动核心线程的策略：只有当新任务执行时，才会创建核心线程。</p>
+<p><strong>返回：</strong></p>
+<p>启动的线程数量。</p>
+<h4 id="allowsCoreThreadTimeOut"><a href="#allowsCoreThreadTimeOut" class="headerlink" title="allowsCoreThreadTimeOut"></a>allowsCoreThreadTimeOut</h4><blockquote>
+<p><strong>public boolean allowsCoreThreadTimeOut()</strong></p>
+</blockquote>
+<p>如果当前线程池允许核心线程具有超时时间，并且会在 <code>keepAlive</code> 超时前没有任何任务到达，则会返回 <code>true</code>，当新任务到达时，如有需要会被替换。当返回 <code>true</code> 时，<code>keep-alive</code> 策略对核心线程与非核心线程同时有效。当为 <code>false</code>(默认) 时，核心线程永远不会因为空闲而被回收。</p>
+<p><strong>返回：</strong></p>
+<p>如果核心线程允许超时，则返回 <code>true</code>，否则返回 <code>false</code>。</p>
+<h4 id="allowCoreThreadTimeOut"><a href="#allowCoreThreadTimeOut" class="headerlink" title="allowCoreThreadTimeOut"></a>allowCoreThreadTimeOut</h4><blockquote>
+<p><strong>public void allowCoreThreadTimeOut(boolean value)</strong></p>
+</blockquote>
+<p>设置控制核心线程是否可能超时，以及在保持活动状态时间内，没有任务到达时是否终止的策略，当新任务到达时，如果需要，被替换。当返回 <code>true</code> 时，<code>keep-alive</code> 策略对核心线程与非核心线程同时有效。当为 <code>false</code>(默认) 时，核心线程永远不会因为空闲而被回收。为避免连续更换线程，当设置为 <code>true</code> 时，<code>keep-alive</code> 超时时间必须大于 <code>0</code>。通常，应该在主动使用线程池之前调用此方法。</p>
+<p><strong>参数：</strong></p>
+<p>value - 如果需要超时则返回 <code>true</code>，否则返回 <code>false</code></p>
+<p><strong>异常：</strong></p>
+<p>IllegalArgumentException - 如果 <code>value</code> 值为 <code>true</code>，但是 <code>keep-alive</code> 超时时间不大于 <code>0</code>.</p>
+<h4 id="setMaximumPoolSize"><a href="#setMaximumPoolSize" class="headerlink" title="setMaximumPoolSize"></a>setMaximumPoolSize</h4><blockquote>
+<p><strong>public void setMaximumPoolSize(int maximumPoolSize)</strong></p>
+</blockquote>
+<p>设置线程池允许的最大线程数量。这个方法会覆盖在构造器中设置的任何值。如果新值小于当前值，超出的已经存在的线程，会在下次空闲的时候被回收。</p>
+<p><strong>异常：</strong></p>
+<p>IllegalArgumentException - 如果 <code>maximumPoolSize &lt;= 0</code>,或者 <code>maximumPoolSize &lt; corePoolSize</code></p>
+<h4 id="getMaximumPoolSize"><a href="#getMaximumPoolSize" class="headerlink" title="getMaximumPoolSize"></a>getMaximumPoolSize</h4><blockquote>
+<p><strong>public int getMaximumPoolSize()</strong></p>
+</blockquote>
+<p>返回线程池允许的最大线程数量。</p>
+<h4 id="setKeepAliveTime"><a href="#setKeepAliveTime" class="headerlink" title="setKeepAliveTime"></a>setKeepAliveTime</h4><blockquote>
+<p><strong>public void setKeepAliveTime(long time, TimeUnit unit)</strong></p>
+</blockquote>
+<p>设置线程在终止之前可以保持空闲的时间限制。如果池中当前的线程数超过核心线程数，则超出的等待此时间却没有任务的线程，将会被回收掉。这将覆盖构造函数中设置的任何值。</p>
+<p><strong>异常：</strong></p>
+<p>IllegalArgumentException - 如果 <code>time &lt; 0</code>，或者 <code>(time == 0 &amp;&amp; allowsCoreThreadTimeOut)</code></p>
+<h4 id="getKeepAliveTime"><a href="#getKeepAliveTime" class="headerlink" title="getKeepAliveTime"></a>getKeepAliveTime</h4><blockquote>
+<p><strong>public long getKeepAliveTime(TimeUnit unit)</strong></p>
+</blockquote>
+<p>返回线程保持活动时间，即超过核心池大小的线程,在终止前可能保持空闲的时间量。</p>
+<h4 id="getQueue"><a href="#getQueue" class="headerlink" title="getQueue"></a>getQueue</h4><blockquote>
+<p><strong>public BlockingQueue<runnable> getQueue()</runnable></strong></p>
+</blockquote>
+<p>返回此执行器使用的任务队列。对任务队列的访问主要用于调试和监视。此队列可能正在使用中。检索任务队列不会阻止执行排队的任务。</p>
+<p><strong>返回：</strong></p>
+<p>任务队列</p>
+<h4 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h4><blockquote>
+<p><strong>public boolean remove(Runnable task)</strong></p>
+</blockquote>
+<p>如果存在此任务，则将其从执行器的内部队列中移除，从而导致尚未启动的任务无法运行。</p>
+<p>该方法可以用作取消方案的一部分。它可能无法删除在放入内部队列之前,已转换为其他形式的任务。例如，使用 <code>submit</code> 提交的任务可能会转换为 <code>Future</code> 格式的任务。然而，在这种情况下，可以使用 <code>purge()</code> 方法删除已取消的 <code>Future</code> 任务。</p>
+<p><strong>参数：</strong></p>
+<p>需要移除的任务</p>
+<p><strong>返回：</strong></p>
+<p>如果任务被移除，则返回 <code>true</code></p>
+<h4 id="purge"><a href="#purge" class="headerlink" title="purge"></a>purge</h4><blockquote>
+<p><strong>public void purge()</strong></p>
+</blockquote>
+<p>尝试删除工作队列中所有被取消的 <code>Future</code> 任务。此方法可以用作对功能没有其他影响的存储回收操作。取消的任务永远不会执行，但可能会在工作队列中累积，直到工作线程可以主动删除它们。而调用此方法会尝试现在删除它们。但是，如果存在其他线程的干扰，此方法可能无法删除任务。</p>
+<h4 id="getPoolSize"><a href="#getPoolSize" class="headerlink" title="getPoolSize"></a>getPoolSize</h4><blockquote>
+<p><strong>public int getPoolSize()</strong></p>
+</blockquote>
+<p>返回线程池中当前的线程数量</p>
+<h4 id="getActiveCount"><a href="#getActiveCount" class="headerlink" title="getActiveCount"></a>getActiveCount</h4><blockquote>
+<p><strong>public int getActiveCount()</strong></p>
+</blockquote>
+<p>返回当前正在执行任务的线程的大致数目。</p>
+<h4 id="getLargestPoolSize"><a href="#getLargestPoolSize" class="headerlink" title="getLargestPoolSize"></a>getLargestPoolSize</h4><blockquote>
+<p><strong>public int getLargestPoolSize()</strong></p>
+</blockquote>
+<p>返回线程池中同时存在的最大线程数。</p>
+<h4 id="getTaskCount"><a href="#getTaskCount" class="headerlink" title="getTaskCount"></a>getTaskCount</h4><blockquote>
+<p><strong>public long getTaskCount()</strong></p>
+</blockquote>
+<p>返回已计划执行的任务的大致总数。由于任务和线程的状态在计算过程中可能会动态变化，因此返回的值只是一个近似值。</p>
+<h4 id="getCompletedTaskCount"><a href="#getCompletedTaskCount" class="headerlink" title="getCompletedTaskCount"></a>getCompletedTaskCount</h4><blockquote>
+<p><strong>public long getCompletedTaskCount()</strong></p>
+</blockquote>
+<p>返回已完成执行的任务的大致总数。因为任务和线程的状态在计算过程中可能会动态变化，所以返回的值只是一个近似值，但在连续调用中不会减少。</p>
+<h4 id="toString-NaN"><a href="#toString-NaN" class="headerlink" title="toString"></a>toString</h4><blockquote>
+<p><strong>public String toString()</strong></p>
+</blockquote>
+<p>返回标识此线程池及其状态的字符串，包括运行状态指示以及估计的工作线程和任务计数。</p>
+<h4 id="beforeExecute"><a href="#beforeExecute" class="headerlink" title="beforeExecute"></a>beforeExecute</h4><blockquote>
+<p><strong>protected void beforeExecute(Thread t, Runnable r)</strong></p>
+</blockquote>
+<p>在给定线程中执行给定 <code>Runnable</code> 之前调用的方法。此方法由执行任务 <code>r</code> 的线程 <code>t</code> 调用，可用于重新初始化 <code>ThreadLocals</code> 或执行日志记录。</p>
+<p>当前实现什么都不做，但是可以在子类中自定义。注意：为了正确地嵌套多个重写，子类通常应该在方法的最后调用 <code>super.beforeExecute</code>。</p>
+<p><strong>参数：</strong></p>
+<p>t - 需要执行任务 r 的线程<br>r - 待执行的任务</p>
+<h4 id="afterExecute"><a href="#afterExecute" class="headerlink" title="afterExecute"></a>afterExecute</h4><blockquote>
+<p><strong>protected void afterExecute(Runnable r, Throwable t)</strong></p>
+</blockquote>
+<p>方法在给定 <code>Runnable</code> 的执行完成时调用。此方法由执行任务的线程调用。如果非空，<code>Throwable</code> 是一个导致运行突然中止的未捕获的 <code>RuntimeException</code> 或 <code>Error</code>。</p>
+<p>这个实现什么都不做，但是可以在子类中自定义。注意：为了正确地嵌套多个重写，子类通常应该在方法的开头调用 <code>super.afterExecute</code>。</p>
+<p><strong>注意：</strong>当任务显式或通过 <code>submit</code> 等方法包含在任务(如 <code>FutureTask</code>)中时，这些任务对象捕获并维护计算异常，因此不会导致突然终止，并且内部异常不会传递给此方法。如果要在此方法中捕获这两种类型的失败，可以进一步探测此类情况，如在以下示例子类中，如果任务已中止，则打印直接原因或底层异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExtendedExecutor</span> <span class="keyword">extends</span> <span class="title">ThreadPoolExecutor</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterExecute</span><span class="params">(Runnable r, Throwable t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.afterExecute(r, t);</span><br><span class="line">    <span class="keyword">if</span> (t == <span class="keyword">null</span> &amp;&amp; r <span class="keyword">instanceof</span> Future&lt;?&gt;) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        Object result = ((Future&lt;?&gt;) r).get();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (CancellationException ce) &#123;</span><br><span class="line">          t = ce;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (ExecutionException ee) &#123;</span><br><span class="line">          t = ee.getCause();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">          Thread.currentThread().interrupt(); <span class="comment">// ignore/reset</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (t != <span class="keyword">null</span>)</span><br><span class="line">      System.out.println(t);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数：</strong></p>
+<p>r - 已经完成的 <code>Runnable</code> 任务<br>t - 引起终止的异常原因。如果任务正常完成，则为 <code>null</code></p>
+<h4 id="terminated"><a href="#terminated" class="headerlink" title="terminated"></a>terminated</h4><blockquote>
+<p><strong>protected void terminated()</strong></p>
+</blockquote>
+<p>当 Executor 终止时调用此方法。默认实现什么都不做。注意，为了正确嵌套多个重写，子类通常应该在方法中调用 super.terminated。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/文档翻译/" rel="tag"># 文档翻译</a>
+          
+            <a href="/tags/并发/" rel="tag"># 并发</a>
+          
+            <a href="/tags/线程池/" rel="tag"># 线程池</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/07/concurrent/FutureTask/" rel="next" title="FutureTask">
+                <i class="fa fa-chevron-left"></i> FutureTask
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#接口概述"><span class="nav-number">1.</span> <span class="nav-text">接口概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造函数"><span class="nav-number">2.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部类"><span class="nav-number">3.</span> <span class="nav-text">内部类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor-AbortPolicy"><span class="nav-number">3.1.</span> <span class="nav-text">ThreadPoolExecutor.AbortPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor-CallerRunsPolicy"><span class="nav-number">3.2.</span> <span class="nav-text">ThreadPoolExecutor.CallerRunsPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor-DiscardOldestPolicy"><span class="nav-number">3.3.</span> <span class="nav-text">ThreadPoolExecutor.DiscardOldestPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor-DiscardPolicy"><span class="nav-number">3.4.</span> <span class="nav-text">ThreadPoolExecutor.DiscardPolicy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法概览"><span class="nav-number">4.</span> <span class="nav-text">方法概览</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#execute"><span class="nav-number">4.1.</span> <span class="nav-text">execute</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shutdown"><span class="nav-number">4.2.</span> <span class="nav-text">shutdown</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shutdownNow"><span class="nav-number">4.3.</span> <span class="nav-text">shutdownNow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#isShutdown"><span class="nav-number">4.4.</span> <span class="nav-text">isShutdown</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#isTerminating"><span class="nav-number">4.5.</span> <span class="nav-text">isTerminating</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#isTerminated"><span class="nav-number">4.6.</span> <span class="nav-text">isTerminated</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#awaitTermination"><span class="nav-number">4.7.</span> <span class="nav-text">awaitTermination</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#finalize"><span class="nav-number">4.8.</span> <span class="nav-text">finalize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setThreadFactory"><span class="nav-number">4.9.</span> <span class="nav-text">setThreadFactory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getThreadFactory"><span class="nav-number">4.10.</span> <span class="nav-text">getThreadFactory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setRejectedExecutionHandler"><span class="nav-number">4.11.</span> <span class="nav-text">setRejectedExecutionHandler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getRejectedExecutionHandler"><span class="nav-number">4.12.</span> <span class="nav-text">getRejectedExecutionHandler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setCorePoolSize"><span class="nav-number">4.13.</span> <span class="nav-text">setCorePoolSize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getCorePoolSize"><span class="nav-number">4.14.</span> <span class="nav-text">getCorePoolSize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prestartCoreThread"><span class="nav-number">4.15.</span> <span class="nav-text">prestartCoreThread</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prestartAllCoreThreads"><span class="nav-number">4.16.</span> <span class="nav-text">prestartAllCoreThreads</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allowsCoreThreadTimeOut"><span class="nav-number">4.17.</span> <span class="nav-text">allowsCoreThreadTimeOut</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allowCoreThreadTimeOut"><span class="nav-number">4.18.</span> <span class="nav-text">allowCoreThreadTimeOut</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setMaximumPoolSize"><span class="nav-number">4.19.</span> <span class="nav-text">setMaximumPoolSize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getMaximumPoolSize"><span class="nav-number">4.20.</span> <span class="nav-text">getMaximumPoolSize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setKeepAliveTime"><span class="nav-number">4.21.</span> <span class="nav-text">setKeepAliveTime</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getKeepAliveTime"><span class="nav-number">4.22.</span> <span class="nav-text">getKeepAliveTime</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getQueue"><span class="nav-number">4.23.</span> <span class="nav-text">getQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#remove"><span class="nav-number">4.24.</span> <span class="nav-text">remove</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#purge"><span class="nav-number">4.25.</span> <span class="nav-text">purge</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getPoolSize"><span class="nav-number">4.26.</span> <span class="nav-text">getPoolSize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getActiveCount"><span class="nav-number">4.27.</span> <span class="nav-text">getActiveCount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getLargestPoolSize"><span class="nav-number">4.28.</span> <span class="nav-text">getLargestPoolSize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getTaskCount"><span class="nav-number">4.29.</span> <span class="nav-text">getTaskCount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getCompletedTaskCount"><span class="nav-number">4.30.</span> <span class="nav-text">getCompletedTaskCount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#toString-NaN"><span class="nav-number">4.31.</span> <span class="nav-text">toString</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#beforeExecute"><span class="nav-number">4.32.</span> <span class="nav-text">beforeExecute</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#afterExecute"><span class="nav-number">4.33.</span> <span class="nav-text">afterExecute</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#terminated"><span class="nav-number">4.34.</span> <span class="nav-text">terminated</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
