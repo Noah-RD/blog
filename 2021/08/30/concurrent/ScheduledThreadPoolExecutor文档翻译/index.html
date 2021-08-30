@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="文档翻译,并发,线程池,定时任务,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="文本为对 JAVA SE 8 J.U.C 包下 ScheduledThreadPoolExecutor 文档的翻译。">
+<meta name="keywords" content="文档翻译,并发,线程池,定时任务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ScheduledThreadPoolExecutor文档翻译">
+<meta property="og:url" content="http://blog.intersico.com/2021/08/30/concurrent/ScheduledThreadPoolExecutor文档翻译/index.html">
+<meta property="og:site_name" content="Every Day">
+<meta property="og:description" content="文本为对 JAVA SE 8 J.U.C 包下 ScheduledThreadPoolExecutor 文档的翻译。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.intersico.com/2021/08/30/concurrent/ScheduledThreadPoolExecutor文档翻译/head.jpg">
+<meta property="og:updated_time" content="2021-08-30T05:14:20.892Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ScheduledThreadPoolExecutor文档翻译">
+<meta name="twitter:description" content="文本为对 JAVA SE 8 J.U.C 包下 ScheduledThreadPoolExecutor 文档的翻译。">
+<meta name="twitter:image" content="http://blog.intersico.com/2021/08/30/concurrent/ScheduledThreadPoolExecutor文档翻译/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.intersico.com/2021/08/30/concurrent/ScheduledThreadPoolExecutor文档翻译/">
+
+
+
+
+
+  <title>ScheduledThreadPoolExecutor文档翻译 | Every Day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Every Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.intersico.com/2021/08/30/concurrent/ScheduledThreadPoolExecutor文档翻译/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="R.D">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Every Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ScheduledThreadPoolExecutor文档翻译</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-30T12:11:39+08:00">
+                2021-08-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/并发/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2021/08/30/concurrent/ScheduledThreadPoolExecutor文档翻译/head.jpg">
+
+<p>文本为对 JAVA SE 8 <code>J.U.C</code> 包下 <code>ScheduledThreadPoolExecutor</code> 文档的翻译。</p>
+<a id="more"></a>
+
+<h3 id="接口概述"><a href="#接口概述" class="headerlink" title="接口概述"></a>接口概述</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScheduledThreadPoolExecutor</span> <span class="keyword">extends</span> <span class="title">ThreadPoolExecutor</span> <span class="keyword">implements</span> <span class="title">ScheduledExecutorService</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一个可以再给定延时后执行调度/定时任务的 <code>ThreadPoolExecutor</code>，当需要多个线程执行任务或需要 <code>ThreadPoolExecutor</code> 的额外灵活性功能时，此类比 <code>Timer</code> 类更适合。</p>
+<p>延迟的任务在启用之后立即执行，但是没有任何关于启用之后何时开始执行的实时保证。计划执行时间完全相同的任务按提交的先进先出(FIFO)顺序启用。</p>
+<p>当提交的任务在运行之前被取消时，执行会被抑制。默认情况下，此类取消的任务不会自动从工作队列中删除，直到其延迟结束。虽然这可以实现进一步的检查和监控，但它也可能导致取消任务的无限保留。为避免这种情况，请将 <code>setRemoveOnCancelPolicy(boolean)</code> 设置为 true，这会使任务在取消时立即从工作队列中删除。</p>
+<p>通过 <code>scheduleAtFixedRate</code> 或 <code>scheduleWithFixedDelay</code> 提交的任务的连续执行不重叠。虽然不同的执行可能由不同的线程执行，但先前执行的效果发生在后续执行的效果之前。</p>
+<p>虽然这个类继承自 <code>ThreadPoolExecutor</code>，但一些继承的调优方法对它没有用。由于此类内部使用 <code>corePoolSize</code> 与无界阻塞队列，所以对 <code>maximumPoolSize</code> 的调整没有任何效果。此外，不推荐将 <code>corePoolSize</code> 设置为零或使用 <code>allowCoreThreadTimeOut</code> ，因为一旦任务可以开始运行后，这可能会导致池没有线程来处理任务。</p>
+<p>扩展说明：该类重写了 <code>execute</code> 和 <code>submit</code> 方法以生成内部 <code>ScheduledFuture</code> 对象来控制每个任务的延迟和调度。为了保留功能，子类中这些方法的任何进一步重写都必须调用超类版本，这有效地禁用了额外的任务自定义。但是，此类也提供了替代的受保护扩展方法 <code>decorateTask(Runnable 和 Callable 各一个版本)</code>，可用于自定义执行通过 <code>execute、submit、schedule、scheduleAtFixedRate 和 scheduleWithFixedDelay</code> 提交的具体任务类型。默认情况下，<code>ScheduledThreadPoolExecutor</code> 使用扩展 <code>FutureTask</code> 的任务类型。但是，这可以使用以下形式的子类进行修改或替换:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomScheduledExecutor</span> <span class="keyword">extends</span> <span class="title">ScheduledThreadPoolExecutor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomTask</span>&lt;<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">RunnableScheduledFuture</span>&lt;<span class="title">V</span>&gt; </span>&#123; <span class="comment">//... &#125;</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">protected</span> &lt;V&gt; <span class="function">RunnableScheduledFuture&lt;V&gt; <span class="title">decorateTask</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">                Runnable r, RunnableScheduledFuture&lt;V&gt; task)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> CustomTask&lt;V&gt;(r, task);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">protected</span> &lt;V&gt; <span class="function">RunnableScheduledFuture&lt;V&gt; <span class="title">decorateTask</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">                Callable&lt;V&gt; c, RunnableScheduledFuture&lt;V&gt; task)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> CustomTask&lt;V&gt;(c, task);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// ... add constructors, etc.</span></span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><blockquote>
+<p><strong>public ScheduledThreadPoolExecutor(int corePoolSize)</strong> </p>
+</blockquote>
+<p>用给定的核心线程数创建调度线程池</p>
+<p><strong>参数</strong></p>
+<p>corePoolSize - 池中保持的线程数量(即使是空闲的，除非设置 allowCoreThreadTimeOut)</p>
+<blockquote>
+<p><strong>public ScheduledThreadPoolExecutor(int corePoolSize, ThreadFactory threadFactory)</strong> </p>
+</blockquote>
+<blockquote>
+<p><strong>public ScheduledThreadPoolExecutor(int corePoolSize, RejectedExecutionHandler handler)</strong> </p>
+</blockquote>
+<blockquote>
+<p><strong>public ScheduledThreadPoolExecutor(int corePoolSize, ThreadFactory threadFactory, RejectedExecutionHandler handler)</strong></p>
+</blockquote>
+<h3 id="方法概览"><a href="#方法概览" class="headerlink" title="方法概览"></a>方法概览</h3><h4 id="decorateTask"><a href="#decorateTask" class="headerlink" title="decorateTask"></a>decorateTask</h4><blockquote>
+<p><strong>protected <v> RunnableScheduledFuture<v> decorateTask(Runnable runnable, RunnableScheduledFuture<v> task)</v></v></v></strong></p>
+</blockquote>
+<p>修改或替换用于执行可运行的任务。此方法可用于管理内部任务的具体类。默认实现只是返回给定的任务。</p>
+<h4 id="decorateTask-1"><a href="#decorateTask-1" class="headerlink" title="decorateTask"></a>decorateTask</h4><blockquote>
+<p><strong>protected <v> RunnableScheduledFuture<v> decorateTask(Callable<v> callable, RunnableScheduledFuture<v> task)</v></v></v></v></strong></p>
+</blockquote>
+<p>修改或替换用于执行可运行的任务。此方法可用于管理内部任务的具体类。默认实现只是返回给定的任务。</p>
+<h4 id="schedule"><a href="#schedule" class="headerlink" title="schedule"></a>schedule</h4><blockquote>
+<p><strong>public ScheduledFuture&lt;?&gt; schedule(Runnable command, long delay, TimeUnit unit)</strong></p>
+</blockquote>
+<p>创建并执行在给定延迟后执行的一次性任务。</p>
+<p><strong>返回</strong></p>
+<p>一个 <code>ScheduledFuture</code> 表示待完成的任务，其 get() 方法将在完成时返回 null</p>
+<h4 id="schedule-1"><a href="#schedule-1" class="headerlink" title="schedule"></a>schedule</h4><blockquote>
+<p><strong>public <v> ScheduledFuture<v> schedule(Callable<v> callable, long delay, TimeUnit unit)</v></v></v></strong></p>
+</blockquote>
+<p>创建并执行在给定延迟后执行的一次性任务。</p>
+<p><strong>返回</strong></p>
+<p>可用于 <code>get()</code> 或 <code>cancel()</code> 的 <code>ScheduledFuture</code></p>
+<h4 id="scheduleAtFixedRate"><a href="#scheduleAtFixedRate" class="headerlink" title="scheduleAtFixedRate"></a>scheduleAtFixedRate</h4><blockquote>
+<p><strong>public ScheduledFuture&lt;?&gt; scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)</strong></p>
+</blockquote>
+<p>在给定延时后执行一个定时任务，之后每过 <code>period</code> 时长执行一次。任务第一次执行的延时时间为 initialDelay，之后在执行则为 initialDelay + period, initialDelay + 2 * period 以此类推。</p>
+<p>如果任务在执行过程中发生异常，则后续执行将会被抑制(注：异常后，futureTask 无法 runAndReset)，否则任务只会被 cancel() 取消或线程池终结时结束。如果此任务的任何执行时间超过其周期，则后续执行可能会延迟开始，但不会并发执行。</p>
+<p><strong>参数</strong></p>
+<p>command - 待执行的任务<br>initialDelay - 第一次执行的延时时间<br>period - 每次调度的定时时间</p>
+<p><strong>返回</strong></p>
+<p>一个 <code>ScheduledFuture</code> 表示待完成的任务，其 <code>get()</code> 方法将在取消时抛出异常</p>
+<h4 id="scheduleWithFixedDelay"><a href="#scheduleWithFixedDelay" class="headerlink" title="scheduleWithFixedDelay"></a>scheduleWithFixedDelay</h4><blockquote>
+<p><strong>public ScheduledFuture&lt;?&gt; scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit)</strong></p>
+</blockquote>
+<p>在给定延时后执行一个定时任务，之后当上一个任务完成后，过 <code>period</code> 时长执行下一次。任务第一次执行的延时时间为 initialDelay，随后在一个执行终止和下一个执行开始之间具有给定的延迟。如果任务的任何执行遇到异常，则后续执行将被抑制。否则，任务只会通过取消或终止执行程序而终止。</p>
+<p><strong>参数</strong></p>
+<p>command - 待执行的任务<br>initialDelay - 第一次执行的延时时间<br>delay - 上一个执行终止和下一个执行开始之间的延迟</p>
+<p><strong>返回</strong></p>
+<p>一个 <code>ScheduledFuture</code> 表示待完成的任务，其 <code>get()</code> 方法将在取消时抛出异常</p>
+<h4 id="execute"><a href="#execute" class="headerlink" title="execute"></a>execute</h4><blockquote>
+<p><strong>public void execute(Runnable command)</strong></p>
+</blockquote>
+<p>0 延时执行任务，等效于 <code>schedule(command, 0, anyUnit)</code>。请注意，对 <code>shutdownNow</code> 返回的队列类型是 <code>ScheduledFuture</code>，而不是 <code>command</code> 本身。</p>
+<p>使用 <code>ScheduledFuture</code> 对象的结果是，即使 <code>command</code> 突然终止，也始终使用空的第二个 <code>Throwable</code> 参数调用 <code>afterExecute()</code>。 相反，此类任务抛出的 <code>Throwable</code> 可以通过 <code>Future.get()</code> 获取。</p>
+<h4 id="submit"><a href="#submit" class="headerlink" title="submit"></a>submit</h4><blockquote>
+<p><strong>public Future&lt;?&gt; submit(Runnable task)</strong></p>
+</blockquote>
+<p>提交一个 <code>Runnable</code> 任务以供执行，并返回一个代表该任务的 <code>Future</code>。 <code>Future</code> 的 <code>get</code> 方法将在成功完成后返回 <code>null</code>。</p>
+<h4 id="submit-1"><a href="#submit-1" class="headerlink" title="submit"></a>submit</h4><blockquote>
+<p><strong>public <t> Future<t> submit(Runnable task, T result)</t></t></strong></p>
+</blockquote>
+<p>提交一个 <code>Runnable</code> 任务以供执行，并返回一个代表该任务的 <code>Future</code>。 <code>Future</code> 的 <code>get</code> 方法将在成功完成后返回给定的结果。</p>
+<h4 id="submit-2"><a href="#submit-2" class="headerlink" title="submit"></a>submit</h4><blockquote>
+<p><strong>public <t> Future<t> submit(Callable<t> task)</t></t></t></strong></p>
+</blockquote>
+<p>提交一个返回值的任务以供执行，并返回一个表示任务未决结果的 <code>Future</code>。 <code>Future</code> 的 <code>get</code> 方法将在成功完成后返回任务的结果。<br>如果您想立即阻止等待任务，可以使用 <code>result = exec.submit(aCallable).get();</code> 形式的结构。</p>
+<p>注意： <code>Executors</code> 类包含一组方法，可以将一些其他常见的类似闭包的对象(例如 <code>PrivilegedAction</code> )转换为 <code>Callable</code> 类型，以便它们可以被提交。</p>
+<h4 id="setContinueExistingPeriodicTasksAfterShutdownPolicy"><a href="#setContinueExistingPeriodicTasksAfterShutdownPolicy" class="headerlink" title="setContinueExistingPeriodicTasksAfterShutdownPolicy"></a>setContinueExistingPeriodicTasksAfterShutdownPolicy</h4><blockquote>
+<p><strong>public void setContinueExistingPeriodicTasksAfterShutdownPolicy(boolean value)</strong></p>
+</blockquote>
+<p>设置是否在线程池已关闭时继续执行现有周期性任务的策略。在这种情况下，这些任务只会在 <code>shutdownNow</code> 或在已关闭时将策略设置为 <code>false</code> 后终止。 此值默认为 <code>false</code>。</p>
+<h4 id="getContinueExistingPeriodicTasksAfterShutdownPolicy"><a href="#getContinueExistingPeriodicTasksAfterShutdownPolicy" class="headerlink" title="getContinueExistingPeriodicTasksAfterShutdownPolicy"></a>getContinueExistingPeriodicTasksAfterShutdownPolicy</h4><blockquote>
+<p><strong>public boolean getContinueExistingPeriodicTasksAfterShutdownPolicy()</strong></p>
+</blockquote>
+<p>获取有关是否在线程池已关闭时继续执行现有周期性任务的策略。在这种情况下，这些任务只会在 <code>shutdownNow</code> 或在已关闭时将策略设置为 <code>false</code> 后终止。 此值默认为 <code>false</code>。</p>
+<h4 id="setExecuteExistingDelayedTasksAfterShutdownPolicy"><a href="#setExecuteExistingDelayedTasksAfterShutdownPolicy" class="headerlink" title="setExecuteExistingDelayedTasksAfterShutdownPolicy"></a>setExecuteExistingDelayedTasksAfterShutdownPolicy</h4><blockquote>
+<p><strong>public void setExecuteExistingDelayedTasksAfterShutdownPolicy(boolean value)</strong></p>
+</blockquote>
+<p>设置是否在线程池已关闭时执行现有延迟任务的策略。在这种情况下，这些任务只会在 <code>shutdownNow</code> 时终止，或者在已关闭时将策略设置为 <code>false</code> 后终止。 该值默认为 <code>true</code>。</p>
+<h4 id="getExecuteExistingDelayedTasksAfterShutdownPolicy"><a href="#getExecuteExistingDelayedTasksAfterShutdownPolicy" class="headerlink" title="getExecuteExistingDelayedTasksAfterShutdownPolicy"></a>getExecuteExistingDelayedTasksAfterShutdownPolicy</h4><blockquote>
+<p><strong>public boolean getExecuteExistingDelayedTasksAfterShutdownPolicy()</strong></p>
+</blockquote>
+<p>获取有关是否在线程池已关闭时执行现有延迟任务的策略。在这种情况下，这些任务只会在 <code>shutdownNow</code> 时终止，或者在已关闭时将策略设置为 <code>false</code> 后终止。 该值默认为 <code>true</code>。</p>
+<h4 id="setRemoveOnCancelPolicy"><a href="#setRemoveOnCancelPolicy" class="headerlink" title="setRemoveOnCancelPolicy"></a>setRemoveOnCancelPolicy</h4><blockquote>
+<p><strong>public void setRemoveOnCancelPolicy(boolean value)</strong></p>
+</blockquote>
+<p>设置在取消任务时，是否立即从工作队列中删除已取消的任务。此值默认为 <code>false</code>。</p>
+<h4 id="getRemoveOnCancelPolicy"><a href="#getRemoveOnCancelPolicy" class="headerlink" title="getRemoveOnCancelPolicy"></a>getRemoveOnCancelPolicy</h4><blockquote>
+<p><strong>public boolean getRemoveOnCancelPolicy()</strong></p>
+</blockquote>
+<h4 id="shutdown"><a href="#shutdown" class="headerlink" title="shutdown"></a>shutdown</h4><blockquote>
+<p><strong>public void shutdown()</strong></p>
+</blockquote>
+<p>启动有序关闭，其中执行先前提交的任务，但不会接受新任务。如果已经关闭，调用没有额外的效果。</p>
+<p>此方法不等待先前提交的任务完成执行。 使用 <code>awaitTermination</code> 来做到这一点。</p>
+<p>如果 <code>ExecuteExistingDelayedTasksAfterShutdownPolicy</code> 已设置为 <code>false</code>，则延迟尚未结束的现有延迟任务将被取消。除非将 <code>ContinueExistingPeriodicTasksAfterShutdownPolicy</code> 设置为 <code>true</code>，否则将取消现有周期性任务的未来执行。</p>
+<h4 id="shutdownNow"><a href="#shutdownNow" class="headerlink" title="shutdownNow"></a>shutdownNow</h4><blockquote>
+<p><strong>public List<runnable> shutdownNow()</runnable></strong></p>
+</blockquote>
+<p>尝试停止所有正在执行的任务，停止等待任务的处理，并返回等待执行的任务列表。</p>
+<p>此方法不会等待主动执行的任务终止。 使用 <code>awaitTermination</code> 来做到这一点。</p>
+<p>除了尽力尝试停止处理正在执行的任务之外，没有任何保证。 此实现通过 <code>Thread.interrupt()</code> 取消任务，因此任何未能响应中断的任务可能永远不会终止。</p>
+<h4 id="getQueue"><a href="#getQueue" class="headerlink" title="getQueue"></a>getQueue</h4><blockquote>
+<p><strong>public BlockingQueue<runnable> getQueue()</runnable></strong></p>
+</blockquote>
+<p>返回此执行程序使用的任务队列。这个队列的每个元素都是一个 <code>ScheduledFuture</code>，包括那些使用 <code>execute</code> 提交的任务，这些任务用于调度目的，用作零延迟 <code>ScheduledFuture</code> 的基础。 不能保证对这个队列的迭代按任务执行的顺序遍历任务。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/文档翻译/" rel="tag"># 文档翻译</a>
+          
+            <a href="/tags/并发/" rel="tag"># 并发</a>
+          
+            <a href="/tags/线程池/" rel="tag"># 线程池</a>
+          
+            <a href="/tags/定时任务/" rel="tag"># 定时任务</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/07/26/spring/validated注解备忘/" rel="next" title="validated注解备忘">
+                <i class="fa fa-chevron-left"></i> validated注解备忘
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/08/30/concurrent/ScheduledThreadPoolExecutor/" rel="prev" title="ScheduledThreadPoolExecutor">
+                ScheduledThreadPoolExecutor <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">R.D</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+<br>
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#接口概述"><span class="nav-number">1.</span> <span class="nav-text">接口概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造函数"><span class="nav-number">2.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法概览"><span class="nav-number">3.</span> <span class="nav-text">方法概览</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#decorateTask"><span class="nav-number">3.1.</span> <span class="nav-text">decorateTask</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#decorateTask-1"><span class="nav-number">3.2.</span> <span class="nav-text">decorateTask</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#schedule"><span class="nav-number">3.3.</span> <span class="nav-text">schedule</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#schedule-1"><span class="nav-number">3.4.</span> <span class="nav-text">schedule</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#scheduleAtFixedRate"><span class="nav-number">3.5.</span> <span class="nav-text">scheduleAtFixedRate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#scheduleWithFixedDelay"><span class="nav-number">3.6.</span> <span class="nav-text">scheduleWithFixedDelay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#execute"><span class="nav-number">3.7.</span> <span class="nav-text">execute</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#submit"><span class="nav-number">3.8.</span> <span class="nav-text">submit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#submit-1"><span class="nav-number">3.9.</span> <span class="nav-text">submit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#submit-2"><span class="nav-number">3.10.</span> <span class="nav-text">submit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setContinueExistingPeriodicTasksAfterShutdownPolicy"><span class="nav-number">3.11.</span> <span class="nav-text">setContinueExistingPeriodicTasksAfterShutdownPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getContinueExistingPeriodicTasksAfterShutdownPolicy"><span class="nav-number">3.12.</span> <span class="nav-text">getContinueExistingPeriodicTasksAfterShutdownPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setExecuteExistingDelayedTasksAfterShutdownPolicy"><span class="nav-number">3.13.</span> <span class="nav-text">setExecuteExistingDelayedTasksAfterShutdownPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getExecuteExistingDelayedTasksAfterShutdownPolicy"><span class="nav-number">3.14.</span> <span class="nav-text">getExecuteExistingDelayedTasksAfterShutdownPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setRemoveOnCancelPolicy"><span class="nav-number">3.15.</span> <span class="nav-text">setRemoveOnCancelPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getRemoveOnCancelPolicy"><span class="nav-number">3.16.</span> <span class="nav-text">getRemoveOnCancelPolicy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shutdown"><span class="nav-number">3.17.</span> <span class="nav-text">shutdown</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shutdownNow"><span class="nav-number">3.18.</span> <span class="nav-text">shutdownNow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getQueue"><span class="nav-number">3.19.</span> <span class="nav-text">getQueue</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">R.D</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
